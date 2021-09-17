@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.ViewModels;
@@ -9,29 +9,29 @@ namespace ChaggarCharts.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SongsController : ControllerBase
+    public class GenresController : ControllerBase
     {
-        private readonly ILogger<SongsController> _logger;
-        private readonly ISongRepository _songRepo;
+        private readonly ILogger<GenresController> _logger;
+        private readonly IGenreRepository _genreRepo;
 
-        public SongsController(ISongRepository songRepo, ILogger<SongsController> logger)
+        public GenresController(IGenreRepository genreRepo, ILogger<GenresController> logger)
         {
-            _songRepo = songRepo;
             _logger = logger;
+            _genreRepo = genreRepo;
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<SongModel>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GenreModel>), 200)]
         [ProducesResponseType(typeof(string), 500)]
         public IActionResult Get()
         {
             try
             {
-                return Ok(_songRepo.GetSongs());
+                return Ok(_genreRepo.GetGenres());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred getting the list of songs from the db");
+                _logger.LogError(ex, "Error thrown while getting genres from db");
                 return StatusCode(500, ex.Message);
             }
         }

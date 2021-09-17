@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "module": "commonjs",
+        "target": "es6",
+        "jsx": "react",
+        "lib": ["es2015", "es2016", "dom", "es2018"]
+    },
+    "include": [
+        "./src",
+        "theme.config.js"
+    ],
+    "exclude": [
+        "node_modules",
+        "build"
+    ],
+}

@@ -1,0 +1,25 @@
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
+using ChaggarCharts.Api.Interfaces;
+using ChaggarCharts.Api.Models;
+using ChaggarCharts.Api.ViewModels;
+
+namespace ChaggarCharts.Api.Repositories
+{
+    public class GenreRepository : IGenreRepository
+    {
+        private readonly ChaggarChartsContext _ctx;
+        private readonly IMapper _mapper;
+        public GenreRepository(ChaggarChartsContext ctx, IMapper mapper)
+        {
+            _ctx = ctx;
+            _mapper = mapper;
+        }
+
+        public IEnumerable<GenreModel> GetGenres()
+        {
+            return _ctx.Set<Genre>().Select(s => _mapper.Map<GenreModel>(s));
+        }
+    }
+}
