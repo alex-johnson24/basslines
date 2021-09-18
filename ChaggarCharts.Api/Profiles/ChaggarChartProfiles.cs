@@ -8,8 +8,11 @@ namespace ChaggarCharts.Api.Profiles
     {
         public ChaggarChartProfile()
         {
-            CreateMap<Song, SongModel>()
-                .ForMember(m => m.Genre, opt => opt.MapFrom(s => s.Genre.Name));
+            CreateMap<Song, SongModel>();
+
+            CreateMap<User, UserModel>();
+            
+            CreateMap<Genre, GenreModel>();
         }
     }
 }

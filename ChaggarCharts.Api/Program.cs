@@ -61,7 +61,9 @@ namespace ChaggarCharts
             {
                 AutoRegisterTemplate = true,
                 IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
-                ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "YreeSP18Qu1tYK6z5RUS")
+                ModifyConnectionSettings = configuration => configuration
+                    .ServerCertificateValidationCallback((o, certificate, arg3, arg4) => { return true; })
+                    .BasicAuthentication("elastic", "YreeSP18Qu1tYK6z5RUS")
             };
         }
     }

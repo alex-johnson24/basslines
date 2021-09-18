@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using AutoMapper;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.Models;
@@ -7,6 +8,7 @@ using ChaggarCharts.Api.Repositories;
 using Elastic.Apm.NetCoreAll;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +40,7 @@ namespace ChaggarCharts
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
             services.AddScoped<ISongRepository, SongRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -62,6 +65,8 @@ namespace ChaggarCharts
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -69,6 +74,12 @@ namespace ChaggarCharts
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.Run(async (context) =>
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
             });
         }
     }

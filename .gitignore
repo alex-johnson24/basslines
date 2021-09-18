@@ -36,3 +36,8 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 ChaggarCharts.Api/appsettings.Development.json
+node_modules/
+ChaggarCharts.Api/wwwroot/index.html
+ChaggarCharts.Api/wwwroot/main.js
+ChaggarCharts.Api/wwwroot/woff.css
+ChaggarCharts.Api/wwwroot/woff2.css

@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" charset="utf-8" />
+    <title>ChaggarCharts</title>
+    <base href="<%= htmlWebpackPlugin.options.baseUrl %>" />
+    <link rel="stylesheet" href="woff.css">
+    <link rel="stylesheet" href="woff2.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+  </head>
+  <body>
+    <div id="mountNode"></div>
+    <script>
+      window.__BASENAME__ = "<%= htmlWebpackPlugin.options.baseUrl %>"
+      window.__APP_VERSION__ = "<%= htmlWebpackPlugin.options.version %>"
+    </script>
+  </body>
+</html>
