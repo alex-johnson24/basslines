@@ -20,7 +20,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - dotnet publish ./ChaggarCharts.Api/ChaggarCharts.Api.csproj
+      - dotnet publish ./ChaggarCharts.Api/ChaggarCharts.Api.csproj -c Release
       
   # post_build:
   #   commands:
@@ -28,8 +28,8 @@ phases:
   #     # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/dotnet-linux-platform-bundle-app.html
   #     - dotnet publish -c Release -r linux-x64 --self-contained false Api.csproj
       
-# artifacts:
-#   files:
-#     - '**/*'
-#   base-directory: ./bin/Release/netcoreapp3.1/linux-x64/publish/
-#   discard-paths: no
+artifacts:
+  files:
+    - '**/*'
+  base-directory: ./ChaggarCharts.Api/bin/Release
+  discard-paths: no
