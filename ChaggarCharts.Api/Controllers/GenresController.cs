@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace ChaggarCharts.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class GenresController : ControllerBase

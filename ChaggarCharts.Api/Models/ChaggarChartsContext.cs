@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
@@ -133,10 +131,20 @@ namespace ChaggarCharts.Api.Models
                     .HasColumnName("createdatetime")
                     .HasDefaultValueSql("(sysdatetime())");
 
+                entity.Property(e => e.Firstname)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnName("firstname");
+
                 entity.Property(e => e.Hpassword)
                     .IsRequired()
                     .HasMaxLength(100)
                     .HasColumnName("hpassword");
+
+                entity.Property(e => e.Lastname)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnName("lastname");
 
                 entity.Property(e => e.Roleid).HasColumnName("roleid");
 
