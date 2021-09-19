@@ -31,5 +31,5 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: ./ChaggarCharts.Api/bin/Release
+  base-directory: ./ChaggarCharts.Api/bin/Release/publish
   discard-paths: no
