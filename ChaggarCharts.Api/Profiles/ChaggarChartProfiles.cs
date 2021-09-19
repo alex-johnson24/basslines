@@ -10,7 +10,8 @@ namespace ChaggarCharts.Api.Profiles
         {
             CreateMap<Song, SongModel>();
 
-            CreateMap<User, UserModel>();
+            CreateMap<User, UserModel>()
+                .ForMember(dest => dest.Role, m => m.MapFrom(src => src.Role.Flag));
             
             CreateMap<Genre, GenreModel>();
         }
