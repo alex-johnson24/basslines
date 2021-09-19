@@ -66,7 +66,7 @@ namespace ChaggarCharts
                 });
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("AdminUser", policy => { policy.RequireClaim("userRole", "admin"); });
+                opt.AddPolicy("AdminUser", policy => { policy.RequireClaim("userRole", "Administrator"); });
             });
             services.AddSingleton(mapper);
             services.AddScoped<ISongRepository, SongRepository>();
