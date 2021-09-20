@@ -1,0 +1,22 @@
+version: 0.0  
+os: linux  
+files:  
+    -  
+        destination: /appl/chaggarcharts  
+        source: /  
+hooks:  
+    ApplicationStop:  
+        -  
+            location: deploy/stop_server.sh  
+            runas: root  
+            timeout: 300  
+    BeforeInstall:  
+        -  
+            location: deploy/clean_application.sh  
+            runas: root  
+            timeout: 300  
+    ApplicationStart:  
+        -  
+            location: deploy/start_server.sh  
+            runas: root  
+            timeout: 300  
