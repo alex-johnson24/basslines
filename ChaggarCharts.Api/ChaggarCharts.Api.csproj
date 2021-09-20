@@ -30,9 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../deploy/**">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="..\deploy\" />
   </ItemGroup>
 
 </Project>
