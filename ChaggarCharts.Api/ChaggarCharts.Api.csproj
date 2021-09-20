@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../deploy/*">
+    <Content Include="../deploy/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
