@@ -13,8 +13,9 @@ phases:
       - echo Restore started on `date`
       - dotnet restore ./chaggarcharts.sln
       - cd ./ChaggarCharts.Web
-      - npm ci
-      - npm run prod-webpack
+      - npm install yarn -g
+      - yarn install
+      - yarn prod:webpack
       - cd ..
       
   build:

@@ -75,6 +75,7 @@ export default function Login() {
           {tabValue === FormSections.Login ? (
             <>
               <TextField
+                className={classes.inputMargin}
                 variant="outlined"
                 value={loginCreds?.username || ""}
                 onChange={(e) =>
@@ -84,6 +85,7 @@ export default function Login() {
                 style={{ width: "100%" }}
               />
               <TextField
+                className={classes.inputMargin}
                 variant="outlined"
                 value={loginCreds?.password || ""}
                 onChange={(e) =>
@@ -110,7 +112,7 @@ export default function Login() {
               />
               <div
                 style={{
-                  height: "100%",
+                  marginTop: "10px",
                   width: "100%",
                   display: "flex",
                   justifyContent: "center",
@@ -120,6 +122,7 @@ export default function Login() {
                 <Button
                   style={{
                     textTransform: "unset",
+                    width: "100%",
                   }}
                   variant="contained"
                   color="primary"
@@ -153,15 +156,17 @@ const useStyles = makeStyles({
     flexDirection: "column",
     width: "30%",
     minWidth: "300px",
-    height: "60%",
+    height: "35%",
     padding: "16px",
   },
   title: {
     display: "flex",
     justifyContent: "center",
-    fontFamily: "roboto",
     fontWeight: 500,
     fontSize: "18px",
     color: "#212121",
+  },
+  inputMargin: {
+    margin: "5px 0 5px 0",
   },
 });
