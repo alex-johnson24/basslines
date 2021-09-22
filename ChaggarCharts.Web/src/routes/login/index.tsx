@@ -7,9 +7,9 @@ import {
   InputAdornment,
   CircularProgress,
   Button,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { ClassSharp, Visibility, VisibilityOff } from "@material-ui/icons";
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useMutation } from "react-query";
 import { useUserDispatch, User } from "../../contexts";
 import axios from "axios";
