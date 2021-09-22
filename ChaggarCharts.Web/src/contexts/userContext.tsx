@@ -1,17 +1,12 @@
 import * as React from "react";
+import { UserModel } from "../data/src";
 
-export interface User {
-  id: string;
-  username: string;
-  role: number;
-}
-
-type Action = { type: "signIn"; payload: User } | { type: "logOut" };
+type Action = { type: "signIn"; payload: UserModel } | { type: "logOut" };
 
 type Dispatch = (action: Action) => void;
 
 type State = {
-  userInfo?: User;
+  userInfo?: UserModel;
 };
 
 type UserProviderProps = { children: React.ReactNode };

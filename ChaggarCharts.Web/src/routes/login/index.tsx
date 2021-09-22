@@ -11,10 +11,15 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { ClassSharp, Visibility, VisibilityOff } from "@material-ui/icons";
 import { useMutation } from "react-query";
-import { useUserDispatch, User } from "../../contexts";
-import axios from "axios";
+import { useUserDispatch } from "../../contexts";
 import { useRouter } from "../../helpers/useRouter";
-import { LoginModel, RegistrationModel } from "../../data/src";
+import {
+  UsersApi,
+  LoginModel,
+  RegistrationModel,
+  UserModel,
+} from "../../data/src";
+import { call } from "../../data/callWrapper";
 
 enum FormSections {
   Login = "Login",
@@ -73,14 +78,16 @@ export default function Login() {
 
   const { mutateAsync: login, status: loginStatus } = useMutation(
     async () => {
-      const result = await axios.post("http://localhost:5000/Users/SignIn", {
-        ...loginCreds,
+      const result = await call(UsersApi).usersSignInPost({
+        loginModel: {
+          ...loginCreds,
+        },
       });
       return result;
     },
     {
-      onSuccess: (result: any) => {
-        dispatch({ type: "signIn", payload: result.data });
+      onSuccess: (result: UserModel) => {
+        dispatch({ type: "signIn", payload: result });
         history.push("/");
       },
     }
@@ -88,10 +95,11 @@ export default function Login() {
 
   const { mutateAsync: signUp, status: signUpStatus } = useMutation(
     async () => {
-      const result = await axios.post("http://localhost:5000/Users", {
-        ...signUpFields,
+      const result = await call(UsersApi).usersPost({
+        registrationModel: {
+          ...signUpFields,
+        },
       });
-      return result;
     },
     {
       onSuccess: () => {
@@ -204,7 +212,6 @@ export default function Login() {
                     }}
                   >
                     <TextField
-                      className={classes.halfInputMargin}
                       variant="outlined"
                       value={signUpFields.firstName}
                       onChange={(e) =>
@@ -214,10 +221,9 @@ export default function Login() {
                         })
                       }
                       placeholder="First Name"
-                      style={{ width: "50%" }}
+                      style={{ width: "50%", margin: "4px 4px 4px 0px" }}
                     />
                     <TextField
-                      className={classes.halfInputMargin}
                       variant="outlined"
                       value={signUpFields.lastName}
                       onChange={(e) =>
@@ -227,7 +233,7 @@ export default function Login() {
                         })
                       }
                       placeholder="Last Name"
-                      style={{ width: "50%" }}
+                      style={{ width: "50%", margin: "4px 0px 4px 4px" }}
                     />
                   </div>
                   <TextField
