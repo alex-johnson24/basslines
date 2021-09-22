@@ -5,25 +5,19 @@ import "regenerator-runtime/runtime";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
-// import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-// import DateFnsUtils from "@date-io/date-fns";
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import { ThemeProvider } from "@material-ui/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import { themeConfig } from "../theme.config";
 import {
-  createTheme,
+  createMuiTheme,
   responsiveFontSizes,
-} from '@mui/material/styles';;
+  makeStyles,
+} from "@material-ui/core/styles";
 import { UserProvider } from "./contexts";
 import Root from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
-// in your theme file that you call `createTheme()`
-import { Theme } from '@mui/material/styles';
-import {makeStyles} from "@mui/styles";
-
-declare module '@mui/styles' {
-  interface DefaultTheme extends Theme {}
-}
 
 declare global {
   interface Window {
@@ -44,7 +38,7 @@ const muiTypography = themeConfig.typography;
 const drawerWidth = 240;
 
 const theme = responsiveFontSizes(
-  createTheme({
+  createMuiTheme({
     palette: muiPalette,
     typography: muiTypography,
   })
@@ -69,13 +63,13 @@ const App = (props: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <ThemeProvider theme={theme}>
             <CssBaseline>
               <Root />
             </CssBaseline>
           </ThemeProvider>
-        {/* </MuiPickersUtilsProvider> */}
+        </MuiPickersUtilsProvider>
       </UserProvider>
     </QueryClientProvider>
   );
