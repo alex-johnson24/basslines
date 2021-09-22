@@ -9,20 +9,21 @@ import {
   Button,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { ClassSharp, Visibility, VisibilityOff } from "@material-ui/icons";
 import { useMutation } from "react-query";
 import { useUserDispatch, User } from "../../contexts";
 import axios from "axios";
 import { useRouter } from "../../helpers/useRouter";
-
-interface LoginRequest {
-  username?: string;
-  password?: string;
-}
+import { LoginModel, RegistrationModel } from "../../data/src";
 
 enum FormSections {
   Login = "Login",
   SignUp = "SignUp",
+}
+
+interface SignUpPasswordBools {
+  showOne: boolean;
+  showTwo: boolean;
 }
 
 export default function Login() {
@@ -33,11 +34,46 @@ export default function Login() {
     FormSections.Login
   );
   const [showPassword, setShowPassword] = React.useState(false);
-  const [loginCreds, setLoginCreds] = React.useState<LoginRequest>({});
+  const [showSignUpPassword, setShowSignUpPassword] =
+    React.useState<SignUpPasswordBools>({
+      showOne: false,
+      showTwo: false,
+    });
+  const [loginCreds, setLoginCreds] = React.useState<LoginModel>({
+    username: "",
+    password: "",
+  });
+  const [signUpFields, setSignUpFields] = React.useState<RegistrationModel>({
+    firstName: "",
+    lastName: "",
+    username: "",
+    password: "",
+  });
+  const [confirmPassword, setConfirmPassword] = React.useState("");
 
-  const { mutateAsync: login } = useMutation(
+  React.useEffect(() => {
+    setLoginCreds({
+      username: "",
+      password: "",
+    });
+    setSignUpFields({
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+    });
+  }, [tabValue]);
+
+  const disableSignUp = () => {
+    const { firstName, lastName, username, password } = signUpFields;
+    if (!firstName || !lastName || !username || !password) return true;
+    if (password !== confirmPassword) return true;
+    return false;
+  };
+
+  const { mutateAsync: login, status: loginStatus } = useMutation(
     async () => {
-      const result = await axios.post("https://localhost:5001/Users/SignIn", {
+      const result = await axios.post("http://localhost:5000/Users/SignIn", {
         ...loginCreds,
       });
       return result;
@@ -50,9 +86,29 @@ export default function Login() {
     }
   );
 
+  const { mutateAsync: signUp, status: signUpStatus } = useMutation(
+    async () => {
+      const result = await axios.post("http://localhost:5000/Users", {
+        ...signUpFields,
+      });
+      return result;
+    },
+    {
+      onSuccess: () => {
+        setTabValue(FormSections.Login);
+      },
+    }
+  );
+
   return (
     <div className={classes.fullPageContainer}>
-      <Card className={classes.loginCard}>
+      <Card
+        className={
+          tabValue === FormSections.Login
+            ? classes.loginCard
+            : classes.signUpCard
+        }
+      >
         <div className={classes.title}>Welcome to Chaggar Charts!</div>
         <Tabs
           value={tabValue}
@@ -62,79 +118,219 @@ export default function Login() {
           <Tab value={FormSections.Login} label="Login" />
           <Tab value={FormSections.SignUp} label="Sign Up" />
         </Tabs>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            width: "100%",
-            height: "100%",
-            padding: "24px",
-          }}
-        >
+        <div className={classes.fieldContainer}>
           {tabValue === FormSections.Login ? (
             <>
-              <TextField
-                className={classes.inputMargin}
-                variant="outlined"
-                value={loginCreds?.username || ""}
-                onChange={(e) =>
-                  setLoginCreds({ ...loginCreds, username: e.target.value })
-                }
-                placeholder="Username"
-                style={{ width: "100%" }}
-              />
-              <TextField
-                className={classes.inputMargin}
-                variant="outlined"
-                value={loginCreds?.password || ""}
-                onChange={(e) =>
-                  setLoginCreds({ ...loginCreds, password: e.target.value })
-                }
-                placeholder="Password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment
-                      position="end"
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ cursor: "pointer" }}
+              {loginStatus === "loading" ? (
+                <div className={classes.centerLoader}>
+                  <CircularProgress variant="indeterminate" size={50} />
+                </div>
+              ) : (
+                <>
+                  <TextField
+                    className={classes.inputMargin}
+                    variant="outlined"
+                    value={loginCreds?.username || ""}
+                    onChange={(e) =>
+                      setLoginCreds({ ...loginCreds, username: e.target.value })
+                    }
+                    placeholder="Username"
+                    style={{ width: "100%" }}
+                  />
+                  <TextField
+                    className={classes.inputMargin}
+                    variant="outlined"
+                    value={loginCreds?.password || ""}
+                    onChange={(e) =>
+                      setLoginCreds({ ...loginCreds, password: e.target.value })
+                    }
+                    placeholder="Password"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          onClick={() => setShowPassword(!showPassword)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showPassword ? (
+                            <VisibilityOff style={{ color: "#C4C4C4" }} />
+                          ) : (
+                            <Visibility style={{ color: "#C4C4C4" }} />
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    type={!showPassword ? "password" : undefined}
+                    style={{ width: "100%" }}
+                  />
+                  <div
+                    style={{
+                      marginTop: "12px",
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "end",
+                    }}
+                  >
+                    <Button
+                      style={{
+                        textTransform: "unset",
+                        width: "100%",
+                      }}
+                      variant="contained"
+                      color="primary"
+                      disabled={!loginCreds.username || !loginCreds.password}
+                      onClick={() => login()}
                     >
-                      {showPassword ? (
-                        <VisibilityOff style={{ color: "#C4C4C4" }} />
-                      ) : (
-                        <Visibility style={{ color: "#C4C4C4" }} />
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                type={!showPassword ? "password" : undefined}
-                style={{ width: "100%" }}
-              />
-              <div
-                style={{
-                  marginTop: "10px",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "end",
-                }}
-              >
-                <Button
-                  style={{
-                    textTransform: "unset",
-                    width: "100%",
-                  }}
-                  variant="contained"
-                  color="primary"
-                  disabled={!loginCreds.username || !loginCreds.password}
-                  onClick={() => login()}
-                >
-                  Login
-                </Button>
-              </div>
+                      Login
+                    </Button>
+                  </div>
+                </>
+              )}
             </>
           ) : (
-            <div>Sign Up</div>
+            <>
+              {signUpStatus === "loading" ? (
+                <div className={classes.centerLoader}>
+                  <CircularProgress variant="indeterminate" size={50} />
+                </div>
+              ) : (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <TextField
+                      className={classes.halfInputMargin}
+                      variant="outlined"
+                      value={signUpFields.firstName}
+                      onChange={(e) =>
+                        setSignUpFields({
+                          ...signUpFields,
+                          firstName: e.target.value,
+                        })
+                      }
+                      placeholder="First Name"
+                      style={{ width: "50%" }}
+                    />
+                    <TextField
+                      className={classes.halfInputMargin}
+                      variant="outlined"
+                      value={signUpFields.lastName}
+                      onChange={(e) =>
+                        setSignUpFields({
+                          ...signUpFields,
+                          lastName: e.target.value,
+                        })
+                      }
+                      placeholder="Last Name"
+                      style={{ width: "50%" }}
+                    />
+                  </div>
+                  <TextField
+                    className={classes.inputMargin}
+                    variant="outlined"
+                    value={signUpFields.username}
+                    onChange={(e) =>
+                      setSignUpFields({
+                        ...signUpFields,
+                        username: e.target.value,
+                      })
+                    }
+                    placeholder="Username"
+                    style={{ width: "100%" }}
+                  />
+                  <TextField
+                    className={classes.inputMargin}
+                    variant="outlined"
+                    value={signUpFields.password}
+                    onChange={(e) =>
+                      setSignUpFields({
+                        ...signUpFields,
+                        password: e.target.value,
+                      })
+                    }
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          onClick={() =>
+                            setShowSignUpPassword({
+                              ...showSignUpPassword,
+                              showOne: !showSignUpPassword.showOne,
+                            })
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showSignUpPassword.showOne ? (
+                            <VisibilityOff style={{ color: "#C4C4C4" }} />
+                          ) : (
+                            <Visibility style={{ color: "#C4C4C4" }} />
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    type={!showSignUpPassword.showOne ? "password" : undefined}
+                    placeholder="Password"
+                    style={{ width: "100%" }}
+                  />
+                  <TextField
+                    className={classes.inputMargin}
+                    variant="outlined"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment
+                          position="end"
+                          onClick={() =>
+                            setShowSignUpPassword({
+                              ...showSignUpPassword,
+                              showTwo: !showSignUpPassword.showTwo,
+                            })
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          {showSignUpPassword.showTwo ? (
+                            <VisibilityOff style={{ color: "#C4C4C4" }} />
+                          ) : (
+                            <Visibility style={{ color: "#C4C4C4" }} />
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    type={!showSignUpPassword.showTwo ? "password" : undefined}
+                    placeholder="Confirm"
+                    style={{ width: "100%" }}
+                  />
+                  <div
+                    style={{
+                      marginTop: "12px",
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "end",
+                    }}
+                  >
+                    <Button
+                      style={{
+                        textTransform: "unset",
+                        width: "100%",
+                      }}
+                      variant="contained"
+                      color="primary"
+                      disabled={disableSignUp()}
+                      onClick={() => signUp()}
+                    >
+                      Sign Up
+                    </Button>
+                  </div>
+                </>
+              )}
+            </>
           )}
         </div>
       </Card>
@@ -155,8 +351,18 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     width: "30%",
-    minWidth: "300px",
     height: "35%",
+    minWidth: "300px",
+    minHeight: "300px",
+    padding: "16px",
+  },
+  signUpCard: {
+    display: "flex",
+    flexDirection: "column",
+    width: "30%",
+    height: "45%",
+    minWidth: "300px",
+    minHeight: "450px",
     padding: "16px",
   },
   title: {
@@ -167,6 +373,24 @@ const useStyles = makeStyles({
     color: "#212121",
   },
   inputMargin: {
-    margin: "5px 0 5px 0",
+    margin: "4px 0 4px 0",
+  },
+  halfInputMargin: {
+    margin: "4px",
+  },
+  fieldContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+    padding: "24px",
+  },
+  centerLoader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
   },
 });
