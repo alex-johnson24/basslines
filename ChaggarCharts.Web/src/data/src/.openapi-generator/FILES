@@ -1,0 +1,14 @@
+.openapi-generator-ignore
+apis/GenresApi.ts
+apis/SongsApi.ts
+apis/UsersApi.ts
+apis/index.ts
+index.ts
+models/GenreModel.ts
+models/LoginModel.ts
+models/RegistrationModel.ts
+models/SongModel.ts
+models/UserModel.ts
+models/UserRole.ts
+models/index.ts
+runtime.ts

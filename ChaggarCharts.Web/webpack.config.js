@@ -63,7 +63,7 @@ module.exports = (env, argv) => {
             new GoogleFontsPlugin({
                 fonts: [
                     {
-                        family: 'Oxanium:300,500,700',
+                        family: 'Kufam:300,500,700',
                     },
                 ],
                 formats: [
