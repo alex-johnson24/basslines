@@ -40,6 +40,8 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.0",
     "@mui/material": "^5.0.0",
+    "@mui/styles": "^5.0.0",
+    "@types/react-router-dom": "^5.3.0",
     "axios": "^0.21.4",
     "date-fns": "^2.24.0",
     "es6-object-assign": "^1.1.0",
