@@ -5,7 +5,7 @@
   "main": "index.tsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prod:webpack": "webpack --optimize-minimize",
+    "prod:webpack": "webpack --mode production",
     "dev:start": "webpack --mode development -d source-map -w",
     "regen": "cd src/data && ./regen.sh"
   },
