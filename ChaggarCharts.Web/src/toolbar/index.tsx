@@ -99,22 +99,22 @@ const drawerItems = [
   {
     label: "Home",
     icon: <HomeIcon />,
-    link: "/home",
+    link: "home",
   },
   {
     label: "My Charts",
     icon: <ThumbUpIcon />,
-    link: "/mycharts",
+    link: "mycharts",
   },
   {
     label: "Leaderboard",
     icon: <BarChartIcon />,
-    link: "/leaderboard",
+    link: "leaderboard",
   },
   {
     label: "Users",
     icon: <PersonIcon />,
-    link: "/users",
+    link: "users",
   },
 ];
 
@@ -187,17 +187,17 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             <ListItem
               sx={{
                 backgroundColor:
-                  item.link === location.pathname
+                  item.link === location.pathname.split("/").pop()
                     ? theme.palette.primary.main
                     : "",
                 "&:hover": {
                   backgroundColor:
-                    item.link === location.pathname
+                    item.link === location.pathname.split("/").pop()
                       ? theme.palette.primary.light
                       : "",
                 },
                 color:
-                  item.link === location.pathname
+                  item.link === location.pathname.split("/").pop()
                     ? theme.palette.secondary.main
                     : "",
               }}
