@@ -1,18 +1,19 @@
 import * as React from "react";
 import {
   Card,
-  TextField,
   Tabs,
   Tab,
   InputAdornment,
   CircularProgress,
   Button,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { ClassSharp, Visibility, VisibilityOff } from "@material-ui/icons";
+  Box,
+  TextField,
+  TextFieldProps,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { useMutation } from "react-query";
-import { useUserDispatch } from "../../contexts";
-import { useRouter } from "../../helpers/useRouter";
+import { useUserDispatch, useUserState } from "../../contexts";
 import {
   UsersApi,
   LoginModel,
@@ -20,6 +21,10 @@ import {
   UserModel,
 } from "../../data/src";
 import { call } from "../../data/callWrapper";
+import { styled } from "@mui/material/styles";
+import { getCookieByName } from "../../utils/textUtils";
+import jwt_decode from "jwt-decode";
+import { useRouter } from "../../helpers/useRouter";
 
 enum FormSections {
   Login = "Login",
@@ -31,9 +36,24 @@ interface SignUpPasswordBools {
   showTwo: boolean;
 }
 
-export default function Login() {
+interface Jwt extends UserModel {
+  exp: number;
+}
+
+const FullWidthInput = styled(TextField)<TextFieldProps>(({ theme }) => ({
+  margin: "4px 0 4px 0",
+  width: "100%",
+}));
+
+const HalfWidthInput = styled(TextField)<TextFieldProps>(({ theme }) => ({
+  margin: "4px 0 4px 0",
+  width: "50%",
+}));
+
+const Login = () => {
   const classes = useStyles();
   const dispatch = useUserDispatch();
+  const { userInfo } = useUserState();
   const { history } = useRouter();
   const [tabValue, setTabValue] = React.useState<FormSections>(
     FormSections.Login
@@ -55,6 +75,17 @@ export default function Login() {
     password: "",
   });
   const [confirmPassword, setConfirmPassword] = React.useState("");
+
+  React.useEffect(() => {
+    const token = getCookieByName("access_token");
+    if (token !== undefined) {
+      const user = jwt_decode(token) as Jwt;
+      if (Date.now() < user.exp * 1000) {
+        dispatch({ type: "signIn", payload: user });
+        history.push("/home");
+      }
+    }
+  }, []);
 
   React.useEffect(() => {
     setLoginCreds({
@@ -88,7 +119,7 @@ export default function Login() {
     {
       onSuccess: (result: UserModel) => {
         dispatch({ type: "signIn", payload: result });
-        history.push("/");
+        history.push("/home");
       },
     }
   );
@@ -122,6 +153,7 @@ export default function Login() {
           value={tabValue}
           onChange={(e, value: FormSections) => setTabValue(value)}
           variant="fullWidth"
+          indicatorColor="secondary"
         >
           <Tab value={FormSections.Login} label="Login" />
           <Tab value={FormSections.SignUp} label="Sign Up" />
@@ -135,20 +167,19 @@ export default function Login() {
                 </div>
               ) : (
                 <>
-                  <TextField
-                    className={classes.inputMargin}
+                  <FullWidthInput
                     variant="outlined"
+                    color="primary"
                     value={loginCreds?.username || ""}
                     onChange={(e) =>
                       setLoginCreds({ ...loginCreds, username: e.target.value })
                     }
                     placeholder="Username"
-                    style={{ width: "100%" }}
                   />
-                  <TextField
-                    className={classes.inputMargin}
+                  <FullWidthInput
                     variant="outlined"
                     value={loginCreds?.password || ""}
+                    color="primary"
                     onChange={(e) =>
                       setLoginCreds({ ...loginCreds, password: e.target.value })
                     }
@@ -169,10 +200,9 @@ export default function Login() {
                       ),
                     }}
                     type={!showPassword ? "password" : undefined}
-                    style={{ width: "100%" }}
                   />
-                  <div
-                    style={{
+                  <Box
+                    sx={{
                       marginTop: "12px",
                       width: "100%",
                       display: "flex",
@@ -181,18 +211,18 @@ export default function Login() {
                     }}
                   >
                     <Button
-                      style={{
+                      sx={{
                         textTransform: "unset",
                         width: "100%",
                       }}
                       variant="contained"
-                      color="primary"
+                      color="secondary"
                       disabled={!loginCreds.username || !loginCreds.password}
                       onClick={() => login()}
                     >
                       Login
                     </Button>
-                  </div>
+                  </Box>
                 </>
               )}
             </>
@@ -211,7 +241,8 @@ export default function Login() {
                       width: "100%",
                     }}
                   >
-                    <TextField
+                    <HalfWidthInput
+                      sx={{ marginRight: "4px" }}
                       variant="outlined"
                       value={signUpFields.firstName}
                       onChange={(e) =>
@@ -221,9 +252,9 @@ export default function Login() {
                         })
                       }
                       placeholder="First Name"
-                      style={{ width: "50%", margin: "4px 4px 4px 0px" }}
                     />
-                    <TextField
+                    <HalfWidthInput
+                      sx={{ marginLeft: "4px" }}
                       variant="outlined"
                       value={signUpFields.lastName}
                       onChange={(e) =>
@@ -233,11 +264,9 @@ export default function Login() {
                         })
                       }
                       placeholder="Last Name"
-                      style={{ width: "50%", margin: "4px 0px 4px 4px" }}
                     />
                   </div>
-                  <TextField
-                    className={classes.inputMargin}
+                  <FullWidthInput
                     variant="outlined"
                     value={signUpFields.username}
                     onChange={(e) =>
@@ -247,10 +276,8 @@ export default function Login() {
                       })
                     }
                     placeholder="Username"
-                    style={{ width: "100%" }}
                   />
-                  <TextField
-                    className={classes.inputMargin}
+                  <FullWidthInput
                     variant="outlined"
                     value={signUpFields.password}
                     onChange={(e) =>
@@ -281,10 +308,8 @@ export default function Login() {
                     }}
                     type={!showSignUpPassword.showOne ? "password" : undefined}
                     placeholder="Password"
-                    style={{ width: "100%" }}
                   />
-                  <TextField
-                    className={classes.inputMargin}
+                  <FullWidthInput
                     variant="outlined"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -310,10 +335,9 @@ export default function Login() {
                     }}
                     type={!showSignUpPassword.showTwo ? "password" : undefined}
                     placeholder="Confirm"
-                    style={{ width: "100%" }}
                   />
-                  <div
-                    style={{
+                  <Box
+                    sx={{
                       marginTop: "12px",
                       width: "100%",
                       display: "flex",
@@ -322,7 +346,7 @@ export default function Login() {
                     }}
                   >
                     <Button
-                      style={{
+                      sx={{
                         textTransform: "unset",
                         width: "100%",
                       }}
@@ -333,7 +357,7 @@ export default function Login() {
                     >
                       Sign Up
                     </Button>
-                  </div>
+                  </Box>
                 </>
               )}
             </>
@@ -342,7 +366,7 @@ export default function Login() {
       </Card>
     </div>
   );
-}
+};
 
 const useStyles = makeStyles({
   fullPageContainer: {
@@ -378,12 +402,6 @@ const useStyles = makeStyles({
     fontSize: "18px",
     color: "#212121",
   },
-  inputMargin: {
-    margin: "4px 0 4px 0",
-  },
-  halfInputMargin: {
-    margin: "4px",
-  },
   fieldContainer: {
     display: "flex",
     flexDirection: "column",
@@ -400,3 +418,5 @@ const useStyles = makeStyles({
     height: "100%",
   },
 });
+
+export default Login;

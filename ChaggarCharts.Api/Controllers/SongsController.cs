@@ -37,5 +37,25 @@ namespace ChaggarCharts.Api.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("SubmissionDate/{submitDateString}")]
+        [ProducesResponseType(typeof(IEnumerable<SongModel>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 500)]
+        public IActionResult GetSongsByDate(string submitDateString)
+        {
+            if (!DateTime.TryParse(submitDateString, out var submitDate)) return BadRequest("Given date string could not be parsed - try \"yyyy-mm-dd\"");
+
+            try
+            {
+                return Ok(_songRepo.GetSongsByDate(submitDate));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred getting songs by date in the db");
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prod:webpack": "webpack --mode production",
-    "dev:start": "webpack --mode development -d source-map -w",
-    "regen": "cd src/data && ./regen.sh"
+    "dev:start": "webpack --mode development -w",
+    "regen": "cd src/data && ./regen.sh",
+    "regen:manual": "cd ./src/data/src && openapi-generator-cli generate -i http://localhost:5000/swagger/v1/swagger.json --skip-validate-spec --generator-name typescript-fetch --type-mappings DateTimeOffset=string --additional-properties=typescriptThreePlus=true -o ./"
   },
   "author": "",
   "license": "MIT",
@@ -40,10 +41,14 @@
     "@material-ui/icons": "4.9.1",
     "@material-ui/pickers": "^3.2.10",
     "@mui/material": "^5.0.0",
+    "@mui/icons-material": "5.0.3",
+    "@mui/styles": "5.0.1",
+    "@mui/lab": "5.0.0-alpha.51",
     "@types/react-router-dom": "^5.1.9",
     "@types/whatwg-fetch": "^0.0.33",
     "axios": "^0.19.2",
     "date-fns": "^2.11.0",
+    "jwt-decode": "3.1.2",
     "es6-object-assign": "^1.1.0",
     "es6-promise": "4.2.8",
     "react": "^16.13.1",

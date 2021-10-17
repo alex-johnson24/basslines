@@ -12,7 +12,8 @@ namespace ChaggarCharts.Api.Models
         public string Artist { get; set; }
         public Guid? Userid { get; set; }
         public Guid? Genreid { get; set; }
-        public int? Rating { get; set; }
+        public DateTime? Submitteddate { get; set; }
+        public decimal? Rating { get; set; }
         public DateTime? Createdatetime { get; set; }
         public DateTime? Updatedatetime { get; set; }
 

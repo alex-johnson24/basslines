@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 using ChaggarCharts.Api.ViewModels;
 
 namespace ChaggarCharts.Api.Interfaces
@@ -7,5 +7,7 @@ namespace ChaggarCharts.Api.Interfaces
     public interface ISongRepository
     {
         IEnumerable<SongModel> GetSongs();
+
+        IEnumerable<SongModel> GetSongsByDate(DateTime submitDate);
     }
 }

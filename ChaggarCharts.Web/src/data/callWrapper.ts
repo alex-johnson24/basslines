@@ -19,7 +19,7 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      basePath: "http://localhost:5000", // We can change this once we have environment variables setup to track prod, test, and local
+      basePath: window.__BASENAME__ === "/" ? "https://localhost:5001" : "https://alexanderdev.com/chaggarcharts",
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );
