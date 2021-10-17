@@ -207,7 +207,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               <ListItemIcon
                 sx={{
                   color:
-                    item.link === location.pathname
+                    item.link === location.pathname.split("/").pop()
                       ? theme.palette.secondary.main
                       : "",
                 }}
