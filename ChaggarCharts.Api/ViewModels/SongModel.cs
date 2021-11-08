@@ -12,6 +12,6 @@ namespace ChaggarCharts.Api.ViewModels
         public string Artist { get; set; }
         public GenreModel Genre { get; set; }
         public UserModel User { get; set; }
-        public int? Rating { get; set; }
+        public decimal? Rating { get; set; }
     }
 }
