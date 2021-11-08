@@ -125,7 +125,7 @@ const SongDialog = (props: ISongDialogProps) => {
           </Grid>
           <Grid item xs={12} md={3} className={classes.centeredBox}>
             <Autocomplete
-              value={userSong?.genre.name}
+              value={userSong?.genre?.name}
               onChange={(e, newValue) =>
                 setUserSong((current) => ({
                   ...current,
