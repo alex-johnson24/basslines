@@ -77,4 +77,3 @@ export function UserModelToJSON(value?: UserModel | null): any {
     };
 }
 
-

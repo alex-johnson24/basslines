@@ -21,6 +21,15 @@ namespace ChaggarCharts.Api.Controllers
             _userService = userService;
         }
 
+        [Route("Logout")]
+        [HttpGet]
+        [ProducesResponseType(200)]
+        public IActionResult Logout()
+        {
+            HttpContext.Response.Cookies.Delete("access_token");
+            return Ok();
+        }
+
         [AllowAnonymous]
         [Route("SignIn")]
         [HttpPost]

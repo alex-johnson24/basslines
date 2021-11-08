@@ -41,6 +41,29 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
+    async usersLogoutGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Users/Logout`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async usersLogoutGet(initOverrides?: RequestInit): Promise<void> {
+        await this.usersLogoutGetRaw(initOverrides);
+    }
+
+    /**
+     */
     async usersPostRaw(requestParameters: UsersPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 

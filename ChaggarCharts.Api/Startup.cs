@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoMapper;
 using ChaggarCharts.Api.Interfaces;
@@ -74,7 +75,11 @@ namespace ChaggarCharts
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
 
-            services.AddControllers();
+            services.AddControllers()
+            .AddJsonOptions(x =>
+            {
+                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChaggarCharts", Version = "v1" });

@@ -92,7 +92,13 @@ namespace ChaggarCharts.Api.Models
 
                 entity.Property(e => e.Genreid).HasColumnName("genreid");
 
-                entity.Property(e => e.Rating).HasColumnName("rating");
+                entity.Property(e => e.Rating)
+                    .HasColumnType("decimal(4, 2)")
+                    .HasColumnName("rating");
+
+                entity.Property(e => e.Submitteddate)
+                    .HasColumnType("date")
+                    .HasColumnName("submitteddate");
 
                 entity.Property(e => e.Title)
                     .IsRequired()

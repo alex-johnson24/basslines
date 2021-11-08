@@ -62,4 +62,3 @@ export function GenreModelToJSON(value?: GenreModel | null): any {
     };
 }
 
-

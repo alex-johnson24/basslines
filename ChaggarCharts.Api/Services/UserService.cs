@@ -83,7 +83,8 @@ namespace ChaggarCharts.Api.Services
                 Subject = new ClaimsIdentity(new[] 
                 { 
                     new Claim("id", user.Id.ToString()),
-                    new Claim("userRole", user.Role.Name)
+                    new Claim("username", user.Username),
+                    new Claim("role", user.Role.Name)
                 }),
                 Issuer = _authSettings.ValidIssuer,
                 Audience = _authSettings.ValidAudience,
