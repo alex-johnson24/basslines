@@ -62,4 +62,3 @@ export function LoginModelToJSON(value?: LoginModel | null): any {
     };
 }
 
-

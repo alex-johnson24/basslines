@@ -78,4 +78,3 @@ export function RegistrationModelToJSON(value?: RegistrationModel | null): any {
     };
 }
 
-

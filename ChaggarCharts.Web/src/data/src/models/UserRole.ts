@@ -18,9 +18,9 @@
  * @enum {string}
  */
 export enum UserRole {
-    NUMBER_1 = 1,
-    NUMBER_2 = 2,
-    NUMBER_4 = 4
+    Contributor = 'Contributor',
+    Reviewer = 'Reviewer',
+    Administrator = 'Administrator'
 }
 
 export function UserRoleFromJSON(json: any): UserRole {

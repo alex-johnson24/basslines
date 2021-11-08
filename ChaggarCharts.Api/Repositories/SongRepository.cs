@@ -37,5 +37,55 @@ namespace ChaggarCharts.Api.Repositories
                     .Where(w => w.Submitteddate == submitDate)
                     .Select(s => _mapper.Map<SongModel>(s));
         }
+
+        public SongModel SubmitSong(SongModel song)
+        {
+            _ctx.Set<Song>().Add(
+                new Song
+                {
+                    Title = song.Title,
+                    Artist = song.Artist,
+                    Userid = song.User.Id,
+                    Genreid = song.Genre.Id,
+                    Submitteddate = DateTime.Now
+                }
+            );
+
+            if (_ctx.SaveChanges() == 0) return null;
+
+            return song;
+        }
+
+        public SongModel UpdateSong(SongModel song)
+        {
+            var toUpdate = _ctx.Set<Song>().Where(w => w.Id == song.Id).FirstOrDefault();
+
+            if (toUpdate == null) return null;
+
+            toUpdate.Title = song.Title;
+            toUpdate.Artist = song.Artist;
+            toUpdate.Genreid = song.Genre.Id;
+
+            _ctx.Songs.Attach(toUpdate);
+
+            _ctx.Entry(toUpdate).State = EntityState.Modified;
+
+            if (_ctx.SaveChanges() == 0) return null;
+
+            return song;
+        }
+
+        public SongModel RateSong(Guid songId, decimal rating)
+        {
+            var toUpdate = _ctx.Set<Song>().Where(w => w.Id == songId).FirstOrDefault();
+
+            if (toUpdate == null) return null;
+
+            toUpdate.Rating = rating;
+
+            if (_ctx.SaveChanges() == 0) return null;
+
+            return _mapper.Map<SongModel>(toUpdate);
+        }
     }
 }

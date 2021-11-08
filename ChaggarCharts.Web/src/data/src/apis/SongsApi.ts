@@ -15,10 +15,26 @@
 
 import * as runtime from '../runtime';
 import {
+    ModelValidationState,
+    ModelValidationStateFromJSON,
+    ModelValidationStateToJSON,
     SongModel,
     SongModelFromJSON,
     SongModelToJSON,
 } from '../models';
+
+export interface SongsPostRequest {
+    songModel?: SongModel;
+}
+
+export interface SongsPutRequest {
+    songModel?: SongModel;
+}
+
+export interface SongsRatePutRequest {
+    songId?: string | null;
+    rating?: number | null;
+}
 
 export interface SongsSubmissionDateSubmitDateStringGetRequest {
     submitDateString: string | null;
@@ -50,6 +66,92 @@ export class SongsApi extends runtime.BaseAPI {
      */
     async songsGet(initOverrides?: RequestInit): Promise<Array<SongModel>> {
         const response = await this.songsGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async songsPostRaw(requestParameters: SongsPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/Songs`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SongModelToJSON(requestParameters.songModel),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SongModelFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async songsPost(requestParameters: SongsPostRequest, initOverrides?: RequestInit): Promise<SongModel> {
+        const response = await this.songsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async songsPutRaw(requestParameters: SongsPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/Songs`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SongModelToJSON(requestParameters.songModel),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SongModelFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async songsPut(requestParameters: SongsPutRequest, initOverrides?: RequestInit): Promise<SongModel> {
+        const response = await this.songsPutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async songsRatePutRaw(requestParameters: SongsRatePutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.songId !== undefined) {
+            queryParameters['songId'] = requestParameters.songId;
+        }
+
+        if (requestParameters.rating !== undefined) {
+            queryParameters['rating'] = requestParameters.rating;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Songs/Rate`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SongModelFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async songsRatePut(requestParameters: SongsRatePutRequest, initOverrides?: RequestInit): Promise<SongModel> {
+        const response = await this.songsRatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -12,10 +12,14 @@ export default function Root() {
     <>
       <Switch>
         <Route path="/login" component={Login} />
-        <Route
-          path="/home"
-          component={() => <MiniDrawer content={<HomeDashboard />} />}
-        />
+        {userInfo ? (
+          <Route
+            path="/home"
+            component={() => (
+              <MiniDrawer content={<HomeDashboard userInfo={userInfo} />} />
+            )}
+          />
+        ) : null}
       </Switch>
       {!userInfo ? <Redirect to="/login" /> : null}
     </>

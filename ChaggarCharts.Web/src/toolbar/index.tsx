@@ -19,6 +19,10 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import PersonIcon from "@mui/icons-material/Person";
+import { Button } from "@mui/material";
+import { call } from "../data/callWrapper";
+import { UsersApi } from "../data/src";
+import { useRouter } from "../helpers/useRouter";
 
 const drawerWidth = 240;
 
@@ -120,7 +124,17 @@ const drawerItems = [
 
 export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
+  const { history } = useRouter();
   const [open, setOpen] = React.useState(false);
+
+  const logout = async () => {
+    try {
+      await call(UsersApi).usersLogoutGet();
+      history.push("/login");
+    } catch (e) {
+      console.log("logout failed");
+    }
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -169,6 +183,14 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               Charts
             </Typography>
           </div>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ marginLeft: "auto" }}
+            onClick={logout}
+          >
+            Logout
+          </Button>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>

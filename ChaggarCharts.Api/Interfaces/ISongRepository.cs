@@ -9,5 +9,8 @@ namespace ChaggarCharts.Api.Interfaces
         IEnumerable<SongModel> GetSongs();
 
         IEnumerable<SongModel> GetSongsByDate(DateTime submitDate);
+        SongModel SubmitSong(SongModel song);
+        SongModel UpdateSong(SongModel song);
+        SongModel RateSong(Guid songId, decimal rating);
     }
 }

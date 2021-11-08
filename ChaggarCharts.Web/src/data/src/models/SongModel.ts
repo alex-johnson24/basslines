@@ -35,13 +35,19 @@ export interface SongModel {
      * @type {string}
      * @memberof SongModel
      */
-    title?: string | null;
+    id?: string | null;
     /**
      * 
      * @type {string}
      * @memberof SongModel
      */
-    artist?: string | null;
+    title: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SongModel
+     */
+    artist: string;
     /**
      * 
      * @type {GenreModel}
@@ -72,8 +78,9 @@ export function SongModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'title': !exists(json, 'title') ? undefined : json['title'],
-        'artist': !exists(json, 'artist') ? undefined : json['artist'],
+        'id': !exists(json, 'id') ? undefined : json['id'],
+        'title': json['title'],
+        'artist': json['artist'],
         'genre': !exists(json, 'genre') ? undefined : GenreModelFromJSON(json['genre']),
         'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
         'rating': !exists(json, 'rating') ? undefined : json['rating'],
@@ -89,6 +96,7 @@ export function SongModelToJSON(value?: SongModel | null): any {
     }
     return {
         
+        'id': value.id,
         'title': value.title,
         'artist': value.artist,
         'genre': GenreModelToJSON(value.genre),
@@ -96,5 +104,4 @@ export function SongModelToJSON(value?: SongModel | null): any {
         'rating': value.rating,
     };
 }
-
 
