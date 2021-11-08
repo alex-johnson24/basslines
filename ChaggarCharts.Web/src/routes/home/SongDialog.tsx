@@ -60,7 +60,7 @@ const SongDialog = (props: ISongDialogProps) => {
   React.useEffect(() => {
     if (props.open) {
       getGenres();
-      if (props.userSong !== null) {
+      if (props.userSong?.id) {
         setUserSong(props.userSong);
       } else {
         setUserSong({
