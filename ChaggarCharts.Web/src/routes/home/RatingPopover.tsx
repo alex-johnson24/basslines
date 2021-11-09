@@ -39,38 +39,30 @@ const RatingPopover = (props: IRatingPopoverProps) => {
       }}
     >
       <Box sx={{ padding: "10px" }}>
-        {/* <TextField type="number" label="Rating" variant="outlined" /> */}
-        {/* <Slider
-          defaultValue={0}
-          valueLabelDisplay="auto"
-          step={.5}
-          marks
-          min={0}
-          max={10}
-        /> */}
-        <Rating
-          sx={{ padding: "5px" }}
-          defaultValue={0}
-          max={10}
-          precision={0.5}
+        <TextField
+          InputProps={{ inputProps: { min: 0, max: 10 } }}
+          type="number"
+          label="Rating"
+          variant="outlined"
           value={props.selectedSong?.rating}
-          onChange={(event, newValue) => {
+          onChange={(event) => {
+            event.persist();
             props.setSelectedSong((current) => ({
               ...current,
-              rating: newValue,
+              rating: Number(event.target.value),
             }));
           }}
         />
         <Divider sx={{ margin: "5px" }} />
         <Box sx={{ display: "flex" }}>
-          <Button onClick={props.handleClose} sx={{ marginLeft: "auto" }} color="primary">
+          <Button
+            onClick={props.handleClose}
+            sx={{ marginLeft: "auto" }}
+            color="primary"
+          >
             Cancel
           </Button>
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={submitRating}
-          >
+          <Button color="secondary" variant="contained" onClick={submitRating}>
             Save
           </Button>
         </Box>
