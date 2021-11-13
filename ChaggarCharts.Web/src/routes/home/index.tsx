@@ -4,17 +4,26 @@ import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import DatePicker from "@mui/lab/DatePicker";
 import {
+  Avatar,
   Box,
   ButtonBase,
+  Container,
   Divider,
   Fab,
   Grid,
+  Theme,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { call } from "../../data/callWrapper";
 import { useMutation } from "react-query";
-import { SongsApi, SongModel, UserModel, UserRole } from "../../data/src";
+import {
+  SongsApi,
+  SongModel,
+  UserModel,
+  UserRole,
+  GenreModel,
+} from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import {
@@ -26,9 +35,18 @@ import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import RatingPopover from "./RatingPopover";
+import {
+  DataGrid,
+  GridColDef,
+  GridSortModel
+} from "@mui/x-data-grid";
 
 const useStyles = makeStyles(() => {
   return {
+    header: {
+      backgroundColor: (theme: Theme) => theme.palette.primary.light,
+      color: "white",
+    },
     paddedGrid: {
       padding: "10px 15px",
     },
@@ -44,9 +62,9 @@ interface IHomeDashboardProps {
 }
 
 const HomeDashboard = (props: IHomeDashboardProps) => {
-  const classes = useStyles();
-
   const theme = useTheme();
+
+  const classes = useStyles(theme);
 
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(
     new Date()
@@ -59,6 +77,9 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
+
+  const allSongsRated =
+    dailySongs.filter((f) => typeof f.rating !== "number").length === 0;
 
   const { mutateAsync: getSongs, status: songsStatus } = useMutation(
     async () => {
@@ -98,8 +119,112 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           (f) => f.user?.username === props.userInfo?.username
         )[0]
       );
+    } else {
+      setCurrentUserSong(null);
     }
   }, [dailySongs]);
+
+  const columns: GridColDef[] = [
+    {
+      field: "id",
+      headerName: "_",
+      flex: 0.25,
+      sortable: false,
+      disableColumnMenu: true,
+      align: "center",
+      renderCell: (params) => {
+        const firstName = (params.getValue(params.id, "user") as UserModel)
+          .firstName;
+        const lastName = (params.getValue(params.id, "user") as UserModel)
+          .lastName;
+        return (
+          <Avatar
+            sx={{
+              bgcolor: theme.palette.secondary.main,
+              color: theme.palette.primary.main,
+            }}
+          >
+            {allSongsRated
+              ? `${firstName.split("")[0]}${lastName.split("")[0]}`
+              : "??"}
+          </Avatar>
+        );
+      },
+    },
+    {
+      field: "title",
+      headerName: "Title",
+      flex: 1,
+    },
+    {
+      field: "artist",
+      headerName: "Artist",
+      flex: 1,
+    },
+    {
+      field: "genreName",
+      headerName: "Genre",
+      flex: 0.75,
+      valueGetter: (params) => {
+        return (params.getValue(params.id, "genre") as GenreModel).name;
+      },
+    },
+    {
+      field: "submitter",
+      headerName: "Submitter",
+      flex: 0.5,
+      renderCell: (params) => {
+        const firstName = (params.getValue(params.id, "user") as UserModel)
+          .firstName;
+        const lastName = (params.getValue(params.id, "user") as UserModel)
+          .lastName;
+        return <span>{allSongsRated ? `${firstName} ${lastName}` : "--"}</span>;
+      },
+    },
+    {
+      field: "rating",
+      headerName: "Rating",
+      flex: 0.5,
+      renderCell: (params) => {
+        const rating = params.getValue(params.id, "rating");
+        return (
+          <div style={{ display: "flex", width: "100%" }}>
+            <span>{typeof rating === "number" ? rating : ""}</span>
+            {(props.userInfo.role === UserRole.Administrator ||
+              props.userInfo.role === UserRole.Reviewer) && (
+              <IconButton
+                onClick={(event) => {
+                  setSongToRate(params.row);
+                  openRatingPopover(event);
+                }}
+                size="small"
+              >
+                <RateReviewIcon />
+              </IconButton>
+            )}
+            {params.row.user.username === props.userInfo?.username &&
+            formattedDate === format(new Date(), "yyyy-MM-dd") &&
+            typeof rating !== "number" ? (
+              <IconButton
+                style={{ marginLeft: "auto" }}
+                size="small"
+                onClick={() => setSongDialogOpen(true)}
+              >
+                <EditIcon />
+              </IconButton>
+            ) : null}
+          </div>
+        );
+      },
+    },
+  ];
+
+  const [sortModel, setSortModel] = React.useState<GridSortModel>([
+    {
+      field: "rating",
+      sort: "desc",
+    },
+  ]);
 
   return (
     <>
@@ -141,94 +266,22 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           </Typography>
         </Grid>
       </Grid>
-      <Divider />
-      <Grid
-        className={classes.paddedGrid}
-        sx={{ backgroundColor: theme.palette.primary.light, color: "white" }}
-        container
-      >
-        <Grid item xs={3}>
-          Title
-        </Grid>
-        <Grid item xs={3}>
-          Artist
-        </Grid>
-        <Grid item xs={2}>
-          Genre
-        </Grid>
-        <Grid item xs={2}>
-          Submitter
-        </Grid>
-        <Grid item xs={1}>
-          Rating
-        </Grid>
-        <Grid item xs={1}></Grid>
-      </Grid>
-      <Divider />
-      {dailySongs
-        .sort((a, b) => b.rating - a.rating)
-        .map((song, i) => (
-          <React.Fragment key={i}>
-            <Divider />
-            <Grid className={classes.paddedGrid} container>
-              <Tooltip
-                title={
-                  song.title.length > MAX_LIMITED_FIELD_LENGTH ? song.title : ""
-                }
-              >
-                <Grid container alignItems="center" item xs={3}>
-                  {limitStringLength(song.title)}
-                </Grid>
-              </Tooltip>
-              <Tooltip
-                title={
-                  song.artist.length > MAX_LIMITED_FIELD_LENGTH
-                    ? song.artist
-                    : ""
-                }
-              >
-                <Grid container alignItems="center" item xs={3}>
-                  {limitStringLength(song.artist)}
-                </Grid>
-              </Tooltip>
-              <Grid container alignItems="center" item xs={2}>
-                {song.genre.name}
-              </Grid>
-              <Grid container alignItems="center" item xs={2}>
-                {song.user.username}
-              </Grid>
-              <Grid container alignItems="center" item xs={1}>
-                <span>
-                  {typeof song.rating === "number" ? song.rating : ""}
-                </span>
-                {(props.userInfo.role === UserRole.Administrator ||
-                  props.userInfo.role === UserRole.Reviewer) && (
-                  <IconButton
-                    onClick={(event) => {
-                      setSongToRate(song);
-                      openRatingPopover(event);
-                    }}
-                    size="small"
-                  >
-                    <RateReviewIcon />
-                  </IconButton>
-                )}
-              </Grid>
-              <Grid container alignItems="center" item xs={1}>
-                {song.user.username === props.userInfo?.username &&
-                formattedDate === format(new Date(), "yyyy-MM-dd") &&
-                typeof song.rating !== "number" ? (
-                  <IconButton
-                    size="small"
-                    onClick={() => setSongDialogOpen(true)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                ) : null}
-              </Grid>
-            </Grid>
-          </React.Fragment>
-        ))}
+      <Container maxWidth="xl">
+        <DataGrid
+          autoHeight
+          classes={{ columnHeader: classes.header }}
+          rows={dailySongs}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[5]}
+          disableSelectionOnClick
+          componentsProps={{
+            columnMenu: { background: theme.palette.secondary },
+          }}
+          sortModel={sortModel}
+          onSortModelChange={(model) => setSortModel(model)}
+        />
+      </Container>
       <Box sx={{ display: "flex", justifyContent: "end" }}>
         <Tooltip
           title={
