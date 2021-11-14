@@ -6,7 +6,11 @@ import Login from "./login";
 import HomeDashboard from "./home";
 import Songs from "./songs";
 
-export default function Root() {
+interface IRootProps {
+  basepath: string;
+}
+
+export default function Root(props: IRootProps) {
   const { userInfo } = useUserState();
 
   return (
@@ -18,12 +22,12 @@ export default function Root() {
             <Route
               path="/home"
               component={() => (
-                <MiniDrawer content={<HomeDashboard userInfo={userInfo} />} />
+                <MiniDrawer basepath={props.basepath} content={<HomeDashboard userInfo={userInfo} />} />
               )}
             />
             <Route
               path="/allsongs"
-              component={() => <MiniDrawer content={<Songs />} />}
+              component={() => <MiniDrawer basepath={props.basepath} content={<Songs />} />}
             />
           </>
         ) : null}

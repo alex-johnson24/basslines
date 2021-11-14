@@ -97,6 +97,7 @@ const Drawer = styled(MuiDrawer, {
 
 interface IMiniDrawerProps {
   content: JSX.Element;
+  basepath: string;
 }
 
 const drawerItems = [
@@ -209,12 +210,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             <ListItem
               sx={{
                 backgroundColor:
-                  item.link === location.pathname
+                  `${props.basepath}${item.link}` === location.pathname
                     ? theme.palette.primary.main
                     : "",
                 "&:hover": {
                   backgroundColor:
-                    item.link === location.pathname
+                  `${props.basepath}${item.link}` === location.pathname
                       ? theme.palette.primary.light
                       : "",
                 }
@@ -230,7 +231,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               <ListItemIcon
                 sx={{
                   color:
-                    item.link === location.pathname
+                  `${props.basepath}${item.link}` === location.pathname
                       ? theme.palette.secondary.main
                       : "",
                 }}
