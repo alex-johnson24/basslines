@@ -186,7 +186,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ marginLeft: "auto" }}
+            sx={{ marginLeft: "auto", color: theme.palette.primary.main }}
             onClick={logout}
           >
             Logout

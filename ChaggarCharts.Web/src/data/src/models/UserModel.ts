@@ -40,6 +40,18 @@ export interface UserModel {
     username?: string | null;
     /**
      * 
+     * @type {string}
+     * @memberof UserModel
+     */
+    firstName?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserModel
+     */
+    lastName?: string | null;
+    /**
+     * 
      * @type {UserRole}
      * @memberof UserModel
      */
@@ -58,6 +70,8 @@ export function UserModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'username': !exists(json, 'username') ? undefined : json['username'],
+        'firstName': !exists(json, 'firstName') ? undefined : json['firstName'],
+        'lastName': !exists(json, 'lastName') ? undefined : json['lastName'],
         'role': !exists(json, 'role') ? undefined : UserRoleFromJSON(json['role']),
     };
 }
@@ -73,6 +87,8 @@ export function UserModelToJSON(value?: UserModel | null): any {
         
         'id': value.id,
         'username': value.username,
+        'firstName': value.firstName,
+        'lastName': value.lastName,
         'role': UserRoleToJSON(value.role),
     };
 }
