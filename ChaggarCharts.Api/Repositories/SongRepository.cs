@@ -47,6 +47,7 @@ namespace ChaggarCharts.Api.Repositories
                     Artist = song.Artist,
                     Userid = song.User.Id,
                     Genreid = song.Genre.Id,
+                    Link = song.Link,
                     Submitteddate = DateTime.Now
                 }
             );
@@ -65,6 +66,7 @@ namespace ChaggarCharts.Api.Repositories
             toUpdate.Title = song.Title;
             toUpdate.Artist = song.Artist;
             toUpdate.Genreid = song.Genre.Id;
+            toUpdate.Link = song.Link;
 
             _ctx.Songs.Attach(toUpdate);
 

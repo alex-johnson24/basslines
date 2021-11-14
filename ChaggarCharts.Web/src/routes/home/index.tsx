@@ -6,9 +6,7 @@ import DatePicker from "@mui/lab/DatePicker";
 import {
   Avatar,
   Box,
-  ButtonBase,
   Container,
-  Divider,
   Fab,
   Grid,
   Theme,
@@ -26,20 +24,12 @@ import {
 } from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
-import {
-  limitStringLength,
-  MAX_LIMITED_FIELD_LENGTH,
-} from "../../utils/textUtils";
 import SongDialog from "./SongDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import RatingPopover from "./RatingPopover";
-import {
-  DataGrid,
-  GridColDef,
-  GridSortModel
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 
 const useStyles = makeStyles(() => {
   return {
@@ -133,10 +123,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       disableColumnMenu: true,
       align: "center",
       renderCell: (params) => {
-        const firstName = (params.getValue(params.id, "user") as UserModel)
-          .firstName;
-        const lastName = (params.getValue(params.id, "user") as UserModel)
-          .lastName;
+        const firstName = (params.row.user as UserModel).firstName;
+        const lastName = (params.row.user as UserModel).lastName;
         return (
           <Avatar
             sx={{
@@ -155,6 +143,17 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       field: "title",
       headerName: "Title",
       flex: 1,
+      renderCell: (params) => {
+        const songTitle = params.getValue(params.id, "title") as string;
+        const songLink = params.row.link as string;
+        return Boolean(songLink) ? (
+          <a href={songLink} target="_blank">
+            {songTitle}
+          </a>
+        ) : (
+          <span>{songTitle}</span>
+        );
+      },
     },
     {
       field: "artist",
@@ -166,7 +165,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       headerName: "Genre",
       flex: 0.75,
       valueGetter: (params) => {
-        return (params.getValue(params.id, "genre") as GenreModel).name;
+        return (params.row.genre as GenreModel).name;
       },
     },
     {
@@ -174,10 +173,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       headerName: "Submitter",
       flex: 0.5,
       renderCell: (params) => {
-        const firstName = (params.getValue(params.id, "user") as UserModel)
-          .firstName;
-        const lastName = (params.getValue(params.id, "user") as UserModel)
-          .lastName;
+        const firstName = (params.row.user as UserModel).firstName;
+        const lastName = (params.row.user as UserModel).lastName;
         return <span>{allSongsRated ? `${firstName} ${lastName}` : "--"}</span>;
       },
     },
@@ -290,20 +287,22 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
               : "Submit Daily Song"
           }
         >
-          <Fab
-            sx={{ marginRight: "30px", marginTop: "30px" }}
-            onClick={() => setSongDialogOpen(true)}
-            color="primary"
-            aria-label="add"
-            disabled={
-              formattedDate !== format(new Date(), "yyyy-MM-dd") ||
-              dailySongs
-                .map((m) => m.user?.username)
-                .indexOf(props.userInfo?.username) > -1
-            }
-          >
-            <AddIcon />
-          </Fab>
+          <span>
+            <Fab
+              sx={{ marginRight: "30px", marginTop: "30px" }}
+              onClick={() => setSongDialogOpen(true)}
+              color="primary"
+              aria-label="add"
+              disabled={
+                formattedDate !== format(new Date(), "yyyy-MM-dd") ||
+                dailySongs
+                  .map((m) => m.user?.username)
+                  .indexOf(props.userInfo?.username) > -1
+              }
+            >
+              <AddIcon />
+            </Fab>
+          </span>
         </Tooltip>
       </Box>
     </>

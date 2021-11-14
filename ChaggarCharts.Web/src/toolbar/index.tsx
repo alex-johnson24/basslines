@@ -209,16 +209,23 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           {drawerItems.map((item, index) => (
             <ListItem
               sx={{
+                color:
+                  `${props.basepath}${item.link.replace("/", "")}` ===
+                  location.pathname
+                    ? theme.palette.secondary.main
+                    : "",
                 backgroundColor:
-                  `${props.basepath}${item.link.replace("/","")}` === location.pathname
+                  `${props.basepath}${item.link.replace("/", "")}` ===
+                  location.pathname
                     ? theme.palette.primary.main
                     : "",
                 "&:hover": {
                   backgroundColor:
-                  `${props.basepath}${item.link.replace("/","")}` === location.pathname
+                    `${props.basepath}${item.link.replace("/", "")}` ===
+                    location.pathname
                       ? theme.palette.primary.light
                       : "",
-                }
+                },
               }}
               button
               key={index}
@@ -231,7 +238,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               <ListItemIcon
                 sx={{
                   color:
-                  `${props.basepath}${item.link.replace("/","")}` === location.pathname
+                    `${props.basepath}${item.link.replace("/", "")}` ===
+                    location.pathname
                       ? theme.palette.secondary.main
                       : "",
                 }}
