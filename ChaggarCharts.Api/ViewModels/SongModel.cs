@@ -13,5 +13,6 @@ namespace ChaggarCharts.Api.ViewModels
         public GenreModel Genre { get; set; }
         public UserModel User { get; set; }
         public decimal? Rating { get; set; }
+        public DateTime? Submitteddate { get; set; }
     }
 }

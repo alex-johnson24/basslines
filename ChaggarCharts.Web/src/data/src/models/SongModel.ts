@@ -66,6 +66,12 @@ export interface SongModel {
      * @memberof SongModel
      */
     rating?: number | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof SongModel
+     */
+    submitteddate?: Date | null;
 }
 
 export function SongModelFromJSON(json: any): SongModel {
@@ -84,6 +90,7 @@ export function SongModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'genre': !exists(json, 'genre') ? undefined : GenreModelFromJSON(json['genre']),
         'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
         'rating': !exists(json, 'rating') ? undefined : json['rating'],
+        'submitteddate': !exists(json, 'submitteddate') ? undefined : (json['submitteddate'] === null ? null : new Date(json['submitteddate'])),
     };
 }
 
@@ -102,6 +109,7 @@ export function SongModelToJSON(value?: SongModel | null): any {
         'genre': GenreModelToJSON(value.genre),
         'user': UserModelToJSON(value.user),
         'rating': value.rating,
+        'submitteddate': value.submitteddate === undefined ? undefined : (value.submitteddate === null ? null : value.submitteddate.toISOString()),
     };
 }
 

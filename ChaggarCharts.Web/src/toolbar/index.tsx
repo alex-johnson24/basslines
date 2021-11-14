@@ -18,7 +18,7 @@ import ListItemText from "@mui/material/ListItemText";
 import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import PersonIcon from "@mui/icons-material/Person";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { Button } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
@@ -103,22 +103,22 @@ const drawerItems = [
   {
     label: "Home",
     icon: <HomeIcon />,
-    link: "home",
+    link: "/home",
   },
   {
     label: "My Charts",
     icon: <ThumbUpIcon />,
-    link: "mycharts",
+    link: "/mycharts",
   },
   {
     label: "Leaderboard",
     icon: <BarChartIcon />,
-    link: "leaderboard",
+    link: "/leaderboard",
   },
   {
-    label: "Users",
-    icon: <PersonIcon />,
-    link: "users",
+    label: "Songs",
+    icon: <MusicNoteIcon />,
+    link: "/allsongs",
   },
 ];
 
@@ -209,27 +209,28 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             <ListItem
               sx={{
                 backgroundColor:
-                  item.link === location.pathname.split("/").pop()
+                  item.link === location.pathname
                     ? theme.palette.primary.main
                     : "",
                 "&:hover": {
                   backgroundColor:
-                    item.link === location.pathname.split("/").pop()
+                    item.link === location.pathname
                       ? theme.palette.primary.light
                       : "",
-                },
-                color:
-                  item.link === location.pathname.split("/").pop()
-                    ? theme.palette.secondary.main
-                    : "",
+                }
               }}
               button
               key={index}
+              onClick={() => {
+                if (item.link == "/allsongs" || item.link == "/home") {
+                  history.push(item.link);
+                }
+              }}
             >
               <ListItemIcon
                 sx={{
                   color:
-                    item.link === location.pathname.split("/").pop()
+                    item.link === location.pathname
                       ? theme.palette.secondary.main
                       : "",
                 }}
