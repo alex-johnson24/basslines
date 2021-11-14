@@ -54,7 +54,7 @@ const App = (props: AppProps) => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Root />
+            <Root basepath={props.basename} />
           </ThemeProvider>
         </LocalizationProvider>
       </UserProvider>
