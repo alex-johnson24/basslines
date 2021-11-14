@@ -210,12 +210,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             <ListItem
               sx={{
                 backgroundColor:
-                  `${props.basepath}${item.link}` === location.pathname
+                  `${props.basepath}${item.link.replace("/","")}` === location.pathname
                     ? theme.palette.primary.main
                     : "",
                 "&:hover": {
                   backgroundColor:
-                  `${props.basepath}${item.link}` === location.pathname
+                  `${props.basepath}${item.link.replace("/","")}` === location.pathname
                       ? theme.palette.primary.light
                       : "",
                 }
@@ -231,7 +231,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               <ListItemIcon
                 sx={{
                   color:
-                  `${props.basepath}${item.link}` === location.pathname
+                  `${props.basepath}${item.link.replace("/","")}` === location.pathname
                       ? theme.palette.secondary.main
                       : "",
                 }}
