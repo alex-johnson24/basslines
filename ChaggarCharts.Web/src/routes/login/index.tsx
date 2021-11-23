@@ -77,7 +77,9 @@ const Login = () => {
     password: "",
   });
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] =
+    React.useState(false);
 
   React.useEffect(() => {
     const token = getCookieByName("access_token");
@@ -110,25 +112,22 @@ const Login = () => {
     return false;
   };
 
-  const { mutateAsync: login, status: loginStatus } = useMutation(
-    async () => {
-      const result = await call(UsersApi).usersSignInPost({
+  const login = async () => {
+    setLoading(true);
+    try {
+      let result = await call(UsersApi).usersSignInPost({
         loginModel: {
           ...loginCreds,
         },
       });
-      return result;
-    },
-    {
-      onSuccess: (result: UserModel) => {
-        dispatch({ type: "signIn", payload: result });
-        history.push("/home");
-      },
-      onError: () => {
-        setLoginCreds((current) => ({ ...current, password: "" }));
-      },
+      dispatch({ type: "signIn", payload: result });
+      history.push("/home");
+    } catch (e) {
+      setLoginCreds((current) => ({ ...current, password: "" }));
+    } finally {
+      setLoading(false);
     }
-  );
+  };
 
   const { mutateAsync: signUp, status: signUpStatus } = useMutation(
     async () => {
@@ -147,7 +146,10 @@ const Login = () => {
 
   return (
     <div className={classes.fullPageContainer}>
-      <ResetPasswordDialog open={resetPasswordDialogOpen} setOpen={setResetPasswordDialogOpen} />
+      <ResetPasswordDialog
+        open={resetPasswordDialogOpen}
+        setOpen={setResetPasswordDialogOpen}
+      />
       <Card
         className={
           tabValue === FormSections.Login
@@ -168,7 +170,7 @@ const Login = () => {
         <div className={classes.fieldContainer}>
           {tabValue === FormSections.Login ? (
             <>
-              {loginStatus === "loading" ? (
+              {loading ? (
                 <div className={classes.centerLoader}>
                   <CircularProgress variant="indeterminate" size={50} />
                 </div>
