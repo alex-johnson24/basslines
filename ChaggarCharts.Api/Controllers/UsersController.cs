@@ -84,5 +84,38 @@ namespace ChaggarCharts.Api.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [Authorize(Policy = "AdminUser")]
+        [HttpGet]
+        [Route("GetPasswordResetToken")]
+        public IActionResult GetPasswordResetToken([FromQuery]string username)
+        {
+            try
+            {
+                var token = _userService.GeneratePasswordResetToken(username);
+
+                return Ok(token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+            }
+
+            return BadRequest();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("ResetUserPassword")]
+        public IActionResult ResetUserPassword(ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
+
+            var result = _userService.ResetUserPassword(model);
+
+            if (result) return Ok();
+
+            return Unauthorized();
+        }
     }
 }

@@ -9,7 +9,7 @@ const unauthenticatedResponseHandlerMiddleware: Middleware = {
     if (context.response.status === 401) {
       console.warn("Received 401 from API, redirecting to login service"); // tslint:disable-line no-console
       if (document.location) {
-        document.location.href = "/login";
+        document.location.href = "./login";
       }
     }
   },

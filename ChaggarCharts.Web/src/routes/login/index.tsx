@@ -9,6 +9,7 @@ import {
   Box,
   TextField,
   TextFieldProps,
+  Link,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
@@ -25,6 +26,7 @@ import { styled } from "@mui/material/styles";
 import { getCookieByName } from "../../utils/textUtils";
 import jwt_decode from "jwt-decode";
 import { useRouter } from "../../helpers/useRouter";
+import ResetPasswordDialog from "./ResetPasswordDialog";
 
 enum FormSections {
   Login = "Login",
@@ -75,6 +77,9 @@ const Login = () => {
     password: "",
   });
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] =
+    React.useState(false);
 
   React.useEffect(() => {
     const token = getCookieByName("access_token");
@@ -107,22 +112,22 @@ const Login = () => {
     return false;
   };
 
-  const { mutateAsync: login, status: loginStatus } = useMutation(
-    async () => {
-      const result = await call(UsersApi).usersSignInPost({
+  const login = async () => {
+    setLoading(true);
+    try {
+      let result = await call(UsersApi).usersSignInPost({
         loginModel: {
           ...loginCreds,
         },
       });
-      return result;
-    },
-    {
-      onSuccess: (result: UserModel) => {
-        dispatch({ type: "signIn", payload: result });
-        history.push("/home");
-      },
+      dispatch({ type: "signIn", payload: result });
+      history.push("/home");
+    } catch (e) {
+      setLoginCreds((current) => ({ ...current, password: "" }));
+    } finally {
+      setLoading(false);
     }
-  );
+  };
 
   const { mutateAsync: signUp, status: signUpStatus } = useMutation(
     async () => {
@@ -141,6 +146,10 @@ const Login = () => {
 
   return (
     <div className={classes.fullPageContainer}>
+      <ResetPasswordDialog
+        open={resetPasswordDialogOpen}
+        setOpen={setResetPasswordDialogOpen}
+      />
       <Card
         className={
           tabValue === FormSections.Login
@@ -161,7 +170,7 @@ const Login = () => {
         <div className={classes.fieldContainer}>
           {tabValue === FormSections.Login ? (
             <>
-              {loginStatus === "loading" ? (
+              {loading ? (
                 <div className={classes.centerLoader}>
                   <CircularProgress variant="indeterminate" size={50} />
                 </div>
@@ -172,7 +181,10 @@ const Login = () => {
                     color="primary"
                     value={loginCreds?.username || ""}
                     onChange={(e) =>
-                      setLoginCreds({ ...loginCreds, username: e.target.value })
+                      setLoginCreds({
+                        ...loginCreds,
+                        username: e.target.value,
+                      })
                     }
                     placeholder="Username"
                   />
@@ -181,7 +193,10 @@ const Login = () => {
                     value={loginCreds?.password || ""}
                     color="primary"
                     onChange={(e) =>
-                      setLoginCreds({ ...loginCreds, password: e.target.value })
+                      setLoginCreds({
+                        ...loginCreds,
+                        password: e.target.value,
+                      })
                     }
                     placeholder="Password"
                     InputProps={{
@@ -203,7 +218,7 @@ const Login = () => {
                   />
                   <Box
                     sx={{
-                      marginTop: "12px",
+                      margin: "12px 0px",
                       width: "100%",
                       display: "flex",
                       justifyContent: "center",
@@ -362,6 +377,20 @@ const Login = () => {
               )}
             </>
           )}
+          <div
+            style={{ display: "flex", marginRight: "auto", marginTop: "auto" }}
+          >
+            <Link
+              sx={{ display: "block" }}
+              component="button"
+              variant="body2"
+              onClick={() => {
+                setResetPasswordDialogOpen(true);
+              }}
+            >
+              Reset Password
+            </Link>
+          </div>
         </div>
       </Card>
     </div>

@@ -7,6 +7,7 @@ models/GenreModel.ts
 models/LoginModel.ts
 models/ModelValidationState.ts
 models/RegistrationModel.ts
+models/ResetPasswordModel.ts
 models/SongModel.ts
 models/UserModel.ts
 models/UserRole.ts

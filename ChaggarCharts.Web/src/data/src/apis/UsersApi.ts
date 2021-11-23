@@ -21,13 +21,24 @@ import {
     RegistrationModel,
     RegistrationModelFromJSON,
     RegistrationModelToJSON,
+    ResetPasswordModel,
+    ResetPasswordModelFromJSON,
+    ResetPasswordModelToJSON,
     UserModel,
     UserModelFromJSON,
     UserModelToJSON,
 } from '../models';
 
+export interface UsersGetPasswordResetTokenGetRequest {
+    username?: string | null;
+}
+
 export interface UsersPostRequest {
     registrationModel?: RegistrationModel;
+}
+
+export interface UsersResetUserPasswordPostRequest {
+    resetPasswordModel?: ResetPasswordModel;
 }
 
 export interface UsersSignInPostRequest {
@@ -38,6 +49,33 @@ export interface UsersSignInPostRequest {
  * 
  */
 export class UsersApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async usersGetPasswordResetTokenGetRaw(requestParameters: UsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.username !== undefined) {
+            queryParameters['username'] = requestParameters.username;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Users/GetPasswordResetToken`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async usersGetPasswordResetTokenGet(requestParameters: UsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.usersGetPasswordResetTokenGetRaw(requestParameters, initOverrides);
+    }
 
     /**
      */
@@ -86,6 +124,32 @@ export class UsersApi extends runtime.BaseAPI {
      */
     async usersPost(requestParameters: UsersPostRequest, initOverrides?: RequestInit): Promise<void> {
         await this.usersPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async usersResetUserPasswordPostRaw(requestParameters: UsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/Users/ResetUserPassword`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ResetPasswordModelToJSON(requestParameters.resetPasswordModel),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async usersResetUserPasswordPost(requestParameters: UsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.usersResetUserPasswordPostRaw(requestParameters, initOverrides);
     }
 
     /**

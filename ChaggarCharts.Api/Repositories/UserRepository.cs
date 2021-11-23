@@ -39,5 +39,15 @@ namespace ChaggarCharts.Api.Repositories
 
             return _ctx.SaveChanges() > 0;
         }
+
+        public bool UpdateUserPassword(string username, string hpassword, string salt)
+        {
+            var user = _ctx.Users.FirstOrDefault(f => f.Username == username);
+
+            user.Hpassword = hpassword;
+            user.Salt = salt;
+
+            return _ctx.SaveChanges() > 0;
+        }
     }
 }
