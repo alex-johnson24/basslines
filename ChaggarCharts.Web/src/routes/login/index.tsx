@@ -9,6 +9,7 @@ import {
   Box,
   TextField,
   TextFieldProps,
+  Link,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
@@ -25,6 +26,7 @@ import { styled } from "@mui/material/styles";
 import { getCookieByName } from "../../utils/textUtils";
 import jwt_decode from "jwt-decode";
 import { useRouter } from "../../helpers/useRouter";
+import ResetPasswordDialog from "./ResetPasswordDialog";
 
 enum FormSections {
   Login = "Login",
@@ -75,6 +77,7 @@ const Login = () => {
     password: "",
   });
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
     const token = getCookieByName("access_token");
@@ -121,6 +124,9 @@ const Login = () => {
         dispatch({ type: "signIn", payload: result });
         history.push("/home");
       },
+      onError: () => {
+        setLoginCreds((current) => ({ ...current, password: "" }));
+      },
     }
   );
 
@@ -141,6 +147,7 @@ const Login = () => {
 
   return (
     <div className={classes.fullPageContainer}>
+      <ResetPasswordDialog open={resetPasswordDialogOpen} setOpen={setResetPasswordDialogOpen} />
       <Card
         className={
           tabValue === FormSections.Login
@@ -172,7 +179,10 @@ const Login = () => {
                     color="primary"
                     value={loginCreds?.username || ""}
                     onChange={(e) =>
-                      setLoginCreds({ ...loginCreds, username: e.target.value })
+                      setLoginCreds({
+                        ...loginCreds,
+                        username: e.target.value,
+                      })
                     }
                     placeholder="Username"
                   />
@@ -181,7 +191,10 @@ const Login = () => {
                     value={loginCreds?.password || ""}
                     color="primary"
                     onChange={(e) =>
-                      setLoginCreds({ ...loginCreds, password: e.target.value })
+                      setLoginCreds({
+                        ...loginCreds,
+                        password: e.target.value,
+                      })
                     }
                     placeholder="Password"
                     InputProps={{
@@ -203,7 +216,7 @@ const Login = () => {
                   />
                   <Box
                     sx={{
-                      marginTop: "12px",
+                      margin: "12px 0px",
                       width: "100%",
                       display: "flex",
                       justifyContent: "center",
@@ -362,6 +375,20 @@ const Login = () => {
               )}
             </>
           )}
+          <div
+            style={{ display: "flex", marginRight: "auto", marginTop: "auto" }}
+          >
+            <Link
+              sx={{ display: "block" }}
+              component="button"
+              variant="body2"
+              onClick={() => {
+                setResetPasswordDialogOpen(true);
+              }}
+            >
+              Reset Password
+            </Link>
+          </div>
         </div>
       </Card>
     </div>

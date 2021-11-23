@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -67,7 +68,10 @@ namespace ChaggarCharts
                 });
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("AdminUser", policy => { policy.RequireClaim("userRole", "Administrator"); });
+                opt.AddPolicy("AdminUser", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, "Administrator");
+                });
             });
             services.AddSingleton(mapper);
             services.AddScoped<ISongRepository, SongRepository>();

@@ -6,5 +6,7 @@ namespace ChaggarCharts.Api.Interfaces
     {
         bool CreateUser(RegistrationModel registrationModel);
         UserModel SignIn(LoginModel loginModel, out string jwt);
+        string GeneratePasswordResetToken(string username);
+        bool ResetUserPassword(ResetPasswordModel model);
     }
 }
