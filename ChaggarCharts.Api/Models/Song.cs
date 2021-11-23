@@ -16,6 +16,7 @@ namespace ChaggarCharts.Api.Models
         public decimal? Rating { get; set; }
         public DateTime? Createdatetime { get; set; }
         public DateTime? Updatedatetime { get; set; }
+        public string Link { get; set; }
 
         public virtual Genre Genre { get; set; }
         public virtual User User { get; set; }

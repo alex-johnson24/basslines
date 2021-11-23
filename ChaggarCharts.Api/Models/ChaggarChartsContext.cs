@@ -92,6 +92,11 @@ namespace ChaggarCharts.Api.Models
 
                 entity.Property(e => e.Genreid).HasColumnName("genreid");
 
+                entity.Property(e => e.Link)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("link");
+
                 entity.Property(e => e.Rating)
                     .HasColumnType("decimal(4, 2)")
                     .HasColumnName("rating");

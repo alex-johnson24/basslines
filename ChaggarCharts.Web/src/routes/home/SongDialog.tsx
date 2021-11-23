@@ -150,6 +150,22 @@ const SongDialog = (props: ISongDialogProps) => {
               )}
             />
           </Grid>
+          <Grid item xs={12} md={8} className={classes.centeredBox}>
+            <TextField
+              margin="dense"
+              label="Link (Spotify, YouTube, etc)"
+              fullWidth
+              variant="standard"
+              value={userSong?.link}
+              onChange={(e) => {
+                const val = e.target?.value;
+                setUserSong((current) => ({
+                  ...current,
+                  link: val || "",
+                }));
+              }}
+            />
+          </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
