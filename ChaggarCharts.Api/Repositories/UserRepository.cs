@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using ChaggarCharts.Api.Enums;
@@ -11,10 +12,15 @@ namespace ChaggarCharts.Api.Repositories
     {
         private readonly ChaggarChartsContext _ctx;
         private readonly IMapper _mapper;
-        public UserRepository(ChaggarChartsContext ctx, IMapper mapper)
+        public UserRepository(IDbContextFactory<ChaggarChartsContext> ctxFactory, IMapper mapper)
         {
-            _ctx = ctx;
+            _ctx = ctxFactory.CreateDbContext();
             _mapper = mapper;
+        }
+
+        public List<User> GetUsers()
+        {
+            return _ctx.Users.Include(i => i.Role).ToList();
         }
 
         public User GetUserByUsername(string username)

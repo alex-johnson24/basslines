@@ -13,9 +13,9 @@ namespace ChaggarCharts.Api.Repositories
     {
         private readonly ChaggarChartsContext _ctx;
         private readonly IMapper _mapper;
-        public SongRepository(ChaggarChartsContext ctx, IMapper mapper)
+        public SongRepository(IDbContextFactory<ChaggarChartsContext> ctxFactory, IMapper mapper)
         {
-            _ctx = ctx;
+            _ctx = ctxFactory.CreateDbContext();
             _mapper = mapper;
         }
 

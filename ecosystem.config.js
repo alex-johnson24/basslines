@@ -3,7 +3,7 @@ module.exports = {
       name: 'chaggarcharts',
       script: 'dotnet /appl/chaggarcharts/ChaggarCharts.Api.dll',
       args: '',
-      instances: 2,
+      instances: 1,
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',

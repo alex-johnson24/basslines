@@ -4,6 +4,7 @@ using AutoMapper;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.Models;
 using ChaggarCharts.Api.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChaggarCharts.Api.Repositories
 {
@@ -11,9 +12,9 @@ namespace ChaggarCharts.Api.Repositories
     {
         private readonly ChaggarChartsContext _ctx;
         private readonly IMapper _mapper;
-        public GenreRepository(ChaggarChartsContext ctx, IMapper mapper)
+        public GenreRepository(IDbContextFactory<ChaggarChartsContext> ctxFactory, IMapper mapper)
         {
-            _ctx = ctx;
+            _ctx = ctxFactory.CreateDbContext();
             _mapper = mapper;
         }
 

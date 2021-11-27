@@ -6,10 +6,6 @@ namespace ChaggarCharts.Api.Models
 {
     public partial class ChaggarChartsContext : DbContext
     {
-        public ChaggarChartsContext()
-        {
-        }
-
         public ChaggarChartsContext(DbContextOptions<ChaggarChartsContext> options)
             : base(options)
         {

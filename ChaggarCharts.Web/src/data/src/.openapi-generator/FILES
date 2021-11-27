@@ -3,12 +3,16 @@ apis/SongsApi.ts
 apis/UsersApi.ts
 apis/index.ts
 index.ts
+models/ArtistCountModel.ts
+models/DailyRatingModel.ts
+models/GenreCountModel.ts
 models/GenreModel.ts
 models/LoginModel.ts
 models/ModelValidationState.ts
 models/RegistrationModel.ts
 models/ResetPasswordModel.ts
 models/SongModel.ts
+models/UserMetricsModel.ts
 models/UserModel.ts
 models/UserRole.ts
 models/index.ts

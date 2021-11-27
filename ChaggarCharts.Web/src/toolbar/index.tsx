@@ -230,7 +230,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               button
               key={index}
               onClick={() => {
-                if (item.link == "/allsongs" || item.link == "/home") {
+                if (item.link == "/allsongs" || item.link == "/home" || item.link == "/mycharts") {
                   history.push(item.link);
                 }
               }}

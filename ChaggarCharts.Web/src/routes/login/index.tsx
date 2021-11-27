@@ -410,7 +410,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     width: "30%",
-    height: "35%",
+    height: "38%",
     minWidth: "300px",
     minHeight: "300px",
     padding: "16px",

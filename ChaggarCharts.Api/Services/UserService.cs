@@ -6,11 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ChaggarCharts.Api.Services
 {
@@ -18,13 +20,15 @@ namespace ChaggarCharts.Api.Services
     {
         private static readonly int _saltLength = 32;
         private readonly IUserRepository _userRepo;
+        private readonly IMetricsRepository _metricsRepo;
         private readonly ILogger<UserService> _logger;
         private readonly IMapper _mapper;
         private readonly AuthSettings _authSettings;
 
-        public UserService(IUserRepository userRepo, ILogger<UserService> logger, IMapper mapper, IOptions<AuthSettings> authSettings)
+        public UserService(IUserRepository userRepo, IMetricsRepository metricsRepo, ILogger<UserService> logger, IMapper mapper, IOptions<AuthSettings> authSettings)
         {
             _userRepo = userRepo;
+            _metricsRepo = metricsRepo;
             _logger = logger;
             _mapper = mapper;
             _authSettings = authSettings.Value;
@@ -41,6 +45,39 @@ namespace ChaggarCharts.Api.Services
             jwt = GenerateToken(user);
 
             return _mapper.Map<UserModel>(user);
+        }
+
+        public async Task<UserMetricsModel> GetUserMetrics(Guid userId)
+        {
+            var recentRatingsTask = _metricsRepo.GetRecentRatings(userId);
+
+            var topGenresTask = _metricsRepo.GetTopGenres(userId);
+
+            var topSongsTask = _metricsRepo.GetTopSongs(userId);
+            
+            var topArtistsTask = _metricsRepo.GetTopArtists(userId);
+
+            var averageRatingTask = _metricsRepo.GetAverageRating(userId);
+
+            var songSubmissionCountTask = _metricsRepo.GetSongSubmissionCount(userId);
+
+            var uniqueArtistCount = _metricsRepo.GetUniqueArtistCount(userId);
+
+            var uniqueGenreCount = _metricsRepo.GetUniqueGenreCount(userId);
+
+            await Task.WhenAll(recentRatingsTask, topGenresTask, topSongsTask, topArtistsTask, averageRatingTask, songSubmissionCountTask, uniqueArtistCount, uniqueGenreCount);
+
+            return new UserMetricsModel
+            {
+                DailyRatings = await recentRatingsTask,
+                TopGenres = await topGenresTask,
+                TopSongs = await topSongsTask,
+                TopArtists = await topArtistsTask,
+                AverageRating = Math.Round((await averageRatingTask) ?? 0, 2),
+                SongSubmissionCount = await songSubmissionCountTask,
+                UniqueArtistCount = await uniqueArtistCount,
+                UniqueGenreCount = await uniqueGenreCount
+            };
         }
 
         public bool CreateUser(RegistrationModel registrationModel)
@@ -162,6 +199,12 @@ namespace ChaggarCharts.Api.Services
             }
 
             return false;
+        }
+
+        public List<UserModel> GetUsers()
+        {
+            var users = _userRepo.GetUsers();
+            return _mapper.Map<List<UserModel>>(users);
         }
     }
 }

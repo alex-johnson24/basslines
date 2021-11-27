@@ -31,8 +31,6 @@ namespace ChaggarCharts
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            var items = Configuration.GetConnectionString("ChaggarChartsDatabase");
-            Console.WriteLine(Configuration.GetConnectionString("ChaggarChartsDatabase"));
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -77,6 +75,7 @@ namespace ChaggarCharts
             services.AddScoped<ISongRepository, SongRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMetricsRepository, MetricsRepository>();
             services.AddScoped<IUserService, UserService>();
 
             services.AddControllers()
@@ -84,11 +83,13 @@ namespace ChaggarCharts
             {
                 x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChaggarCharts", Version = "v1" });
             });
-            services.AddDbContext<ChaggarChartsContext>(options =>
+
+            services.AddDbContextFactory<ChaggarChartsContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ChaggarChartsDatabase")));
         }
 

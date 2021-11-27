@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +22,25 @@ namespace ChaggarCharts.Api.Controllers
             _logger = logger;
             _userService = userService;
         }
+
+        [Route("AllUsers")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<UserModel>), 200)]
+        [ProducesResponseType(typeof(string), 500)]
+        public IActionResult GetUsers()
+        {
+            try
+            {
+                var users = _userService.GetUsers();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.StackTrace, ex);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
         [Route("Logout")]
         [HttpGet]
@@ -88,7 +109,7 @@ namespace ChaggarCharts.Api.Controllers
         [Authorize(Policy = "AdminUser")]
         [HttpGet]
         [Route("GetPasswordResetToken")]
-        public IActionResult GetPasswordResetToken([FromQuery]string username)
+        public IActionResult GetPasswordResetToken([FromQuery] string username)
         {
             try
             {
@@ -102,6 +123,29 @@ namespace ChaggarCharts.Api.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet]
+        [Route("UserMetrics")]
+        [ProducesResponseType(typeof(UserMetricsModel), 200)]
+        [ProducesResponseType(typeof(string), 500)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> UserMetrics([FromQuery] Guid? userId)
+        {
+            if (!userId.HasValue) return BadRequest("No user id was given");
+
+            try
+            {
+                var metrics = await _userService.GetUserMetrics(userId.Value);
+
+                return Ok(metrics);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [AllowAnonymous]

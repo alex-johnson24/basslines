@@ -24,6 +24,9 @@ import {
     ResetPasswordModel,
     ResetPasswordModelFromJSON,
     ResetPasswordModelToJSON,
+    UserMetricsModel,
+    UserMetricsModelFromJSON,
+    UserMetricsModelToJSON,
     UserModel,
     UserModelFromJSON,
     UserModelToJSON,
@@ -45,10 +48,38 @@ export interface UsersSignInPostRequest {
     loginModel?: LoginModel;
 }
 
+export interface UsersUserMetricsGetRequest {
+    userId?: string | null;
+}
+
 /**
  * 
  */
 export class UsersApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async usersAllUsersGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserModel>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Users/AllUsers`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
+    }
+
+    /**
+     */
+    async usersAllUsersGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
+        const response = await this.usersAllUsersGetRaw(initOverrides);
+        return await response.value();
+    }
 
     /**
      */
@@ -176,6 +207,34 @@ export class UsersApi extends runtime.BaseAPI {
      */
     async usersSignInPost(requestParameters: UsersSignInPostRequest, initOverrides?: RequestInit): Promise<UserModel> {
         const response = await this.usersSignInPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async usersUserMetricsGetRaw(requestParameters: UsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserMetricsModel>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.userId !== undefined) {
+            queryParameters['userId'] = requestParameters.userId;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Users/UserMetrics`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserMetricsModelFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async usersUserMetricsGet(requestParameters: UsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<UserMetricsModel> {
+        const response = await this.usersUserMetricsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
