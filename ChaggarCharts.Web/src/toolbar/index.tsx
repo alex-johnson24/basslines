@@ -22,7 +22,7 @@ import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { Button } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
-import { useRouter } from "../helpers/useRouter";
+import { useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -125,7 +125,7 @@ const drawerItems = [
 
 export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
-  const { history } = useRouter();
+  const history = useHistory();
   const [open, setOpen] = React.useState(false);
 
   const logout = async () => {

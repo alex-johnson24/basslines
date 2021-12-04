@@ -263,7 +263,7 @@ const MyCharts = () => {
               </ResponsiveContainer>
             </div>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid className={classes.chartBox} item xs={12} md={6}>
             <div style={{ height: "300px" }}>
               <Typography variant="h5">Top Songs</Typography>
               <ResponsiveContainer>
