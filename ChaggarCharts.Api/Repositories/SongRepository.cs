@@ -38,6 +38,16 @@ namespace ChaggarCharts.Api.Repositories
                     .Select(s => _mapper.Map<SongModel>(s));
         }
 
+        public IEnumerable<SongModel> SongSearch(string search)
+        {
+            return _ctx.Set<Song>()
+                .AsNoTracking()
+                .Include(i => i.Genre)
+                .Include(i => i.User)
+                .Where(w => (w.Title.ToLower() + w.Artist.ToLower()).Contains(search))
+                .Select(s => _mapper.Map<SongModel>(s));
+        }
+
         public SongModel SubmitSong(SongModel song)
         {
             _ctx.Set<Song>().Add(

@@ -138,7 +138,7 @@ const SongDialog = (props: ISongDialogProps) => {
                   },
                 }))
               }
-              options={genres.map((m) => m.name)}
+              options={genres.map((m) => m.name).sort()}
               sx={{ width: 300 }}
               renderInput={(params) => (
                 <TextField

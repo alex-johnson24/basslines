@@ -23,6 +23,7 @@ import { Button } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
+import GlobalSearch from "./GlobalSearch";
 
 const drawerWidth = 240;
 
@@ -184,10 +185,13 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               Charts
             </Typography>
           </div>
+          <Box sx={{ marginRight: "20px" }}>
+            <GlobalSearch />
+          </Box>
           <Button
             variant="contained"
             color="secondary"
-            sx={{ marginLeft: "auto", color: theme.palette.primary.main }}
+            sx={{ color: theme.palette.primary.main }}
             onClick={logout}
           >
             Logout
@@ -230,7 +234,11 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               button
               key={index}
               onClick={() => {
-                if (item.link == "/allsongs" || item.link == "/home" || item.link == "/mycharts") {
+                if (
+                  item.link == "/allsongs" ||
+                  item.link == "/home" ||
+                  item.link == "/mycharts"
+                ) {
                   history.push(item.link);
                 }
               }}

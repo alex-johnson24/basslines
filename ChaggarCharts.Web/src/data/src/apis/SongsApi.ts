@@ -36,6 +36,10 @@ export interface SongsRatePutRequest {
     rating?: number | null;
 }
 
+export interface SongsSongSearchGetRequest {
+    search?: string | null;
+}
+
 export interface SongsSubmissionDateSubmitDateStringGetRequest {
     submitDateString: string | null;
 }
@@ -152,6 +156,34 @@ export class SongsApi extends runtime.BaseAPI {
      */
     async songsRatePut(requestParameters: SongsRatePutRequest, initOverrides?: RequestInit): Promise<SongModel> {
         const response = await this.songsRatePutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async songsSongSearchGetRaw(requestParameters: SongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.search !== undefined) {
+            queryParameters['search'] = requestParameters.search;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Songs/SongSearch`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SongModelFromJSON));
+    }
+
+    /**
+     */
+    async songsSongSearchGet(requestParameters: SongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongModel>> {
+        const response = await this.songsSongSearchGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

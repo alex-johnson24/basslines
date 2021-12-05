@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -55,6 +56,25 @@ namespace ChaggarCharts.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred getting songs by date in the db");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("SongSearch")]
+        [ProducesResponseType(typeof(IEnumerable<SongModel>), 200)]
+        [ProducesResponseType(typeof(string), 500)]
+        public IActionResult SongSearch([FromQuery] string search)
+        {
+            if (search == null || search.Length < 3) return Ok(Enumerable.Empty<SongModel>());
+
+            try
+            {
+                return Ok(_songRepo.SongSearch(search));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred searching songs in the db");
                 return StatusCode(500, ex.Message);
             }
         }
