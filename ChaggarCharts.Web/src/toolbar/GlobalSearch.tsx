@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   alpha,
+  Box,
   Card,
   CircularProgress,
   InputBase,
@@ -59,7 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const GlobalSearch = () => {
   const [searchResults, setSearchResults] = React.useState<SongModel[]>([]);
-  const [searchString, setSearchString] = React.useState<string>();
+  const [searchString, setSearchString] = React.useState<string>("");
   const inputRef = React.useRef<HTMLInputElement | null>();
 
   const refBounds = inputRef.current?.getBoundingClientRect();
@@ -84,7 +85,6 @@ const GlobalSearch = () => {
   const resetSearch = () => {
     setSearchString("");
     setSearchResults([]);
-
   };
 
   React.useEffect(() => {
@@ -119,19 +119,18 @@ const GlobalSearch = () => {
           overflow: "auto",
         }}
       >
-        {searchResults.length === 0 ? (
+        {songsStatus === "loading" ? (
           <CircularProgress sx={{ margin: "auto" }} />
-        ) : (
+        ) : searchResults.length > 0 ? (
           <List>
             {searchResults.map((m, i) => (
               <ListItem key={i}>
-                <ListItemText
-                  primary={m.title}
-                  secondary={m.artist}
-                />
+                <ListItemText primary={m.title} secondary={m.artist} />
               </ListItem>
             ))}
           </List>
+        ) : (
+          <Box sx={{ margin: "auto" }}>No results (refine your search)</Box>
         )}
       </Card>
     </>
