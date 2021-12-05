@@ -19,7 +19,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button } from "@mui/material";
+import { Button, useMediaQuery } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
@@ -42,9 +42,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(9)} + 1px)`,
+  width: `calc(${theme.spacing(9)} + 1px)`,
+  [theme.breakpoints.down("md")]: {
+    width: 0,
   },
 });
 
@@ -128,6 +128,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const logout = async () => {
     try {
@@ -163,28 +164,30 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           >
             <MenuIcon />
           </IconButton>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "auto",
-            }}
-          >
-            <Typography variant="h4" color="secondary">
-              Chaggar
-            </Typography>
-            <Typography
-              sx={{
-                color: theme.palette.primary.light,
-                fontWeight: 300,
-                fontStyle: "italic",
-                marginRight: 10,
+          {!isSmallScreen && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "auto",
               }}
-              variant="h4"
             >
-              Charts
-            </Typography>
-          </div>
+              <Typography variant="h4" color="secondary">
+                Chaggar
+              </Typography>
+              <Typography
+                sx={{
+                  color: theme.palette.primary.light,
+                  fontWeight: 300,
+                  fontStyle: "italic",
+                  marginRight: 10,
+                }}
+                variant="h4"
+              >
+                Charts
+              </Typography>
+            </div>
+          )}
           <Box sx={{ marginRight: "20px" }}>
             <GlobalSearch />
           </Box>

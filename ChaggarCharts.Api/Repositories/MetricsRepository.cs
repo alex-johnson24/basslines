@@ -26,8 +26,9 @@ namespace ChaggarCharts.Api.Repositories
             {
                 return await asyncCtx.Songs
                                 .Where(w => w.Userid == userId && w.Rating.HasValue)
-                                .OrderBy(o => o.Submitteddate)
+                                .OrderByDescending(o => o.Submitteddate)
                                 .Take(5)
+                                .OrderBy(o => o.Submitteddate)
                                 .Select(s => new DailyRatingModel { SubmittedDate = s.Submitteddate.Value, Rating = s.Rating, Title = s.Title, Artist = s.Artist })
                                 .ToListAsync();
             }
