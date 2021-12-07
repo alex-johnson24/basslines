@@ -7,6 +7,11 @@ namespace ChaggarCharts.Api.Models
 {
     public partial class Song
     {
+        public Song()
+        {
+            Likes = new HashSet<Like>();
+        }
+
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Artist { get; set; }
@@ -20,5 +25,6 @@ namespace ChaggarCharts.Api.Models
 
         public virtual Genre Genre { get; set; }
         public virtual User User { get; set; }
+        public virtual ICollection<Like> Likes { get; set; }
     }
 }

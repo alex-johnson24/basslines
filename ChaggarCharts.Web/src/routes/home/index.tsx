@@ -4,32 +4,23 @@ import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import DatePicker from "@mui/lab/DatePicker";
 import {
-  Avatar,
   Box,
   Container,
   Fab,
   Grid,
+  Pagination,
   Theme,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { call } from "../../data/callWrapper";
 import { useMutation } from "react-query";
-import {
-  SongsApi,
-  SongModel,
-  UserModel,
-  UserRole,
-  GenreModel,
-} from "../../data/src";
+import { SongsApi, SongModel, UserModel } from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import SongDialog from "./SongDialog";
-import EditIcon from "@mui/icons-material/Edit";
-import IconButton from "@mui/material/IconButton";
-import RateReviewIcon from "@mui/icons-material/RateReview";
 import RatingPopover from "./RatingPopover";
-import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import SongCard from "./SongCard";
 
 const useStyles = makeStyles(() => {
   return {
@@ -51,6 +42,8 @@ interface IHomeDashboardProps {
   userInfo: UserModel;
 }
 
+const SONG_PAGE_SIZE = 9;
+
 const HomeDashboard = (props: IHomeDashboardProps) => {
   const theme = useTheme();
 
@@ -65,6 +58,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const [currentUserSong, setCurrentUserSong] = React.useState<SongModel>(null);
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
+  const [page, setPage] = React.useState<number>(1);
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
@@ -81,6 +75,13 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       setDailySongs(songsResults);
     }
   );
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
 
   React.useEffect(() => {
     getSongs();
@@ -114,115 +115,6 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     }
   }, [dailySongs]);
 
-  const columns: GridColDef[] = [
-    {
-      field: "id",
-      headerName: "_",
-      flex: 0.25,
-      sortable: false,
-      disableColumnMenu: true,
-      align: "center",
-      renderCell: (params) => {
-        const firstName = (params.row.user as UserModel).firstName;
-        const lastName = (params.row.user as UserModel).lastName;
-        return (
-          <Avatar
-            sx={{
-              bgcolor: theme.palette.secondary.main,
-              color: theme.palette.primary.main,
-            }}
-          >
-            {allSongsRated
-              ? `${firstName.split("")[0]}${lastName.split("")[0]}`
-              : "??"}
-          </Avatar>
-        );
-      },
-    },
-    {
-      field: "title",
-      headerName: "Title",
-      flex: 1,
-      renderCell: (params) => {
-        const songTitle = params.getValue(params.id, "title") as string;
-        const songLink = params.row.link as string;
-        return Boolean(songLink) ? (
-          <a href={songLink} target="_blank">
-            {songTitle}
-          </a>
-        ) : (
-          <span>{songTitle}</span>
-        );
-      },
-    },
-    {
-      field: "artist",
-      headerName: "Artist",
-      flex: 1,
-    },
-    {
-      field: "genreName",
-      headerName: "Genre",
-      flex: 0.75,
-      valueGetter: (params) => {
-        return (params.row.genre as GenreModel).name;
-      },
-    },
-    {
-      field: "submitter",
-      headerName: "Submitter",
-      flex: 0.5,
-      renderCell: (params) => {
-        const firstName = (params.row.user as UserModel).firstName;
-        const lastName = (params.row.user as UserModel).lastName;
-        return <span>{allSongsRated ? `${firstName} ${lastName}` : "--"}</span>;
-      },
-    },
-    {
-      field: "rating",
-      headerName: "Rating",
-      flex: 0.5,
-      renderCell: (params) => {
-        const rating = params.getValue(params.id, "rating");
-        return (
-          <div style={{ display: "flex", width: "100%" }}>
-            <span>{typeof rating === "number" ? rating : ""}</span>
-            {(props.userInfo.role === UserRole.Administrator ||
-              props.userInfo.role === UserRole.Reviewer) && (
-              <IconButton
-                onClick={(event) => {
-                  setSongToRate(params.row);
-                  openRatingPopover(event);
-                }}
-                size="small"
-              >
-                <RateReviewIcon />
-              </IconButton>
-            )}
-            {params.row.user.username === props.userInfo?.username &&
-            formattedDate === format(new Date(), "yyyy-MM-dd") &&
-            typeof rating !== "number" ? (
-              <IconButton
-                style={{ marginLeft: "auto" }}
-                size="small"
-                onClick={() => setSongDialogOpen(true)}
-              >
-                <EditIcon />
-              </IconButton>
-            ) : null}
-          </div>
-        );
-      },
-    },
-  ];
-
-  const [sortModel, setSortModel] = React.useState<GridSortModel>([
-    {
-      field: "rating",
-      sort: "desc",
-    },
-  ]);
-
   return (
     <>
       <RatingPopover
@@ -237,7 +129,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
         userInfo={props.userInfo}
         userSong={currentUserSong}
       />
-      <Grid sx={{ marginBottom: "25px" }} container>
+      <Grid sx={{ marginBottom: "10px" }} container>
         <Grid item xs={4}>
           <DatePicker
             label="Submission Date"
@@ -264,47 +156,54 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
         </Grid>
       </Grid>
       <Container maxWidth="xl">
-        <DataGrid
-          autoHeight
-          classes={{ columnHeader: classes.header }}
-          rows={dailySongs}
-          columns={columns}
-          pageSize={10}
-          rowsPerPageOptions={[5]}
-          disableSelectionOnClick
-          componentsProps={{
-            columnMenu: { background: theme.palette.secondary },
-          }}
-          sortModel={sortModel}
-          onSortModelChange={(model) => setSortModel(model)}
-        />
+        {dailySongs
+          .sort((a, b) => b.rating - a.rating)
+          .slice((page - 1) * SONG_PAGE_SIZE, page * SONG_PAGE_SIZE)
+          .map((m: SongModel, i: number) => (
+            <SongCard
+              key={i}
+              song={m}
+              allSongsRated={allSongsRated}
+              setSelectedSong={setSongToRate}
+              setRatingAnchor={setRatingPopoverAnchor}
+              userInfo={props.userInfo}
+              refreshSongs={getSongs}
+              setEditSongDialogOpen={setSongDialogOpen}
+            />
+          ))}
+        <Box sx={{ display: "flex", mt: "20px", alignItems: "center" }}>
+          <Pagination
+            sx={{ ml: "auto" }}
+            count={Math.ceil(dailySongs?.length / SONG_PAGE_SIZE)}
+            color="secondary"
+            page={page}
+            onChange={handlePageChange}
+          />
+          <Tooltip
+            title={
+              formattedDate !== format(new Date(), "yyyy-MM-dd")
+                ? ""
+                : "Submit Daily Song"
+            }
+          >
+            <span>
+              <Fab
+                onClick={() => setSongDialogOpen(true)}
+                color="primary"
+                size="small"
+                disabled={
+                  formattedDate !== format(new Date(), "yyyy-MM-dd") ||
+                  dailySongs
+                    .map((m) => m.user?.username)
+                    .indexOf(props.userInfo?.username) > -1
+                }
+              >
+                <AddIcon />
+              </Fab>
+            </span>
+          </Tooltip>
+        </Box>
       </Container>
-      <Box sx={{ display: "flex", justifyContent: "end" }}>
-        <Tooltip
-          title={
-            formattedDate !== format(new Date(), "yyyy-MM-dd")
-              ? ""
-              : "Submit Daily Song"
-          }
-        >
-          <span>
-            <Fab
-              sx={{ marginRight: "30px", marginTop: "30px" }}
-              onClick={() => setSongDialogOpen(true)}
-              color="primary"
-              aria-label="add"
-              disabled={
-                formattedDate !== format(new Date(), "yyyy-MM-dd") ||
-                dailySongs
-                  .map((m) => m.user?.username)
-                  .indexOf(props.userInfo?.username) > -1
-              }
-            >
-              <AddIcon />
-            </Fab>
-          </span>
-        </Tooltip>
-      </Box>
     </>
   );
 };

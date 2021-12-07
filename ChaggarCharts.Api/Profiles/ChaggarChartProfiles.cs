@@ -14,6 +14,8 @@ namespace ChaggarCharts.Api.Profiles
                 .ForMember(dest => dest.Role, m => m.MapFrom(src => src.Role.Flag));
             
             CreateMap<Genre, GenreModel>();
+
+            CreateMap<Like, LikeModel>();
         }
     }
 }

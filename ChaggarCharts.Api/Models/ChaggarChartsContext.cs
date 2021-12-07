@@ -12,6 +12,7 @@ namespace ChaggarCharts.Api.Models
         }
 
         public virtual DbSet<Genre> Genres { get; set; }
+        public virtual DbSet<Like> Likes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Song> Songs { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -41,6 +42,40 @@ namespace ChaggarCharts.Api.Models
                 entity.Property(e => e.Updatedatetime)
                     .HasPrecision(3)
                     .HasColumnName("updatedatetime");
+            });
+
+            modelBuilder.Entity<Like>(entity =>
+            {
+                entity.ToTable("likes");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.Createdatetime)
+                    .HasPrecision(3)
+                    .HasColumnName("createdatetime")
+                    .HasDefaultValueSql("(sysdatetime())");
+
+                entity.Property(e => e.Songid).HasColumnName("songid");
+
+                entity.Property(e => e.Updatedatetime)
+                    .HasPrecision(3)
+                    .HasColumnName("updatedatetime");
+
+                entity.Property(e => e.Userid).HasColumnName("userid");
+
+                entity.HasOne(d => d.Song)
+                    .WithMany(p => p.Likes)
+                    .HasForeignKey(d => d.Songid)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_likes_songid");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Likes)
+                    .HasForeignKey(d => d.Userid)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_likes_userid");
             });
 
             modelBuilder.Entity<Role>(entity =>

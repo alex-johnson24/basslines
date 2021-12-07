@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ChaggarCharts.Api.ViewModels
@@ -15,5 +16,6 @@ namespace ChaggarCharts.Api.ViewModels
         public decimal? Rating { get; set; }
         public string Link { get; set; }
         public DateTime? Submitteddate { get; set; }
-    }
+        public ICollection<LikeModel> Likes {get;set;}
+}
 }

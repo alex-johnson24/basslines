@@ -4,6 +4,7 @@ export * from './ArtistCountModel';
 export * from './DailyRatingModel';
 export * from './GenreCountModel';
 export * from './GenreModel';
+export * from './LikeModel';
 export * from './LoginModel';
 export * from './ModelValidationState';
 export * from './RegistrationModel';

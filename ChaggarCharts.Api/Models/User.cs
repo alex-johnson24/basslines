@@ -9,6 +9,7 @@ namespace ChaggarCharts.Api.Models
     {
         public User()
         {
+            Likes = new HashSet<Like>();
             Songs = new HashSet<Song>();
         }
 
@@ -23,6 +24,7 @@ namespace ChaggarCharts.Api.Models
         public DateTime? Updatedatetime { get; set; }
 
         public virtual Role Role { get; set; }
+        public virtual ICollection<Like> Likes { get; set; }
         public virtual ICollection<Song> Songs { get; set; }
     }
 }

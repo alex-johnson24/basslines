@@ -62,7 +62,7 @@ const RatingPopover = (props: IRatingPopoverProps) => {
           >
             Cancel
           </Button>
-          <Button color="secondary" variant="contained" onClick={submitRating}>
+          <Button color="secondary" variant="outlined" onClick={submitRating}>
             Save
           </Button>
         </Box>

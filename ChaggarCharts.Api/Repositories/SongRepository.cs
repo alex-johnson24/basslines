@@ -25,6 +25,7 @@ namespace ChaggarCharts.Api.Repositories
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
+                    .Include(i => i.Likes)
                     .Select(s => _mapper.Map<SongModel>(s));
         }
 
@@ -34,6 +35,7 @@ namespace ChaggarCharts.Api.Repositories
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
+                    .Include(i => i.Likes)
                     .Where(w => w.Submitteddate == submitDate)
                     .Select(s => _mapper.Map<SongModel>(s));
         }
