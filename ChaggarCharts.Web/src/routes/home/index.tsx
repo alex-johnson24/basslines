@@ -8,7 +8,6 @@ import {
   Container,
   Fab,
   Grid,
-  Pagination,
   Theme,
   Tooltip,
   Typography,
@@ -42,8 +41,6 @@ interface IHomeDashboardProps {
   userInfo: UserModel;
 }
 
-const SONG_PAGE_SIZE = 9;
-
 const HomeDashboard = (props: IHomeDashboardProps) => {
   const theme = useTheme();
 
@@ -58,12 +55,23 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const [currentUserSong, setCurrentUserSong] = React.useState<SongModel>(null);
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
-  const [page, setPage] = React.useState<number>(1);
+
+  const uniqueDailyRatings = [...new Set(dailySongs.map(m => m.rating))].sort((a,b) => b-a);
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
   const allSongsRated =
     dailySongs.filter((f) => typeof f.rating !== "number").length === 0;
+
+  const getSongRanking = (song: SongModel) => {
+    if (song.rating === uniqueDailyRatings[0]) {
+      return "first";
+    } else if (song.rating === uniqueDailyRatings[1]) {
+      return "second";
+    } else if (song.rating === uniqueDailyRatings[2]) {
+      return "third";
+    } else return null;
+  }
 
   const { mutateAsync: getSongs, status: songsStatus } = useMutation(
     async () => {
@@ -75,13 +83,6 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       setDailySongs(songsResults);
     }
   );
-
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  };
 
   React.useEffect(() => {
     getSongs();
@@ -155,30 +156,23 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           </Typography>
         </Grid>
       </Grid>
-      <Container maxWidth="xl">
-        {dailySongs
-          .sort((a, b) => b.rating - a.rating)
-          .slice((page - 1) * SONG_PAGE_SIZE, page * SONG_PAGE_SIZE)
-          .map((m: SongModel, i: number) => (
-            <SongCard
-              key={i}
-              song={m}
-              allSongsRated={allSongsRated}
-              setSelectedSong={setSongToRate}
-              setRatingAnchor={setRatingPopoverAnchor}
-              userInfo={props.userInfo}
-              refreshSongs={getSongs}
-              setEditSongDialogOpen={setSongDialogOpen}
-            />
-          ))}
-        <Box sx={{ display: "flex", mt: "20px", alignItems: "center" }}>
-          <Pagination
-            sx={{ ml: "auto" }}
-            count={Math.ceil(dailySongs?.length / SONG_PAGE_SIZE)}
-            color="secondary"
-            page={page}
-            onChange={handlePageChange}
-          />
+      <Container sx={{maxHeight: "700px", overflowY: "auto"}} maxWidth="xl">
+          {dailySongs
+            .sort((a, b) => b.rating - a.rating)
+            .map((m: SongModel, i: number) => (
+              <SongCard
+                key={i}
+                song={m}
+                allSongsRated={allSongsRated}
+                setSelectedSong={setSongToRate}
+                setRatingAnchor={setRatingPopoverAnchor}
+                userInfo={props.userInfo}
+                refreshSongs={getSongs}
+                setEditSongDialogOpen={setSongDialogOpen}
+                ranking={getSongRanking(m)}
+              />
+            ))}
+        <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
           <Tooltip
             title={
               formattedDate !== format(new Date(), "yyyy-MM-dd")
@@ -190,7 +184,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
               <Fab
                 onClick={() => setSongDialogOpen(true)}
                 color="primary"
-                size="small"
+                size="medium"
                 disabled={
                   formattedDate !== format(new Date(), "yyyy-MM-dd") ||
                   dailySongs

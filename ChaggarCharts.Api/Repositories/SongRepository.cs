@@ -36,6 +36,7 @@ namespace ChaggarCharts.Api.Repositories
                     .Include(i => i.Genre)
                     .Include(i => i.User)
                     .Include(i => i.Likes)
+                    .ThenInclude(i => i.User)
                     .Where(w => w.Submitteddate == submitDate)
                     .Select(s => _mapper.Map<SongModel>(s));
         }

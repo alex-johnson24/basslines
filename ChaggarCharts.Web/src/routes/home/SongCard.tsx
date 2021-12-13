@@ -9,11 +9,16 @@ import {
   Chip,
   Tooltip,
   Link,
+  Box,
+  Stack,
+  Badge,
+  styled,
 } from "@mui/material";
 import * as React from "react";
 import { LikesApi, SongModel, UserModel, UserRole } from "../../data/src";
 import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
 
@@ -25,7 +30,14 @@ interface ISongCardProps {
   userInfo: UserModel;
   refreshSongs: () => void;
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  ranking?: "first" | "second" | "third";
 }
+
+const SmallAvatar = styled(Avatar)(({ theme }) => ({
+  width: 22,
+  height: 22,
+  border: `2px solid ${theme.palette.background.paper}`,
+}));
 
 const SongCard = (props: ISongCardProps) => {
   const theme = useTheme();
@@ -41,9 +53,14 @@ const SongCard = (props: ISongCardProps) => {
 
   const saveLike = async () => {
     try {
-      await call(LikesApi).likesPost({
-        likeModel: { userId: props.userInfo.id, songId: props.song.id },
-      });
+      props.song.likes?.map((m) => m.userId).indexOf(props.userInfo.id) > -1
+        ? await call(LikesApi).likesDelete({
+            userId: props.userInfo.id,
+            songId: props.song.id,
+          })
+        : await call(LikesApi).likesPost({
+            likeModel: { userId: props.userInfo.id, songId: props.song.id },
+          });
       props.refreshSongs();
     } catch (err) {
       console.log(err);
@@ -65,16 +82,23 @@ const SongCard = (props: ISongCardProps) => {
           xs={2}
           md={1}
         >
-          <Avatar
-            sx={{
-              bgcolor: "secondary.main",
-              color: "primary.main",
-            }}
+          <Badge
+            overlap="rectangular"
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            badgeContent={<SmallAvatar src={`${props.ranking}.svg`} />}
+            invisible={!props.ranking}
           >
-            {props.allSongsRated
-              ? `${firstName.split("")[0]}${lastName.split("")[0]}`
-              : "??"}
-          </Avatar>
+            <Avatar
+              sx={{
+                bgcolor: "secondary.main",
+                color: "primary.main",
+              }}
+            >
+              {props.allSongsRated
+                ? `${firstName.split("")[0]}${lastName.split("")[0]}`
+                : "??"}
+            </Avatar>
+          </Badge>
         </Grid>
         <Grid container alignItems="center" item xs={5} md={4}>
           <Grid container alignItems="center" item xs={12}>
@@ -157,13 +181,48 @@ const SongCard = (props: ISongCardProps) => {
         <Grid
           container
           alignItems="center"
-          justifyContent="space-evenly"
+          justifyContent="space-between"
           item
-          xs={3}
-          md={2}
+          xs={2}
+          md={1}
         >
+          <Stack>
+            <Box>
+              <IconButton onClick={saveLike} disabled={isUserSong} size="small">
+                {props.song.likes
+                  .map((m) => m.userId)
+                  .indexOf(props.userInfo.id) > -1 ? (
+                  <ThumbDownIcon />
+                ) : (
+                  <ThumbUpIcon />
+                )}
+              </IconButton>
+            </Box>
+            <Tooltip
+              title={
+                props.song.likes?.length > 0 ? (
+                  <span style={{ whiteSpace: "pre-line" }}>
+                    {props.song.likes?.map(
+                      (m) => `${m.user?.firstName} ${m.user?.lastName}\n`
+                    )}
+                  </span>
+                ) : (
+                  ""
+                )
+              }
+            >
+              <Typography
+                textAlign="center"
+                variant="subtitle2"
+                color="secondary"
+              >
+                {props.song.likes?.length || 0}
+              </Typography>
+            </Tooltip>
+          </Stack>
           {isUserSong && (
             <IconButton
+              sx={{ marginRight: "20px" }}
               disabled={songIsRated || !isCurrentSubmissionDate}
               size="small"
               onClick={() => props.setEditSongDialogOpen(true)}
@@ -171,25 +230,6 @@ const SongCard = (props: ISongCardProps) => {
               <EditIcon />
             </IconButton>
           )}
-          {!isUserSong && (
-            <IconButton
-              onClick={saveLike}
-              disabled={
-                props.song.likes
-                  .map((m) => m.userId)
-                  .indexOf(props.userInfo.id) > -1
-              }
-              size="small"
-            >
-              <ThumbUpIcon />
-            </IconButton>
-          )}
-          <Chip
-            size={isSmallScreen ? "small" : "medium"}
-            color="secondary"
-            label={props.song.likes?.length || 0}
-            variant="outlined"
-          />
         </Grid>
       </Grid>
     </Paper>

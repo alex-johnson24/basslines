@@ -9,5 +9,6 @@ namespace ChaggarCharts.Api.ViewModels
         public Guid? SongId { get; set; }
         [Required]
         public Guid? UserId { get; set; }
+        public UserModel User { get; set; }
     }
 }

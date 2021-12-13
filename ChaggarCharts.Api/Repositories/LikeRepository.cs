@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.Models;
 using ChaggarCharts.Api.ViewModels;
@@ -20,6 +22,14 @@ namespace ChaggarCharts.Api.Repositories
                 Userid = model.UserId
             });
 
+            return _ctx.SaveChanges() > 0;
+        }
+
+        public bool RemoveLike(Guid userId, Guid songId)
+        {
+            var toDelete = _ctx.Set<Like>().Where(w => w.Songid == songId && w.Userid == userId).FirstOrDefault();
+            if (toDelete == null) return false;
+            _ctx.Set<Like>().Remove(toDelete);
             return _ctx.SaveChanges() > 0;
         }
     }

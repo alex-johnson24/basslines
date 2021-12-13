@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    UserModel,
+    UserModelFromJSON,
+    UserModelFromJSONTyped,
+    UserModelToJSON,
+} from './';
+
 /**
  * 
  * @export
@@ -31,6 +38,12 @@ export interface LikeModel {
      * @memberof LikeModel
      */
     userId: string;
+    /**
+     * 
+     * @type {UserModel}
+     * @memberof LikeModel
+     */
+    user?: UserModel;
 }
 
 export function LikeModelFromJSON(json: any): LikeModel {
@@ -45,6 +58,7 @@ export function LikeModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         
         'songId': json['songId'],
         'userId': json['userId'],
+        'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
     };
 }
 
@@ -59,6 +73,7 @@ export function LikeModelToJSON(value?: LikeModel | null): any {
         
         'songId': value.songId,
         'userId': value.userId,
+        'user': UserModelToJSON(value.user),
     };
 }
 

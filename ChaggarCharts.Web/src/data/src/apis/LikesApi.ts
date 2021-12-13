@@ -20,6 +20,11 @@ import {
     LikeModelToJSON,
 } from '../models';
 
+export interface LikesDeleteRequest {
+    userId?: string | null;
+    songId?: string | null;
+}
+
 export interface LikesPostRequest {
     likeModel?: LikeModel;
 }
@@ -28,6 +33,37 @@ export interface LikesPostRequest {
  * 
  */
 export class LikesApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async likesDeleteRaw(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.userId !== undefined) {
+            queryParameters['userId'] = requestParameters.userId;
+        }
+
+        if (requestParameters.songId !== undefined) {
+            queryParameters['songId'] = requestParameters.songId;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Likes`,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async likesDelete(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.likesDeleteRaw(requestParameters, initOverrides);
+    }
 
     /**
      */

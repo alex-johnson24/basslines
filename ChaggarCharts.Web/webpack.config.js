@@ -1,5 +1,6 @@
 const TerserPlugin = require("terser-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const Package = require("./package.json");
 const path = require("path");
 const commitHash = require("child_process")
@@ -26,6 +27,7 @@ module.exports = (env, argv) => {
 
   return {
     output: {
+      hashFunction: "xxhash64",
       pathinfo: false,
       path: `${__dirname}/../ChaggarCharts.Api/wwwroot`,
     },
@@ -62,6 +64,9 @@ module.exports = (env, argv) => {
         baseUrl: argv.mode === "development" ? "/" : "/chaggarcharts/",
         template: "index.ejs",
         version: argv.mode === "development" ? devVersion : prodVersion,
+      }),
+      new CopyPlugin({
+        patterns: [{ from: "assets" }],
       }),
     ],
     entry: {

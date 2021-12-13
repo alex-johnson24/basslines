@@ -37,5 +37,24 @@ namespace ChaggarCharts.Api.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 500)]
+        public IActionResult Delete([FromQuery] Guid? userId, [FromQuery] Guid? songId)
+        {
+            if (!userId.HasValue || !songId.HasValue) return BadRequest("Check your request details");
+            try
+            {
+                if (_likesRepo.RemoveLike(userId.Value, songId.Value)) return Ok();
+                throw new Exception("No like record was removed - check the query fields");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error thrown while removing a like from the db");
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
