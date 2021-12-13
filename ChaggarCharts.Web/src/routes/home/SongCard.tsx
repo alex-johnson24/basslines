@@ -108,6 +108,8 @@ const SongCard = (props: ISongCardProps) => {
                 sx={{ color: "inherit" }}
                 href={props.song.link}
                 variant="h6"
+                target="_blank"
+                rel="noreferrer"
               >
                 {props.song.title}
               </Link>
