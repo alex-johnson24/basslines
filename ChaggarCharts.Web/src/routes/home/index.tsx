@@ -64,7 +64,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     dailySongs.filter((f) => typeof f.rating !== "number").length === 0;
 
   const getSongRanking = (song: SongModel) => {
-    if uniqueDailyRatings.filter(f => f == null).length > 0 return null;
+    if (uniqueDailyRatings.filter(f => f == null).length > 0) return null;
     if (song.rating === uniqueDailyRatings[0]) {
       return "first";
     } else if (song.rating === uniqueDailyRatings[1]) {
