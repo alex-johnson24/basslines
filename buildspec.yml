@@ -6,7 +6,7 @@ phases:
   install:
     runtime-versions:
       dotnet: latest
-      nodejs: 14
+      nodejs: 17
       
   pre_build:
     commands:
