@@ -81,6 +81,10 @@ namespace ChaggarCharts.Api.Repositories
             toUpdate.Genreid = song.Genre.Id;
             toUpdate.Link = song.Link;
 
+            var likes = _ctx.Set<Like>().Where(w => w.Songid == song.Id);
+
+            _ctx.RemoveRange(likes);
+
             _ctx.Songs.Attach(toUpdate);
 
             _ctx.Entry(toUpdate).State = EntityState.Modified;

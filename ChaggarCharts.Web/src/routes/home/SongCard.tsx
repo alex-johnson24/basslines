@@ -191,13 +191,17 @@ const SongCard = (props: ISongCardProps) => {
           <Stack>
             <Box>
               <IconButton onClick={saveLike} disabled={isUserSong} size="small">
-                {props.song.likes
-                  .map((m) => m.userId)
-                  .indexOf(props.userInfo.id) > -1 ? (
-                  <ThumbDownIcon />
-                ) : (
-                  <ThumbUpIcon />
-                )}
+                <ThumbUpIcon
+                  sx={{
+                    color: isUserSong
+                      ? "disabled"
+                      : props.song.likes
+                          .map((m) => m.userId)
+                          .indexOf(props.userInfo.id) > -1
+                      ? "secondary.main"
+                      : "",
+                  }}
+                />
               </IconButton>
             </Box>
             <Tooltip
@@ -216,7 +220,7 @@ const SongCard = (props: ISongCardProps) => {
               <Typography
                 textAlign="center"
                 variant="subtitle2"
-                color="secondary"
+                color="primary"
               >
                 {props.song.likes?.length || 0}
               </Typography>

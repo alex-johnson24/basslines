@@ -34,6 +34,20 @@ const useStyles = makeStyles(() => {
       display: "flex",
       alignItems: "center",
     },
+    holidayBow: {
+      height: "250px",
+      position: "fixed",
+      bottom: 0,
+      right: "-177px",
+      zIndex: -999999,
+      transform: "rotate(-40deg)",
+    },
+    ornaments: {
+      height: "200px",
+      position: "fixed",
+      top: "143px",
+      zIndex: -999999,
+    },
   };
 });
 
@@ -56,7 +70,9 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
 
-  const uniqueDailyRatings = [...new Set(dailySongs.map(m => m.rating))].sort((a,b) => b-a);
+  const uniqueDailyRatings = [...new Set(dailySongs.map((m) => m.rating))].sort(
+    (a, b) => b - a
+  );
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
@@ -72,7 +88,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     } else if (song.rating === uniqueDailyRatings[2]) {
       return "third";
     } else return null;
-  }
+  };
 
   const { mutateAsync: getSongs, status: songsStatus } = useMutation(
     async () => {
@@ -119,6 +135,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   return (
     <>
+      <img className={classes.holidayBow} src="red-ribbon.png" />
+      <img className={classes.ornaments} src="ornaments.png" />
       <RatingPopover
         anchorEl={ratingPopoverAnchor}
         handleClose={closeRatingPopover}
@@ -157,22 +175,22 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           </Typography>
         </Grid>
       </Grid>
-      <Container sx={{maxHeight: "700px", overflowY: "auto"}} maxWidth="xl">
-          {dailySongs
-            .sort((a, b) => b.rating - a.rating)
-            .map((m: SongModel, i: number) => (
-              <SongCard
-                key={i}
-                song={m}
-                allSongsRated={allSongsRated}
-                setSelectedSong={setSongToRate}
-                setRatingAnchor={setRatingPopoverAnchor}
-                userInfo={props.userInfo}
-                refreshSongs={getSongs}
-                setEditSongDialogOpen={setSongDialogOpen}
-                ranking={getSongRanking(m)}
-              />
-            ))}
+      <Container sx={{ maxHeight: "700px", overflowY: "auto" }} maxWidth="xl">
+        {dailySongs
+          .sort((a, b) => b.rating - a.rating)
+          .map((m: SongModel, i: number) => (
+            <SongCard
+              key={i}
+              song={m}
+              allSongsRated={allSongsRated}
+              setSelectedSong={setSongToRate}
+              setRatingAnchor={setRatingPopoverAnchor}
+              userInfo={props.userInfo}
+              refreshSongs={getSongs}
+              setEditSongDialogOpen={setSongDialogOpen}
+              ranking={getSongRanking(m)}
+            />
+          ))}
         <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
           <Tooltip
             title={
