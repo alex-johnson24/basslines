@@ -34,20 +34,6 @@ const useStyles = makeStyles(() => {
       display: "flex",
       alignItems: "center",
     },
-    holidayBow: {
-      height: "250px",
-      position: "fixed",
-      bottom: 0,
-      right: "-177px",
-      zIndex: -999999,
-      transform: "rotate(-40deg)",
-    },
-    ornaments: {
-      height: "200px",
-      position: "fixed",
-      top: "143px",
-      zIndex: -999999,
-    },
   };
 });
 
@@ -80,7 +66,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     dailySongs.filter((f) => typeof f.rating !== "number").length === 0;
 
   const getSongRanking = (song: SongModel) => {
-    if (uniqueDailyRatings.filter(f => f == null).length > 0) return null;
+    if (uniqueDailyRatings.filter((f) => f == null).length > 0) return null;
     if (song.rating === uniqueDailyRatings[0]) {
       return "first";
     } else if (song.rating === uniqueDailyRatings[1]) {
@@ -135,8 +121,6 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   return (
     <>
-      <img className={classes.holidayBow} src="red-ribbon.png" />
-      <img className={classes.ornaments} src="ornaments.png" />
       <RatingPopover
         anchorEl={ratingPopoverAnchor}
         handleClose={closeRatingPopover}
