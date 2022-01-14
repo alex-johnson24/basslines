@@ -4,6 +4,7 @@ import MiniDrawer from "../toolbar";
 import Login from "./login/index";
 import HomeDashboard from "./home";
 import Songs from "./songs";
+import Leaderboard from "./leaderboard";
 import MyCharts from "./mycharts";
 import { useUserDispatch, useUserState } from "../contexts";
 import jwt_decode from "jwt-decode";
@@ -48,6 +49,7 @@ export default function Root(props: IRootProps) {
               />
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />
+              <Route path="/leaderboard" component={Leaderboard} />
             </>
           }
         />

@@ -55,5 +55,10 @@ namespace ChaggarCharts.Api.Repositories
 
             return _ctx.SaveChanges() > 0;
         }
+
+        public List<User> GetLeaderboardUsers()
+        {
+            return _ctx.Users.Include(i => i.Songs).ThenInclude(i => i.Genre).Include(i => i.Likes).ToList();
+        }
     }
 }

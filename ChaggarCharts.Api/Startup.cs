@@ -78,6 +78,7 @@ namespace ChaggarCharts
             services.AddScoped<IMetricsRepository, MetricsRepository>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<ILeaderboardService, LeaderboardService>();
 
             services.AddControllers()
             .AddJsonOptions(x =>

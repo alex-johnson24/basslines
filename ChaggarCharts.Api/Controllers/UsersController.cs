@@ -16,11 +16,13 @@ namespace ChaggarCharts.Api.Controllers
     {
         private readonly ILogger<UsersController> _logger;
         private readonly IUserService _userService;
+        private readonly ILeaderboardService _leaderboardService;
 
-        public UsersController(ILogger<UsersController> logger, IUserService userService)
+        public UsersController(ILogger<UsersController> logger, IUserService userService, ILeaderboardService leaderboardService)
         {
             _logger = logger;
             _userService = userService;
+            _leaderboardService = leaderboardService;
         }
 
         [Route("AllUsers")]
@@ -160,6 +162,24 @@ namespace ChaggarCharts.Api.Controllers
             if (result) return Ok();
 
             return Unauthorized();
+        }
+
+
+        [AllowAnonymous]
+        [Route("LeaderboardMetrics")]
+        [HttpGet]
+        public IActionResult GetLeaderboardMetrics()
+        {
+            try
+            {
+                var result = _leaderboardService.GetLeaderboardMetrics();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

@@ -240,7 +240,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
                 if (
                   item.link == "/allsongs" ||
                   item.link == "/home" ||
-                  item.link == "/mycharts"
+                  item.link == "/mycharts" ||
+                  item.link == "/leaderboard"
                 ) {
                   history.push(item.link);
                 }
