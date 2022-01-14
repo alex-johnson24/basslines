@@ -110,6 +110,29 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
+    async usersLeaderboardMetricsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/Users/LeaderboardMetrics`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async usersLeaderboardMetricsGet(initOverrides?: RequestInit): Promise<void> {
+        await this.usersLeaderboardMetricsGetRaw(initOverrides);
+    }
+
+    /**
+     */
     async usersLogoutGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 

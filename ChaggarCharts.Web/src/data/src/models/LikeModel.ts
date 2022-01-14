@@ -18,7 +18,7 @@ import {
     UserModelFromJSON,
     UserModelFromJSONTyped,
     UserModelToJSON,
-} from './';
+} from './UserModel';
 
 /**
  * 

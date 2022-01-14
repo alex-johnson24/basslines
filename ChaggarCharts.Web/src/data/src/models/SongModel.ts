@@ -18,15 +18,19 @@ import {
     GenreModelFromJSON,
     GenreModelFromJSONTyped,
     GenreModelToJSON,
+} from './GenreModel';
+import {
     LikeModel,
     LikeModelFromJSON,
     LikeModelFromJSONTyped,
     LikeModelToJSON,
+} from './LikeModel';
+import {
     UserModel,
     UserModelFromJSON,
     UserModelFromJSONTyped,
     UserModelToJSON,
-} from './';
+} from './UserModel';
 
 /**
  * 

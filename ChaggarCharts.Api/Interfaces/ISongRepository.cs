@@ -13,5 +13,7 @@ namespace ChaggarCharts.Api.Interfaces
         SongModel SubmitSong(SongModel song);
         SongModel UpdateSong(SongModel song);
         SongModel RateSong(Guid songId, decimal rating);
+
+        IEnumerable<UserDailyWinsModel> GetUserDailyWins();
     }
 }

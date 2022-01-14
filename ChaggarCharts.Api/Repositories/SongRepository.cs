@@ -106,5 +106,19 @@ namespace ChaggarCharts.Api.Repositories
 
             return _mapper.Map<SongModel>(toUpdate);
         }
+
+        public IEnumerable<UserDailyWinsModel> GetUserDailyWins()
+        {
+            return _ctx.Songs
+                .AsEnumerable()
+                .GroupBy(x => x.Submitteddate)
+                .SelectMany(g => g.Where(p => p.Rating == g.Max(h => h.Rating)))
+                .GroupBy(u => u.Userid,
+                (key, g) => new UserDailyWinsModel
+                {
+                    UserID = key,
+                    Wins = g.Count()
+                });
+        }
     }
 }
