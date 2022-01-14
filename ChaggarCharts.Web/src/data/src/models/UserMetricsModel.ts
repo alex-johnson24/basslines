@@ -18,15 +18,19 @@ import {
     ArtistCountModelFromJSON,
     ArtistCountModelFromJSONTyped,
     ArtistCountModelToJSON,
+} from './ArtistCountModel';
+import {
     DailyRatingModel,
     DailyRatingModelFromJSON,
     DailyRatingModelFromJSONTyped,
     DailyRatingModelToJSON,
+} from './DailyRatingModel';
+import {
     GenreCountModel,
     GenreCountModelFromJSON,
     GenreCountModelFromJSONTyped,
     GenreCountModelToJSON,
-} from './';
+} from './GenreCountModel';
 
 /**
  * 

@@ -70,7 +70,7 @@ namespace ChaggarCharts.Api.Services
         //fix this
         public static void setDailyWins(this User usr, UserLeaderboardModel ldr, IEnumerable<UserDailyWinsModel> userWinCounts)
         {
-            ldr.DaysWon = userWinCounts.FirstOrDefault(s => s.userID == usr.Id)?.Wins ?? 0;
+            ldr.DaysWon = userWinCounts.FirstOrDefault(s => s.UserID == usr.Id)?.Wins ?? 0;
         }
         //fix this
         public static void setMostLikedSong(this User usr, UserLeaderboardModel ldr)
