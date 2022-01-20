@@ -79,13 +79,20 @@ const Songs = () => {
       },
     },
     {
-        field: "submitteddate",
-        headerName: "Date",
-        flex: 0.5,
-        renderCell: (params) => {
-          return <span>{format(params.getValue(params.id, "submitteddate") as Date, "MM/dd/yyyy")}</span>;
-        },
+      field: "submitteddate",
+      headerName: "Date",
+      flex: 0.5,
+      renderCell: (params) => {
+        return (
+          <span>
+            {format(
+              params.getValue(params.id, "submitteddate") as Date,
+              "MM/dd/yyyy"
+            )}
+          </span>
+        );
       },
+    },
     {
       field: "rating",
       headerName: "Rating",

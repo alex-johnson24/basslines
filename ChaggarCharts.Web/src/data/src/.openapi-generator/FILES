@@ -14,6 +14,7 @@ models/ModelValidationState.ts
 models/RegistrationModel.ts
 models/ResetPasswordModel.ts
 models/SongModel.ts
+models/UserLeaderboardModel.ts
 models/UserMetricsModel.ts
 models/UserModel.ts
 models/UserRole.ts

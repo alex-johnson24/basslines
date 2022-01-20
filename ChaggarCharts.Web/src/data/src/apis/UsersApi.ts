@@ -24,6 +24,9 @@ import {
     ResetPasswordModel,
     ResetPasswordModelFromJSON,
     ResetPasswordModelToJSON,
+    UserLeaderboardModel,
+    UserLeaderboardModelFromJSON,
+    UserLeaderboardModelToJSON,
     UserMetricsModel,
     UserMetricsModelFromJSON,
     UserMetricsModelToJSON,
@@ -110,7 +113,7 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersLeaderboardMetricsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async usersLeaderboardMetricsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserLeaderboardModel>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -122,13 +125,14 @@ export class UsersApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserLeaderboardModelFromJSON));
     }
 
     /**
      */
-    async usersLeaderboardMetricsGet(initOverrides?: RequestInit): Promise<void> {
-        await this.usersLeaderboardMetricsGetRaw(initOverrides);
+    async usersLeaderboardMetricsGet(initOverrides?: RequestInit): Promise<Array<UserLeaderboardModel>> {
+        const response = await this.usersLeaderboardMetricsGetRaw(initOverrides);
+        return await response.value();
     }
 
     /**

@@ -164,8 +164,10 @@ namespace ChaggarCharts.Api.Controllers
             return Unauthorized();
         }
 
-        [Route("LeaderboardMetrics")]
         [HttpGet]
+        [Route("LeaderboardMetrics")]
+        [ProducesResponseType(typeof(List<UserLeaderboardModel>), 200)]
+        [ProducesResponseType(typeof(string), 500)]
         public IActionResult GetLeaderboardMetrics()
         {
             try

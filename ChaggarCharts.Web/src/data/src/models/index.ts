@@ -10,6 +10,7 @@ export * from './ModelValidationState';
 export * from './RegistrationModel';
 export * from './ResetPasswordModel';
 export * from './SongModel';
+export * from './UserLeaderboardModel';
 export * from './UserMetricsModel';
 export * from './UserModel';
 export * from './UserRole';
