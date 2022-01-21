@@ -35,6 +35,27 @@ const OrderedLeaderboardCard = (props: IProps) => {
 
   itemToBeRanked.includes("lowest") && clonedUsers.reverse();
 
+  const getTrophy = (user: UserLeaderboardModel) => {
+    let uniqueRatings = [...new Set(clonedUsers.map((u) => u[itemToBeRanked]))];
+    if (user[itemToBeRanked] === uniqueRatings[0]) return "first";
+    else if (user[itemToBeRanked] === uniqueRatings[1]) return "second";
+    else if (user[itemToBeRanked] === uniqueRatings[2]) return "third";
+    else return undefined;
+  };
+
+  const displayRank = (user: UserLeaderboardModel, index: number) => {
+    let rank = getTrophy(user);
+    return (
+      <>
+        {rank ? (
+          <img src={`${rank}.svg`} height="20px" width="20px" />
+        ) : (
+          `${index + 1}.`
+        )}
+      </>
+    );
+  };
+
   return (
     <Paper
       variant="outlined"
@@ -64,21 +85,17 @@ const OrderedLeaderboardCard = (props: IProps) => {
       <div style={{ padding: "10px 10px 4px 10px" }}>
         <Collapse in={expanded} collapsedSize="160px">
           {clonedUsers.map((user, index) => {
-            let rank =
-              index === 0
-                ? "first"
-                : index === 1
-                ? "second"
-                : index === 2
-                ? "third"
-                : undefined;
             return (
               <Grid container sx={{ paddingBottom: "8px" }}>
-                <Grid item xs={1}>
-                  {`${index + 1}.`}
-                  {!!rank && (
-                    <img src={`${rank}.svg`} height="20px" width="20px" />
-                  )}
+                <Grid
+                  item
+                  xs={1}
+                  sx={{
+                    textAlign: "right",
+                    paddingRight: "12px",
+                  }}
+                >
+                  {displayRank(user, index)}
                 </Grid>
                 <Grid item xs={5}>
                   {user.name}:
