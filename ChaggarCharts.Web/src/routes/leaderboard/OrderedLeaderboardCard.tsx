@@ -7,13 +7,13 @@ import makeStyles from "@mui/styles/makeStyles";
 
 interface IProps {
   itemToBeRanked: keyof UserLeaderboardModel;
-  rating?: keyof UserLeaderboardModel;
+  nameOfItem?: keyof UserLeaderboardModel;
   title: string;
   users: UserLeaderboardModel[];
 }
 
 const OrderedLeaderboardCard = (props: IProps) => {
-  const { itemToBeRanked, title, users, rating } = props;
+  const { itemToBeRanked, title, users, nameOfItem } = props;
   const [expanded, setExpanded] = React.useState(false);
   const classes = useStyles();
 
@@ -24,9 +24,9 @@ const OrderedLeaderboardCard = (props: IProps) => {
   const clonedUsers = [...users];
 
   clonedUsers.sort((l, r) => {
-    if (l[rating] > r[rating]) {
+    if (l[itemToBeRanked] > r[itemToBeRanked]) {
       return -1;
-    } else if (l[rating] < r[rating]) {
+    } else if (l[itemToBeRanked] < r[itemToBeRanked]) {
       return 1;
     } else {
       return 0;
@@ -84,10 +84,10 @@ const OrderedLeaderboardCard = (props: IProps) => {
                   {user.name}:
                 </Grid>
                 <Grid item xs={5} className={classes.overflowGrid}>
-                  {user[itemToBeRanked] ?? "--"}
+                  {user[nameOfItem]}
                 </Grid>
                 <Grid item xs={1}>
-                  {user[rating]}
+                  {user[itemToBeRanked]}
                 </Grid>
               </Grid>
             );

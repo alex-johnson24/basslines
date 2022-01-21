@@ -2,18 +2,12 @@ import * as React from "react";
 import { useMutation } from "react-query";
 import { UsersApi, UserLeaderboardModel } from "../../data/src";
 import { call } from "../../data/callWrapper";
-import NumericLeaderboardCard from "./NumericLeaderboardCard";
 import OrderedLeaderboardCard from "./OrderedLeaderboardCard";
 import { Grid } from "@mui/material";
 
-interface itemsTypes {
-  itemToBeRanked: keyof UserLeaderboardModel;
-  title: string;
-}
-
 interface rankedItemTypes {
   itemToBeRanked: keyof UserLeaderboardModel;
-  ranking?: keyof UserLeaderboardModel;
+  nameOfItem?: keyof UserLeaderboardModel;
   title: string;
 }
 
@@ -22,7 +16,7 @@ const Leaderboard = () => {
     UserLeaderboardModel[]
   >([]);
 
-  var items: itemsTypes[] = [
+  var rankedItems: rankedItemTypes[] = [
     { itemToBeRanked: "average", title: "Highest Average Users" },
     { itemToBeRanked: "daysWon", title: "Most Days Won" },
     { itemToBeRanked: "numberOfLikes", title: "Users' Total Likes Received" },
@@ -35,22 +29,19 @@ const Leaderboard = () => {
       title: "Number of Total Submissions",
     },
     { itemToBeRanked: "uniqueGenres", title: "Number of Unique Genres" },
-  ];
-
-  var rankedItems: rankedItemTypes[] = [
     {
-      itemToBeRanked: "highestRatedSong",
-      ranking: "highestRating",
+      itemToBeRanked: "highestRating",
+      nameOfItem: "highestRatedSong",
       title: "Users' Highest Rated Song",
     },
     {
-      itemToBeRanked: "lowestRatedSong",
-      ranking: "lowestRating",
+      itemToBeRanked: "lowestRating",
+      nameOfItem: "lowestRatedSong",
       title: "Users' Lowest Rated Song",
     },
     {
-      itemToBeRanked: "mostLikedSong",
-      ranking: "likesOnMostLikedSong",
+      itemToBeRanked: "likesOnMostLikedSong",
+      nameOfItem: "mostLikedSong",
       title: "Users' Most Liked Song",
     },
   ];
@@ -73,20 +64,11 @@ const Leaderboard = () => {
 
   return (
     <Grid container rowSpacing={2} columnSpacing={2}>
-      {items.map((s) => (
-        <Grid item xs={12} md={6} lg={4}>
-          <NumericLeaderboardCard
-            itemToBeRanked={s.itemToBeRanked}
-            title={s.title}
-            users={leaderboardModels}
-          />
-        </Grid>
-      ))}
       {rankedItems.map((s) => (
         <Grid item xs={12} md={6} lg={4}>
           <OrderedLeaderboardCard
             itemToBeRanked={s.itemToBeRanked}
-            rating={s.ranking}
+            nameOfItem={s.nameOfItem}
             title={s.title}
             users={leaderboardModels}
           />

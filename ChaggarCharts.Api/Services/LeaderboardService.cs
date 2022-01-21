@@ -25,7 +25,7 @@ namespace ChaggarCharts.Api.Services
         }
         public static void setHighestRatedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.HighestRatedSong = usr.Songs.Select(s => new
+            ldr.HighestRatedSong = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 SongName = s.Title,
                 Rating = s.Rating
@@ -35,7 +35,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setHighestRating(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.HighestRating = usr.Songs.Select(s => new
+            ldr.HighestRating = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating)
@@ -44,7 +44,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setLowestRatedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LowestRatedSong = usr.Songs.Select(s => new
+            ldr.LowestRatedSong = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 SongName = s.Title,
                 Rating = s.Rating
@@ -53,7 +53,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setLowestRating(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LowestRating = usr.Songs.Select(s => new
+            ldr.LowestRating = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating).LastOrDefault()?.Rating;
