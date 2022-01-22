@@ -159,7 +159,10 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           </Typography>
         </Grid>
       </Grid>
-      <Container sx={{ maxHeight: "700px", overflowY: "auto" }} maxWidth="xl">
+      <Container
+        sx={{ height: "calc(100vh - 228px)", overflowY: "auto" }}
+        maxWidth="xl"
+      >
         {dailySongs
           .sort((a, b) => b.rating - a.rating)
           .map((m: SongModel, i: number) => (

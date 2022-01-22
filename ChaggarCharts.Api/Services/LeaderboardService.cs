@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using System;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.ViewModels;
-using AutoMapper;
 using ChaggarCharts.Api.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,20 +19,13 @@ namespace ChaggarCharts.Api.Services
             ldr.Average = Math.Round(usr.Songs.Select(s => s.Rating).Average() ?? 0, 2);
         }
 
-        public static void setFavGenre(this User usr, UserLeaderboardModel ldr)
+        public static void setUniqueGenres(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.FavGenre = usr.Songs.GroupBy(x => x.Genre.Name)
-                                               .Select(s => new
-                                               {
-                                                   GenreName = s.Key,
-                                                   Count = s.Count()
-                                               }).OrderByDescending(x => x.Count)
-                                               .FirstOrDefault()?.GenreName;
+            ldr.UniqueGenres = usr.Songs.Select(s => s.Genre).Distinct().Count();
         }
-
         public static void setHighestRatedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.HighestRatedSong = usr.Songs.Select(s => new
+            ldr.HighestRatedSong = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 SongName = s.Title,
                 Rating = s.Rating
@@ -44,7 +35,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setHighestRating(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.HighestRating = usr.Songs.Select(s => new
+            ldr.HighestRating = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating)
@@ -53,7 +44,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setLowestRatedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LowestRatedSong = usr.Songs.Select(s => new
+            ldr.LowestRatedSong = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 SongName = s.Title,
                 Rating = s.Rating
@@ -62,7 +53,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setLowestRating(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LowestRating = usr.Songs.Select(s => new
+            ldr.LowestRating = usr.Songs.Where(s => s.Rating != null).Select(s => new
             {
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating).LastOrDefault()?.Rating;
@@ -77,7 +68,6 @@ namespace ChaggarCharts.Api.Services
         {
             ldr.MostLikedSong = usr.Songs.Select(s => new
             {
-                Date = s.Submitteddate,
                 SongName = s.Title,
                 Likes = s.Likes
             }).OrderByDescending(x => x.Likes.Count)
@@ -97,6 +87,15 @@ namespace ChaggarCharts.Api.Services
         public static void setSubmissionsCount(this User usr, UserLeaderboardModel ldr)
         {
             ldr.SubmissionsCount = usr.Songs.Count;
+        }
+
+        public static void setLikesOnMostLikedSong(this User usr, UserLeaderboardModel ldr)
+        {
+            ldr.LikesOnMostLikedSong = usr.Songs.Select(s => new
+            {
+                Likes = s.Likes.Count
+            }).OrderByDescending(o => o.Likes)
+            .FirstOrDefault()?.Likes;
         }
     }
 
@@ -120,7 +119,6 @@ namespace ChaggarCharts.Api.Services
                 var ldr = new UserLeaderboardModel();
                 s.setName(ldr);
                 s.setAverage(ldr);
-                s.setFavGenre(ldr);
                 s.setHighestRatedSong(ldr);
                 s.setHighestRating(ldr);
                 s.setLowestRatedSong(ldr);
@@ -130,6 +128,8 @@ namespace ChaggarCharts.Api.Services
                 s.setNumberOfLikes(ldr);
                 s.setSongsAdded(ldr);
                 s.setSubmissionsCount(ldr);
+                s.setLikesOnMostLikedSong(ldr);
+                s.setUniqueGenres(ldr);
 
                 return ldr;
             });
