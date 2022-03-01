@@ -47,7 +47,7 @@ namespace ChaggarCharts.Api.Repositories
                 .AsNoTracking()
                 .Include(i => i.Genre)
                 .Include(i => i.User)
-                .Where(w => (w.Title.ToLower() + w.Artist.ToLower()).Contains(search))
+                .Where(w => (w.Title.ToLower() + w.Artist.ToLower()).Contains(search) && w.Rating.HasValue)
                 .Select(s => _mapper.Map<SongModel>(s));
         }
 
