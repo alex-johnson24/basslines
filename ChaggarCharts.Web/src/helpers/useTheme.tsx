@@ -4,6 +4,9 @@ import {
   createTheme,
   responsiveFontSizes,
 } from "@mui/material/styles";
+import { ColorModeContext } from "../contexts/colorModeContext";
+import { ThemeProvider } from "@mui/material/styles";
+
 
 const useTheme = () => {
     const [mode, setMode] = React.useState<'palette' | 'cyberPalette'>(localStorage.getItem('theme') === 'cyberPalette' ? 'cyberPalette' : 'palette');
@@ -32,4 +35,16 @@ const useTheme = () => {
     return({colorMode, curTheme});
 }
 
-export default useTheme;
+const ColorModeWithProvider = ({children}: {children: JSX.Element}) => {
+  const {colorMode, curTheme} = useTheme();
+
+  return(
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={curTheme}>
+        {children}
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  );
+}
+
+export default ColorModeWithProvider;

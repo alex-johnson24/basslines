@@ -10,10 +10,9 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { UserProvider } from "./contexts";
 import Root from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { ColorModeContext } from "./contexts/colorModeContext";
-import useTheme from "./helpers/useTheme";
+import ColorModeWithProvider from "./helpers/useTheme";
+
 
 declare global {
   interface Window {
@@ -34,7 +33,6 @@ interface AppProps {
 
 const App = (props: AppProps) => {
     
-  const {colorMode, curTheme} = useTheme();
 
   const queryClient = new QueryClient();
 
@@ -42,12 +40,12 @@ const App = (props: AppProps) => {
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <ColorModeContext.Provider value={colorMode}>
-              <ThemeProvider theme={curTheme}>
-                <CssBaseline />
-                <Root basepath={props.basename} />
-            </ThemeProvider>
-          </ColorModeContext.Provider>
+          <ColorModeWithProvider>
+            <>
+              <CssBaseline />
+              <Root basepath={props.basename} />
+            </>
+          </ColorModeWithProvider>
         </LocalizationProvider>
       </UserProvider>
     </QueryClientProvider>
