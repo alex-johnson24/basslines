@@ -58,12 +58,14 @@ const renderTooltip = ({ active, payload, label }) => {
 };
 
 const renderPieTooltip = ({ active, payload, label }) => {
+    const theme = useTheme();
+
   return (
     payload?.length > 0 && (
       <Paper sx={{ padding: "10px" }}>
         <Typography
           variant="h6"
-          color="primary"
+          color={theme.palette.text.primary}
         >{`${payload[0].payload.artist}:`}</Typography>{" "}
         <span>
           <Typography color="secondary" variant="h6">
