@@ -11,7 +11,7 @@ const useTheme = () => {
         () => ({
             toggleColorMode: () => {
                 setMode((prevMode) => (prevMode === 'palette' ? 'cyberPalette' : 'palette'));
-            }, theme: mode
+            }, curTheme: mode
         }),
         [mode],
     );
@@ -20,7 +20,7 @@ const useTheme = () => {
       localStorage.setItem('theme', mode);
     }, [mode]);
     
-    const theme = React.useMemo(
+    const curTheme = React.useMemo(
       () => responsiveFontSizes(
         createTheme({
           palette: themeConfig[mode],
@@ -29,7 +29,7 @@ const useTheme = () => {
       [mode],
     );
 
-    return({colorMode, theme});
+    return({colorMode, curTheme});
 }
 
 export default useTheme;

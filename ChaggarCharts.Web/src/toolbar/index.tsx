@@ -130,7 +130,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const colorMode = React.useContext(ColorModeContext);
+  const { toggleColorMode, curTheme} = React.useContext(ColorModeContext);
 
   const logout = async () => {
     try {
@@ -190,8 +190,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               </Typography>
             </div>
           )}
-          <Box><Typography>{colorMode.theme === 'cyberPalette' ? "Night City" : "Light City"}</Typography></Box>
-          <Switch color="secondary" checked={colorMode.theme === 'cyberPalette'} onChange={colorMode.toggleColorMode}/>
+          <Box><Typography>{curTheme === 'cyberPalette' ? "Night City" : "Light City"}</Typography></Box>
+          <Switch color="secondary" checked={curTheme === 'cyberPalette'} onChange={toggleColorMode}/>
           <Box sx={{ marginRight: "20px" }}>
             <GlobalSearch />
           </Box>

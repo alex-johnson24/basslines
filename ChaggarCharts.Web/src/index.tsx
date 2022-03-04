@@ -34,7 +34,7 @@ interface AppProps {
 
 const App = (props: AppProps) => {
     
-  const { colorMode, theme } = useTheme();
+  const {colorMode, curTheme} = useTheme();
 
   const queryClient = new QueryClient();
 
@@ -43,7 +43,7 @@ const App = (props: AppProps) => {
       <UserProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <ColorModeContext.Provider value={colorMode}>
-              <ThemeProvider theme={theme}>
+              <ThemeProvider theme={curTheme}>
                 <CssBaseline />
                 <Root basepath={props.basename} />
             </ThemeProvider>
