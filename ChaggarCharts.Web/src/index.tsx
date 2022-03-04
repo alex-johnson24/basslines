@@ -18,7 +18,6 @@ import {
 } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { ColorModeContext } from "./contexts/colorModeContext";
-import darkScrollbar from '@mui/material/darkScrollbar';
 
 declare global {
   interface Window {
