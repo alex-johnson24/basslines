@@ -7,17 +7,13 @@ import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import { themeConfig } from "../theme.config";
 import { UserProvider } from "./contexts";
 import Root from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
-import {
-  createTheme,
-  responsiveFontSizes,
-  ThemeProvider,
-} from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import { ColorModeContext } from "./contexts/colorModeContext";
+import useTheme from "./helpers/useTheme";
 
 declare global {
   interface Window {
@@ -37,28 +33,8 @@ interface AppProps {
 }
 
 const App = (props: AppProps) => {
-    const [mode, setMode] = React.useState<'palette' | 'cyberPalette'>(localStorage.getItem('theme') === 'cyberPalette' ? 'cyberPalette' : 'palette');
-    const colorMode = React.useMemo( 
-        () => ({
-            toggleColorMode: () => {
-                setMode((prevMode) => (prevMode === 'palette' ? 'cyberPalette' : 'palette'));
-            }, theme: mode
-        }),
-        [mode],
-    );
-
-    React.useEffect(() => {
-      localStorage.setItem('theme', mode);
-    }, [mode]);
     
-    const theme = React.useMemo(
-      () => responsiveFontSizes(
-        createTheme({
-          palette: themeConfig[mode],
-          typography: themeConfig.typography
-      })),
-      [mode],
-    );
+  const { colorMode, theme } = useTheme();
 
   const queryClient = new QueryClient();
 
