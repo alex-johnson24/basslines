@@ -7,16 +7,12 @@ import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import { themeConfig } from "../theme.config";
 import { UserProvider } from "./contexts";
 import Root from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
-import {
-  createTheme,
-  responsiveFontSizes,
-  ThemeProvider,
-} from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
+import ColorModeWithProvider from "./helpers/useTheme";
+
 
 declare global {
   interface Window {
@@ -28,15 +24,6 @@ declare global {
 const basename = window.__BASENAME__;
 const version = window.__APP_VERSION__;
 
-const muiPalette = themeConfig.palette;
-const muiTypography = themeConfig.typography;
-
-const theme = responsiveFontSizes(
-  createTheme({
-    palette: muiPalette,
-    typography: muiTypography,
-  })
-);
 
 interface AppProps {
   appName: string;
@@ -45,6 +32,7 @@ interface AppProps {
 }
 
 const App = (props: AppProps) => {
+    
 
   const queryClient = new QueryClient();
 
@@ -52,10 +40,12 @@ const App = (props: AppProps) => {
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Root basepath={props.basename} />
-          </ThemeProvider>
+          <ColorModeWithProvider>
+            <>
+              <CssBaseline />
+              <Root basepath={props.basename} />
+            </>
+          </ColorModeWithProvider>
         </LocalizationProvider>
       </UserProvider>
     </QueryClientProvider>

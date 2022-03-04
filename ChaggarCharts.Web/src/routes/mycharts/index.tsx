@@ -58,12 +58,14 @@ const renderTooltip = ({ active, payload, label }) => {
 };
 
 const renderPieTooltip = ({ active, payload, label }) => {
+    const theme = useTheme();
+
   return (
     payload?.length > 0 && (
       <Paper sx={{ padding: "10px" }}>
         <Typography
           variant="h6"
-          color="primary"
+          color={theme.palette.text.primary}
         >{`${payload[0].payload.artist}:`}</Typography>{" "}
         <span>
           <Typography color="secondary" variant="h6">
@@ -252,6 +254,7 @@ const MyCharts = () => {
                           y={y}
                           textAnchor={x > cx ? "start" : "end"}
                           dominantBaseline="central"
+                          fill={theme.palette.text.primary}
                         >
                           {userMetrics?.topArtists[index]?.artist}
                         </text>
@@ -285,7 +288,7 @@ const MyCharts = () => {
                     fill={theme.palette.secondary.main}
                     barSize={6}
                   >
-                    <LabelList dataKey="title" position="top" />
+                    <LabelList dataKey="title" position="top" fill={theme.palette.text.primary} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
