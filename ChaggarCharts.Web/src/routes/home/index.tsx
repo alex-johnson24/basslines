@@ -34,6 +34,20 @@ const useStyles = makeStyles(() => {
       display: "flex",
       alignItems: "center",
     },
+    scrollbar: {
+    "&::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px",
+    },
+    "&::-webkit-scrollbar-track": {
+      boxShadow: "rgba(0, 0, 0, 0.2)",
+      borderRadius: "4px"
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+      borderRadius: "4px"
+    },
+  }
   };
 });
 
@@ -145,12 +159,12 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           />
         </Grid>
         <Grid className={classes.vCenteredGrid} item xs={4}>
-          <Typography color="primary" variant="h4">
+          <Typography color="inherit" variant="h4">
             Daily Songs: {dailySongs.length}
           </Typography>
         </Grid>
         <Grid className={classes.vCenteredGrid} item xs={4}>
-          <Typography color="primary" variant="h4">
+          <Typography color="inherit" variant="h4">
             Daily Avg:{" "}
             {(
               dailySongs.reduce((a, b) => a + b.rating, 0) /
@@ -161,7 +175,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       </Grid>
       <Container
         sx={{ height: "calc(100vh - 228px)", overflowY: "auto" }}
-        maxWidth="xl"
+        maxWidth="xl" className={classes.scrollbar}
       >
         {dailySongs
           .sort((a, b) => b.rating - a.rating)

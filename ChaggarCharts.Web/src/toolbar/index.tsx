@@ -19,11 +19,12 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button, useMediaQuery } from "@mui/material";
+import { Button, Switch, useMediaQuery } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
 import GlobalSearch from "./GlobalSearch";
+import { ColorModeContext } from "../contexts/colorModeContext";
 
 const drawerWidth = 240;
 
@@ -129,6 +130,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const colorMode = React.useContext(ColorModeContext);
 
   const logout = async () => {
     try {
@@ -188,6 +190,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               </Typography>
             </div>
           )}
+          <Box><Typography>{colorMode.theme === 'cyberPalette' ? "Night City" : "Light City"}</Typography></Box>
+          <Switch color="secondary" checked={colorMode.theme === 'cyberPalette'} onChange={colorMode.toggleColorMode}/>
           <Box sx={{ marginRight: "20px" }}>
             <GlobalSearch />
           </Box>

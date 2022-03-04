@@ -252,6 +252,7 @@ const MyCharts = () => {
                           y={y}
                           textAnchor={x > cx ? "start" : "end"}
                           dominantBaseline="central"
+                          fill={theme.palette.text.primary}
                         >
                           {userMetrics?.topArtists[index]?.artist}
                         </text>
@@ -285,7 +286,7 @@ const MyCharts = () => {
                     fill={theme.palette.secondary.main}
                     barSize={6}
                   >
-                    <LabelList dataKey="title" position="top" />
+                    <LabelList dataKey="title" position="top" fill={theme.palette.text.primary} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

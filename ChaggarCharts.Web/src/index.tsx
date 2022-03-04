@@ -17,6 +17,8 @@ import {
   ThemeProvider,
 } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
+import { ColorModeContext } from "./contexts/colorModeContext";
+import darkScrollbar from '@mui/material/darkScrollbar';
 
 declare global {
   interface Window {
@@ -28,15 +30,6 @@ declare global {
 const basename = window.__BASENAME__;
 const version = window.__APP_VERSION__;
 
-const muiPalette = themeConfig.palette;
-const muiTypography = themeConfig.typography;
-
-const theme = responsiveFontSizes(
-  createTheme({
-    palette: muiPalette,
-    typography: muiTypography,
-  })
-);
 
 interface AppProps {
   appName: string;
@@ -45,6 +38,28 @@ interface AppProps {
 }
 
 const App = (props: AppProps) => {
+    const [mode, setMode] = React.useState<'palette' | 'cyberPalette'>(localStorage.getItem('theme') === 'cyberPalette' ? 'cyberPalette' : 'palette');
+    const colorMode = React.useMemo( 
+        () => ({
+            toggleColorMode: () => {
+                setMode((prevMode) => (prevMode === 'palette' ? 'cyberPalette' : 'palette'));
+            }, theme: mode
+        }),
+        [mode],
+    );
+
+    React.useEffect(() => {
+      localStorage.setItem('theme', mode);
+    }, [mode]);
+    
+    const theme = React.useMemo(
+      () => responsiveFontSizes(
+        createTheme({
+          palette: themeConfig[mode],
+          typography: themeConfig.typography
+      })),
+      [mode],
+    );
 
   const queryClient = new QueryClient();
 
@@ -52,10 +67,12 @@ const App = (props: AppProps) => {
     <QueryClientProvider client={queryClient}>
       <UserProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Root basepath={props.basename} />
-          </ThemeProvider>
+          <ColorModeContext.Provider value={colorMode}>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Root basepath={props.basename} />
+            </ThemeProvider>
+          </ColorModeContext.Provider>
         </LocalizationProvider>
       </UserProvider>
     </QueryClientProvider>
