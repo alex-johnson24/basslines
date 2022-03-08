@@ -1,6 +1,6 @@
 # ChaggarCharts
 
-React app with ASP.NET Core backend proving a platform to submit and rate songs while tracking their statistics.
+React app with ASP.NET Core backend providing a platform to submit and rate songs while tracking their statistics.
 
 ## Table of Contents
 
