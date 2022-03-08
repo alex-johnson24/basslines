@@ -37,6 +37,9 @@ Backend:
 To run this project locally in a development environment:
 
 ```
+Create database using chaggarcharts.sql script
+Load connection string into appsettings.json file and store in ChaggarCharts.API folder
+
 $ cd ChaggarCharts.API
 $ dotnet restore
 $ dotnet ChaggarCharts.API.dll
@@ -45,5 +48,4 @@ $ cd ..
 $ cd ChaggarCharts.Web
 $ yarn install
 $ yarn dev:start
-
 ```
