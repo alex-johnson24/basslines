@@ -18,23 +18,25 @@ import SignUpDialog from "./SignUpDialog";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 
+
 interface Jwt extends UserModel {
   exp: number;
 }
 
 const useStyles = makeStyles({
-    autofill: {
-      '& :-webkit-autofill': {
-        transitionDelay: '9999s'
+      autofill: {
+        '& :-webkit-autofill': {
+          boxShadow: '0 0 0 100px transparent inset !important',
+          webkitBoxShadow: '0 0 0 100px transparent inset !important',
+          '-webkit-text-fill-color': 'black !important'
+        }
       }
-    }
-});
+  });
 
 const Login = () => {
   const classes = useStyles();
   const dispatch = useUserDispatch();
   const history = useHistory();
-
   const [loginCreds, setLoginCreds] = React.useState<LoginModel>({
     username: "",
     password: "",
@@ -171,3 +173,4 @@ const Login = () => {
 };
 
 export default Login;
+
