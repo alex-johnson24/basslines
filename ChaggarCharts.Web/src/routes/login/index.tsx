@@ -16,12 +16,22 @@ import { call } from "../../data/callWrapper";
 import ResetPasswordDialog from "./ResetPasswordDialog";
 import SignUpDialog from "./SignUpDialog";
 import { useHistory } from "react-router-dom";
+import { makeStyles } from "@mui/styles";
 
 interface Jwt extends UserModel {
   exp: number;
 }
 
+const useStyles = makeStyles({
+    autofill: {
+      '& :-webkit-autofill': {
+        transitionDelay: '9999s'
+      }
+    }
+});
+
 const Login = () => {
+  const classes = useStyles();
   const dispatch = useUserDispatch();
   const history = useHistory();
 
@@ -94,6 +104,7 @@ const Login = () => {
               label="Username"
               name="username"
               autoComplete="username"
+              className={classes.autofill}
               autoFocus
               onChange={(e) =>
                 setLoginCreds({
@@ -111,6 +122,7 @@ const Login = () => {
               type="password"
               id="password"
               autoComplete="current-password"
+              className={classes.autofill}
               onChange={(e) =>
                 setLoginCreds({
                   ...loginCreds,

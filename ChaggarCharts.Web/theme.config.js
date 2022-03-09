@@ -38,9 +38,9 @@ export const themeConfig = {
             "contrastText": "#000"
         },
         "primary": {
-            "main": "#282830",
-            "light": "#505059",
-            "dark": "#000007",
+            "main": "#3e3e48",
+            "light": "#6b6b73",
+            "dark": "#212121",
             "contrastText": "#ffffff"
         }
     }
