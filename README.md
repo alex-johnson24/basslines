@@ -1,6 +1,6 @@
 # ChaggarCharts
 
-React app with ASP.NET Core backend proving a platform to submit and rate songs while tracking their statistics.
+React app with ASP.NET Core backend providing a platform to submit and rate songs while tracking their statistics.
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@ ChaggarCharts is created using:
 Frontend:
 
 - React version: 16.13.1
-- Material UI version: 15.0.0
+- Material UI version: 5.0.0
 - Recharts version: 2.1.6
 - React Router version: 5.1.2
 - React Query version: 3.24.2
@@ -37,6 +37,9 @@ Backend:
 To run this project locally in a development environment:
 
 ```
+Create database using chaggarcharts.sql script
+Load connection string into appsettings.json file and store in ChaggarCharts.API folder
+
 $ cd ChaggarCharts.API
 $ dotnet restore
 $ dotnet ChaggarCharts.API.dll
@@ -45,5 +48,4 @@ $ cd ..
 $ cd ChaggarCharts.Web
 $ yarn install
 $ yarn dev:start
-
 ```
