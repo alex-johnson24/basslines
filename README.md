@@ -21,7 +21,7 @@ ChaggarCharts is created using:
 Frontend:
 
 - React version: 16.13.1
-- Material UI version: 15.0.0
+- Material UI version: 5.0.0
 - Recharts version: 2.1.6
 - React Router version: 5.1.2
 - React Query version: 3.24.2
