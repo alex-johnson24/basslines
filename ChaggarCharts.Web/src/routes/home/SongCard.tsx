@@ -121,7 +121,7 @@ const SongCard = (props: ISongCardProps) => {
           </Grid>
           <Grid container alignItems="center" item xs={12}>
             <Typography
-              sx={{ m: 0, color: "primary.light" }}
+              sx={{ m: 0, color: "text.secondary" }}
               variant="subtitle1"
               noWrap
             >
@@ -220,7 +220,7 @@ const SongCard = (props: ISongCardProps) => {
               <Typography
                 textAlign="center"
                 variant="subtitle2"
-                color="primary"
+                color="text.secondary"
               >
                 {props.song.likes?.length || 0}
               </Typography>

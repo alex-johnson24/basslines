@@ -41,34 +41,34 @@ const SongDetailDialog = (props: IProps) => {
         <Grid container>
           <Grid container item xs={7}>
             <Grid className={classes.infoBlock} item xs={12}>
-              <Typography variant="overline">Title</Typography>
-              <Typography variant="h3" color="primary">
+              <Typography variant="overline" color="inherit">Title</Typography>
+              <Typography variant="h3" color="text.primary">
                 {props.song?.title}
               </Typography>
             </Grid>
             <Grid className={classes.infoBlock} item xs={12}>
-              <Typography variant="overline">Artist</Typography>
-              <Typography variant="h3" color="primary">
+              <Typography variant="overline" color="inherit">Artist</Typography>
+              <Typography variant="h3" color="text.primary">
                 {props.song?.artist}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="overline">Rating</Typography>
+              <Typography variant="overline" color="inherit">Rating</Typography>
               <Typography
                 variant="h3"
-                color="secondary"
+                color="secondary.main"
               >{`${props.song?.rating}/10`}</Typography>
             </Grid>
           </Grid>
           <Grid container item xs={5}>
             <Grid className={classes.infoBlock} item xs={12}>
-              <Typography variant="overline">Submitter</Typography>
+              <Typography variant="overline" color="inherit">Submitter</Typography>
               <Typography color="primary.light" variant="h4">
                 {`${props.song?.user.firstName} ${props.song?.user.lastName}`}
               </Typography>
             </Grid>
             <Grid className={classes.infoBlock} item xs={12}>
-              <Typography variant="overline">Submitted</Typography>
+              <Typography variant="overline" color="inherit">Submitted</Typography>
               <Typography color="primary.light" variant="h4">
                 {props.song
                   ? format(props.song?.submitteddate, "MM/dd/yyyy")
@@ -76,7 +76,7 @@ const SongDetailDialog = (props: IProps) => {
               </Typography>
             </Grid>
             <Grid className={classes.infoBlock} item xs={12}>
-              <Typography variant="overline">Genre</Typography>
+              <Typography variant="overline" color="inherit">Genre</Typography>
               <Typography color="primary.light" variant="h4">
                 {props.song?.genre?.name || "--"}
               </Typography>
@@ -85,7 +85,7 @@ const SongDetailDialog = (props: IProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" onClick={props.handleClose}>
+        <Button variant="outlined" color="inherit" onClick={props.handleClose}>
           Close
         </Button>
       </DialogActions>

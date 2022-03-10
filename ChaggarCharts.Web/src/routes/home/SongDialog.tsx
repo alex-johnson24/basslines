@@ -85,7 +85,7 @@ const SongDialog = (props: ISongDialogProps) => {
       fullWidth
       maxWidth="lg"
       open={props.open}
-      sx={{ minHeight: "300px" }}
+      sx={{ minHeight: "300px", color: "secondary.main" }}
     >
       <DialogTitle>Submit Daily Song</DialogTitle>
       <DialogContent>
@@ -169,8 +169,8 @@ const SongDialog = (props: ISongDialogProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose}>Cancel</Button>
-        <Button onClick={submitSong}>Submit</Button>
+        <Button onClick={props.handleClose} color="inherit">Cancel</Button>
+        <Button onClick={submitSong} color="inherit">Submit</Button>
       </DialogActions>
     </Dialog>
   );
