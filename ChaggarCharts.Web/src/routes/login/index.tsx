@@ -146,6 +146,7 @@ const Login = () => {
                 <Link
                   variant="body2"
                   sx={{ cursor: "pointer" }}
+                  color = "inherit"
                   onClick={() => {
                     setResetPasswordDialogOpen(true);
                   }}
@@ -159,6 +160,7 @@ const Login = () => {
                     setSignUpDialogOpen(true);
                   }}
                   variant="body2"
+                  color = "inherit"
                   sx={{ cursor: "pointer" }}
                 >
                   {"Don't have an account? Sign Up"}

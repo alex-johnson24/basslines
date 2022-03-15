@@ -8,7 +8,8 @@ export const themeConfig = {
             "primary": "rgba(0, 0, 0, 0.87)",
             "secondary": "rgba(0, 0, 0, 0.54)",
             "disabled": "rgba(0, 0, 0, 0.38)",
-            "hint": "rgba(0, 0, 0, 0.38)"
+            "hint": "rgba(0, 0, 0, 0.38)",
+            "textColor": "rgba(0, 0, 0, 0.54)"
         },
         "secondary": {
             "main": "#50d292",
@@ -29,7 +30,8 @@ export const themeConfig = {
             "primary": "rgba(256, 256, 256, 0.87)",
             "secondary": "rgba(256, 256, 256, 0.54)",
             "disabled": "rgba(256, 256, 256, 0.38)",
-            "hint": "rgba(256, 256, 256, 0.38)"
+            "hint": "rgba(256, 256, 256, 0.38)",
+            "textColor": "#fef901"
         },
         "secondary": {
             "main": "#fef901",

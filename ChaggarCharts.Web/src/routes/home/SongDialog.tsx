@@ -6,7 +6,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Autocomplete, Grid } from "@mui/material";
+import { Autocomplete, Grid, Typography } from "@mui/material";
 import { call } from "../../data/callWrapper";
 import {
   GenresApi,
@@ -95,6 +95,7 @@ const SongDialog = (props: ISongDialogProps) => {
               autoFocus
               margin="dense"
               label="Song Title"
+              color="secondary"
               fullWidth
               variant="standard"
               value={userSong?.title}
@@ -112,6 +113,7 @@ const SongDialog = (props: ISongDialogProps) => {
               margin="dense"
               label="Artist"
               fullWidth
+              color="secondary"
               variant="standard"
               value={userSong?.artist}
               onChange={(e) => {
@@ -126,6 +128,7 @@ const SongDialog = (props: ISongDialogProps) => {
           <Grid item xs={12} md={3} className={classes.centeredBox}>
             <Autocomplete
               value={userSong?.genre?.name}
+              color="secondary"
               onChange={(e, newValue) =>
                 setUserSong((current) => ({
                   ...current,
@@ -144,6 +147,7 @@ const SongDialog = (props: ISongDialogProps) => {
                 <TextField
                   {...params}
                   fullWidth
+                  color="secondary"
                   label="Genre"
                   variant="standard"
                 />
@@ -156,6 +160,7 @@ const SongDialog = (props: ISongDialogProps) => {
               label="Link (Spotify, YouTube, etc)"
               fullWidth
               variant="standard"
+              color="secondary"
               value={userSong?.link}
               onChange={(e) => {
                 const val = e.target?.value;
@@ -169,8 +174,8 @@ const SongDialog = (props: ISongDialogProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose} color="inherit">Cancel</Button>
-        <Button onClick={submitSong} color="inherit">Submit</Button>
+        <Button onClick={props.handleClose} variant="outlined" color="inherit">Cancel</Button>
+        <Button onClick={submitSong} variant="contained" color="primary">Submit</Button>
       </DialogActions>
     </Dialog>
   );
