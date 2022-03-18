@@ -108,6 +108,9 @@ const Login = () => {
               autoComplete="username"
               className={classes.autofill}
               autoFocus
+              InputLabelProps={{
+                style: { color: "#3e3e48"}
+              }}
               onChange={(e) =>
                 setLoginCreds({
                   ...loginCreds,
@@ -125,6 +128,9 @@ const Login = () => {
               id="password"
               autoComplete="current-password"
               className={classes.autofill}
+              InputLabelProps={{
+                style: { color: "#3e3e48"}
+              }}
               onChange={(e) =>
                 setLoginCreds({
                   ...loginCreds,
