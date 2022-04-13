@@ -51,11 +51,8 @@ const Leaderboard = () => {
       const leaderboardResults = await call(
         UsersApi
       ).usersLeaderboardMetricsGet();
-      let filteredResults = leaderboardResults.filter(
-        (user) => user.submissionsCount !== 0
-      );
 
-      setLeaderboardModels(filteredResults);
+      setLeaderboardModels(leaderboardResults);
     });
 
   React.useEffect(() => {
