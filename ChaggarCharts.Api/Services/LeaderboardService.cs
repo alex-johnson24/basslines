@@ -132,7 +132,7 @@ namespace ChaggarCharts.Api.Services
                 s.setUniqueGenres(ldr);
 
                 return ldr;
-            }).Where(x => x.SubmissionsCount >= 10);
+            });
         }
     }
 }

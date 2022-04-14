@@ -58,7 +58,7 @@ namespace ChaggarCharts.Api.Repositories
 
         public List<User> GetLeaderboardUsers()
         {
-            return _ctx.Users.Include(i => i.Songs).ThenInclude(i => i.Genre).Include(i => i.Likes).ToList();
+            return _ctx.Users.Include(i => i.Songs).ThenInclude(i => i.Genre).Include(i => i.Likes).Where(x => x.Songs.Count >= 10).ToList();
         }
     }
 }
