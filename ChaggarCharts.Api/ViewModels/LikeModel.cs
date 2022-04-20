@@ -5,6 +5,7 @@ namespace ChaggarCharts.Api.ViewModels
 {
     public class LikeModel
     {
+        public Guid? Id { get; set; }
         [Required]
         public Guid? SongId { get; set; }
         [Required]

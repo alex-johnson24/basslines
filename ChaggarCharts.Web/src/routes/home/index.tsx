@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import SongDialog from "./SongDialog";
 import RatingPopover from "./RatingPopover";
 import SongCard from "./SongCard";
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 
 const useStyles = makeStyles(() => {
   return {
@@ -69,6 +70,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const [currentUserSong, setCurrentUserSong] = React.useState<SongModel>(null);
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
+  const [connection, setConnection] = React.useState<HubConnection>(null);
 
   const uniqueDailyRatings = [...new Set(dailySongs.map((m) => m.rating))].sort(
     (a, b) => b - a
@@ -107,19 +109,32 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   const handleSongDialogClose = () => {
     setSongDialogOpen(false);
-    getSongs();
-  };
-
-  const openRatingPopover = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    setRatingPopoverAnchor(event.currentTarget);
   };
 
   const closeRatingPopover = () => {
     setRatingPopoverAnchor(null);
-    getSongs();
   };
+
+  const registerSongEvents = async () => {
+    if (connection) {
+      await connection.start();
+      connection.on("ReceiveSongEvent", (song: SongModel) => {
+        setDailySongs((current) => [
+          ...current.filter((f) => f.id !== song.id),
+          { ...song, submitteddate: new Date(song.submitteddate) },
+        ]);
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    const newConnection = new HubConnectionBuilder()
+      .withUrl("/songHub")
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+  }, []);
 
   React.useEffect(() => {
     if (dailySongs.length > 0) {
@@ -132,6 +147,10 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       setCurrentUserSong(null);
     }
   }, [dailySongs]);
+
+  React.useEffect(() => {
+    registerSongEvents();
+  }, [connection]);
 
   return (
     <>

@@ -1,35 +1,38 @@
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using ChaggarCharts.Api.Interfaces;
 using ChaggarCharts.Api.Models;
-using ChaggarCharts.Api.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
+using ChaggarCharts.Api.ViewModels;
 
 namespace ChaggarCharts.Api.Repositories
 {
-    public class SongRepository : ISongRepository
+    public class SongRepository : BaseRepository, ISongRepository
     {
-        private readonly ChaggarChartsContext _ctx;
-        private readonly IMapper _mapper;
-        public SongRepository(IDbContextFactory<ChaggarChartsContext> ctxFactory, IMapper mapper)
+        public SongRepository(IDbContextFactory<ChaggarChartsContext> ctxFactory) : base(ctxFactory)
+        { }
+
+        public IEnumerable<Song> GetSongs()
         {
-            _ctx = ctxFactory.CreateDbContext();
-            _mapper = mapper;
+            return _ctx.Set<Song>()
+                    .AsNoTracking()
+                    .Include(i => i.Genre)
+                    .Include(i => i.User)
+                    .Include(i => i.Likes);
         }
 
-        public IEnumerable<SongModel> GetSongs()
+        public Song GetSongById(Guid id)
         {
             return _ctx.Set<Song>()
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
                     .Include(i => i.Likes)
-                    .Select(s => _mapper.Map<SongModel>(s));
+                    .FirstOrDefault(w => w.Id == id);
         }
 
-        public IEnumerable<SongModel> GetSongsByDate(DateTime submitDate)
+        public IEnumerable<Song> GetSongsByDate(DateTime submitDate)
         {
             return _ctx.Set<Song>()
                     .AsNoTracking()
@@ -37,74 +40,43 @@ namespace ChaggarCharts.Api.Repositories
                     .Include(i => i.User)
                     .Include(i => i.Likes)
                     .ThenInclude(i => i.User)
-                    .Where(w => w.Submitteddate == submitDate)
-                    .Select(s => _mapper.Map<SongModel>(s));
+                    .Where(w => w.Submitteddate == submitDate);
         }
 
-        public IEnumerable<SongModel> SongSearch(string search)
+        public IEnumerable<Song> SongSearch(string search)
         {
             return _ctx.Set<Song>()
                 .AsNoTracking()
                 .Include(i => i.Genre)
                 .Include(i => i.User)
-                .Where(w => (w.Title.ToLower() + w.Artist.ToLower()).Contains(search) && w.Rating.HasValue)
-                .Select(s => _mapper.Map<SongModel>(s));
+                .Where(w => (w.Title.ToLower() + w.Artist.ToLower()).Contains(search) && w.Rating.HasValue);
         }
 
-        public SongModel SubmitSong(SongModel song)
+        public void SubmitSong(Song song)
         {
-            _ctx.Set<Song>().Add(
-                new Song
-                {
-                    Title = song.Title,
-                    Artist = song.Artist,
-                    Userid = song.User.Id,
-                    Genreid = song.Genre.Id,
-                    Link = song.Link,
-                    Submitteddate = DateTime.Now
-                }
-            );
+            // get us a submitted date
+            // add the genre to the context to let the db know it exists
+            // do the same for the submitting user
+            song.Submitteddate = DateTime.Now;
+            _ctx.Attach(song.Genre);
+            _ctx.Attach(song.User);
 
-            if (_ctx.SaveChanges() == 0) return null;
-
-            return song;
+            _ctx.Set<Song>().Add(song);
         }
 
-        public SongModel UpdateSong(SongModel song)
+        public void UpdateSong(Song song)
         {
-            var toUpdate = _ctx.Set<Song>().Where(w => w.Id == song.Id).FirstOrDefault();
+            // If we're updating the song before it's rated, reset the like count
+            if (!song.Rating.HasValue)
+            {
+                var likes = _ctx.Set<Like>().Where(w => w.Songid == song.Id);
+                _ctx.RemoveRange(likes);
+            }
 
-            if (toUpdate == null) return null;
+            _ctx.Attach(song.User);
+            _ctx.Attach(song.Genre);
 
-            toUpdate.Title = song.Title;
-            toUpdate.Artist = song.Artist;
-            toUpdate.Genreid = song.Genre.Id;
-            toUpdate.Link = song.Link;
-
-            var likes = _ctx.Set<Like>().Where(w => w.Songid == song.Id);
-
-            _ctx.RemoveRange(likes);
-
-            _ctx.Songs.Attach(toUpdate);
-
-            _ctx.Entry(toUpdate).State = EntityState.Modified;
-
-            if (_ctx.SaveChanges() == 0) return null;
-
-            return song;
-        }
-
-        public SongModel RateSong(Guid songId, decimal rating)
-        {
-            var toUpdate = _ctx.Set<Song>().Where(w => w.Id == songId).FirstOrDefault();
-
-            if (toUpdate == null) return null;
-
-            toUpdate.Rating = rating;
-
-            if (_ctx.SaveChanges() == 0) return null;
-
-            return _mapper.Map<SongModel>(toUpdate);
+            _ctx.Songs.Update(song);
         }
 
         public IEnumerable<UserDailyWinsModel> GetUserDailyWins()

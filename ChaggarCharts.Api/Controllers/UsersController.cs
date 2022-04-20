@@ -145,7 +145,6 @@ namespace ChaggarCharts.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message, ex);
-
                 return StatusCode(500, ex.Message);
             }
         }
@@ -155,13 +154,19 @@ namespace ChaggarCharts.Api.Controllers
         [Route("ResetUserPassword")]
         public IActionResult ResetUserPassword(ResetPasswordModel model)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
+            try
+            {
+                if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
 
-            var result = _userService.ResetUserPassword(model);
+                _userService.ResetUserPassword(model);
 
-            if (result) return Ok();
-
-            return Unauthorized();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Unauthorized();
+            }
         }
 
         [HttpGet]

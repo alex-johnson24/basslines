@@ -21,8 +21,7 @@ import {
 } from '../models';
 
 export interface LikesDeleteRequest {
-    userId?: string | null;
-    songId?: string | null;
+    likeModel?: LikeModel;
 }
 
 export interface LikesPostRequest {
@@ -39,21 +38,16 @@ export class LikesApi extends runtime.BaseAPI {
     async likesDeleteRaw(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
-        if (requestParameters.userId !== undefined) {
-            queryParameters['userId'] = requestParameters.userId;
-        }
-
-        if (requestParameters.songId !== undefined) {
-            queryParameters['songId'] = requestParameters.songId;
-        }
-
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/Likes`,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
+            body: LikeModelToJSON(requestParameters.likeModel),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -61,7 +55,7 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesDelete(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<void> {
+    async likesDelete(requestParameters: LikesDeleteRequest = {}, initOverrides?: RequestInit): Promise<void> {
         await this.likesDeleteRaw(requestParameters, initOverrides);
     }
 
@@ -87,7 +81,7 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesPost(requestParameters: LikesPostRequest, initOverrides?: RequestInit): Promise<void> {
+    async likesPost(requestParameters: LikesPostRequest = {}, initOverrides?: RequestInit): Promise<void> {
         await this.likesPostRaw(requestParameters, initOverrides);
     }
 

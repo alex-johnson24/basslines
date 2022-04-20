@@ -4,6 +4,10 @@ using ChaggarCharts.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using ChaggarCharts.Api.Models;
+using Microsoft.AspNetCore.SignalR;
+using ChaggarCharts.Api.Hubs;
 
 namespace ChaggarCharts.Api.Controllers
 {
@@ -14,22 +18,35 @@ namespace ChaggarCharts.Api.Controllers
     {
         private readonly ILogger<LikesController> _logger;
         private readonly ILikeRepository _likesRepo;
+        private readonly IMapper _mapper;
+        private readonly ISongRepository _songRepo;
+        private readonly IHubContext<SongHub, ISongHub> _songHub;
 
-        public LikesController(ILikeRepository likesRepo, ILogger<LikesController> logger)
+        public LikesController(ILikeRepository likesRepo, ILogger<LikesController> logger, IMapper mapper, ISongRepository songRepo, IHubContext<SongHub, ISongHub> songHub)
         {
             _logger = logger;
             _likesRepo = likesRepo;
+            _mapper = mapper;
+            _songRepo = songRepo;
+            _songHub = songHub;
         }
 
         [HttpPost]
-        [ProducesResponseType(201)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 500)]
         public IActionResult Post(LikeModel model)
         {
             try
             {
-                if (_likesRepo.CreateLike(model)) return Created("", null);
-                throw new Exception("No like record was saved - check the model body");
+                var toLike = _mapper.Map<Like>(model);
+                _likesRepo.CreateLike(toLike);
+                _likesRepo.SaveChanges();
+
+                var likedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toLike.Songid.Value));
+
+                _songHub.Clients.All.ReceiveSongEvent(likedSong);
+
+                return Ok(_mapper.Map<LikeModel>(toLike));
             }
             catch (Exception ex)
             {
@@ -42,13 +59,19 @@ namespace ChaggarCharts.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
-        public IActionResult Delete([FromQuery] Guid? userId, [FromQuery] Guid? songId)
+        public IActionResult Delete(LikeModel like)
         {
-            if (!userId.HasValue || !songId.HasValue) return BadRequest("Check your request details");
             try
             {
-                if (_likesRepo.RemoveLike(userId.Value, songId.Value)) return Ok();
-                throw new Exception("No like record was removed - check the query fields");
+                var toUnlike = _mapper.Map<Like>(like);
+                _likesRepo.RemoveLike(toUnlike);
+                _likesRepo.SaveChanges();
+
+                var unlikedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toUnlike.Songid.Value));
+
+                _songHub.Clients.All.ReceiveSongEvent(unlikedSong);
+
+                return Ok();
             }
             catch (Exception ex)
             {

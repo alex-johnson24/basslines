@@ -1,4 +1,4 @@
-using System;
+using ChaggarCharts.Api.Hubs;
 using System.IO;
 using System.Security.Claims;
 using System.Text;
@@ -10,7 +10,6 @@ using ChaggarCharts.Api.Models;
 using ChaggarCharts.Api.Profiles;
 using ChaggarCharts.Api.Repositories;
 using ChaggarCharts.Api.Services;
-using Elastic.Apm.NetCoreAll;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -79,6 +78,9 @@ namespace ChaggarCharts
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILikeRepository, LikeRepository>();
             services.AddScoped<ILeaderboardService, LeaderboardService>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+
+            services.AddSignalR();
 
             services.AddControllers()
             .AddJsonOptions(x =>
@@ -109,8 +111,6 @@ namespace ChaggarCharts
                 app.UseHttpsRedirection();
             }
 
-            app.UseAllElasticApm(Configuration);
-
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -122,6 +122,7 @@ namespace ChaggarCharts
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<SongHub>("/songHub");
             });
 
             app.Run(async (context) =>

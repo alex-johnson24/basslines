@@ -1,11 +1,11 @@
 using System;
-using ChaggarCharts.Api.ViewModels;
+using ChaggarCharts.Api.Models;
 
 namespace ChaggarCharts.Api.Interfaces
 {
-    public interface ILikeRepository
+    public interface ILikeRepository : IBaseRepository
     {
-        bool CreateLike(LikeModel model);
-        bool RemoveLike(Guid userId, Guid songId);
+        void CreateLike(Like like);
+        void RemoveLike(Like like);
     }
 }

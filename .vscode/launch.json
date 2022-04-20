@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/ChaggarCharts.Api/bin/Debug/net5.0/ChaggarCharts.Api.dll",
+            "program": "${workspaceFolder}/ChaggarCharts.Api/bin/Debug/net6.0/ChaggarCharts.Api.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ChaggarCharts.Api",
             "stopAtEntry": false,
