@@ -24,10 +24,6 @@ const RatingPopover = (props: IRatingPopoverProps) => {
     }
   };
 
-  React.useEffect(() => {
-    console.log(open);
-  }, [open])
-
   return (
     <Popover
       id={id}
