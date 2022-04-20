@@ -129,7 +129,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   React.useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("/songHub")
+      .withUrl("songHub")
       .withAutomaticReconnect()
       .build();
 

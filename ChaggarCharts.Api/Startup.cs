@@ -122,7 +122,7 @@ namespace ChaggarCharts
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<SongHub>("/songHub");
+                endpoints.MapHub<SongHub>("songHub");
             });
 
             app.Run(async (context) =>
