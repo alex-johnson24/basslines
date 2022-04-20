@@ -7,11 +7,11 @@ namespace ChaggarCharts.Api.Interfaces
 {
     public interface IUserService
     {
-        List<UserModel> GetUsers();
-        bool CreateUser(RegistrationModel registrationModel);
+        IEnumerable<UserModel> GetUsers();
+        UserModel CreateUser(RegistrationModel registrationModel);
         UserModel SignIn(LoginModel loginModel, out string jwt);
         string GeneratePasswordResetToken(string username);
-        bool ResetUserPassword(ResetPasswordModel model);
+        void ResetUserPassword(ResetPasswordModel model);
         Task<UserMetricsModel> GetUserMetrics(Guid userId);
     }
 }

@@ -21,17 +21,24 @@ namespace ChaggarCharts.Api.Services
         private static readonly int _saltLength = 32;
         private readonly IUserRepository _userRepo;
         private readonly IMetricsRepository _metricsRepo;
+        private readonly IRoleRepository _roleRepository;
         private readonly ILogger<UserService> _logger;
         private readonly IMapper _mapper;
         private readonly AuthSettings _authSettings;
 
-        public UserService(IUserRepository userRepo, IMetricsRepository metricsRepo, ILogger<UserService> logger, IMapper mapper, IOptions<AuthSettings> authSettings)
+        public UserService(IUserRepository userRepo,
+                           IMetricsRepository metricsRepo,
+                           ILogger<UserService> logger,
+                           IMapper mapper,
+                           IOptions<AuthSettings> authSettings,
+                           IRoleRepository roleRepository)
         {
             _userRepo = userRepo;
             _metricsRepo = metricsRepo;
             _logger = logger;
             _mapper = mapper;
             _authSettings = authSettings.Value;
+            _roleRepository = roleRepository;
         }
 
         public UserModel SignIn(LoginModel loginModel, out string jwt)
@@ -54,7 +61,7 @@ namespace ChaggarCharts.Api.Services
             var topGenresTask = _metricsRepo.GetTopGenres(userId);
 
             var topSongsTask = _metricsRepo.GetTopSongs(userId);
-            
+
             var topArtistsTask = _metricsRepo.GetTopArtists(userId);
 
             var averageRatingTask = _metricsRepo.GetAverageRating(userId);
@@ -80,20 +87,36 @@ namespace ChaggarCharts.Api.Services
             };
         }
 
-        public bool CreateUser(RegistrationModel registrationModel)
+        public UserModel CreateUser(RegistrationModel registrationModel)
         {
             if (_userRepo.GetUserByUsername(registrationModel.Username) != null) throw new DuplicateUserException();
 
             var salt = GetSalt();
             var hpassword = HashPasswordWithSalt(registrationModel.Password, salt);
+            var defaultRole = _roleRepository.GetDefaultRole();
 
-            return _userRepo.CreateUser(registrationModel.Username, registrationModel.FirstName, registrationModel.LastName, hpassword, salt);
+            var toCreate = new User
+            {
+                Username = registrationModel.Username,
+                Firstname = registrationModel.FirstName,
+                Lastname = registrationModel.LastName,
+                Hpassword = hpassword,
+                Salt = salt,
+                Roleid = defaultRole.Id,
+            };
+
+            _userRepo.CreateUser(toCreate);
+
+            _userRepo.SaveChanges();
+
+            return _mapper.Map<UserModel>(toCreate);
         }
 
         private string GetSalt()
         {
             var salt = new byte[_saltLength];
-            using (var random = new RNGCryptoServiceProvider())
+
+            using (var random = RandomNumberGenerator.Create())
             {
                 random.GetNonZeroBytes(salt);
             }
@@ -111,17 +134,21 @@ namespace ChaggarCharts.Api.Services
             }
         }
 
-        public bool ResetUserPassword(ResetPasswordModel model)
+        public void ResetUserPassword(ResetPasswordModel model)
         {
-            if (ValidatePasswordToken(model.ResetToken, model.Username))
-            {
-                var salt = GetSalt();
-                var hpassword = HashPasswordWithSalt(model.Password, salt);
+            ValidatePasswordToken(model.ResetToken, model.Username);
 
-                return _userRepo.UpdateUserPassword(model.Username, hpassword, salt);
-            }
+            var salt = GetSalt();
+            var hpassword = HashPasswordWithSalt(model.Password, salt);
 
-            return false;
+            var toUpdate = _userRepo.GetUserByUsername(model.Username);
+
+            toUpdate.Salt = salt;
+            toUpdate.Hpassword = hpassword;
+
+            _userRepo.UpdateUser(toUpdate);
+
+            _userRepo.SaveChanges();
         }
 
         public string GeneratePasswordResetToken(string username)
@@ -165,11 +192,10 @@ namespace ChaggarCharts.Api.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private bool ValidatePasswordToken(string token, string username)
+        private void ValidatePasswordToken(string token, string username)
         {
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_authSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-            SecurityToken validatedToken;
             var validator = new JwtSecurityTokenHandler();
 
             // These need to match the values used to generate the token
@@ -180,31 +206,19 @@ namespace ChaggarCharts.Api.Services
             validationParameters.ValidateIssuerSigningKey = true;
             validationParameters.ValidateAudience = true;
 
-            if (validator.CanReadToken(token))
-            {
-                ClaimsPrincipal principal;
-                try
-                {
-                    // This line throws if invalid
-                    principal = validator.ValidateToken(token, validationParameters, out validatedToken);
+            if (!validator.CanReadToken(token)) throw new TokenFormatException();
 
-                    var claimForUser = principal.Claims.Where(w => w.Type == "username" && w.Value == username).FirstOrDefault();
+            ClaimsPrincipal principal;
 
-                    if (claimForUser != null) return true;
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e.Message, e);
-                }
-            }
+            // This line throws if invalid
+            principal = validator.ValidateToken(token, validationParameters, out _);
 
-            return false;
+            if (!principal.Claims.Any(w => w.Type == "username" && w.Value == username)) throw new UserNotFoundException();
         }
 
-        public List<UserModel> GetUsers()
+        public IEnumerable<UserModel> GetUsers()
         {
-            var users = _userRepo.GetUsers();
-            return _mapper.Map<List<UserModel>>(users);
+            return _mapper.Map<List<UserModel>>(_userRepo.GetUsers());
         }
     }
 }

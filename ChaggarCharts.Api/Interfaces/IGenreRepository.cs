@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using ChaggarCharts.Api.ViewModels;
+using ChaggarCharts.Api.Models;
 
 namespace ChaggarCharts.Api.Interfaces
 {
-    public interface IGenreRepository
+    public interface IGenreRepository : IBaseRepository
     {
-        IEnumerable<GenreModel> GetGenres();
+        IEnumerable<Genre> GetGenres();
     }
 }

@@ -31,6 +31,12 @@ export interface LikeModel {
      * @type {string}
      * @memberof LikeModel
      */
+    id?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof LikeModel
+     */
     songId: string;
     /**
      * 
@@ -56,6 +62,7 @@ export function LikeModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
+        'id': !exists(json, 'id') ? undefined : json['id'],
         'songId': json['songId'],
         'userId': json['userId'],
         'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
@@ -71,6 +78,7 @@ export function LikeModelToJSON(value?: LikeModel | null): any {
     }
     return {
         
+        'id': value.id,
         'songId': value.songId,
         'userId': value.userId,
         'user': UserModelToJSON(value.user),

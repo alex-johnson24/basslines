@@ -66,8 +66,7 @@ const SongDialog = (props: ISongDialogProps) => {
         setUserSong({
           id: null,
           user: {
-            id: props.userInfo?.id,
-            username: props.userInfo?.username,
+            ...props.userInfo
           },
           genre: {
             id: null,

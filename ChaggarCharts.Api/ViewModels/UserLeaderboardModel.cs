@@ -1,6 +1,3 @@
-using System;
-using ChaggarCharts.Api.Models;
-
 namespace ChaggarCharts.Api.ViewModels
 {
     public partial class UserLeaderboardModel

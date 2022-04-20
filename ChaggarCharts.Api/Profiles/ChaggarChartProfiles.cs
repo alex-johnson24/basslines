@@ -8,14 +8,19 @@ namespace ChaggarCharts.Api.Profiles
     {
         public ChaggarChartProfile()
         {
-            CreateMap<Song, SongModel>();
+            CreateMap<Song, SongModel>()
+                .ReverseMap();
 
             CreateMap<User, UserModel>()
-                .ForMember(dest => dest.Role, m => m.MapFrom(src => src.Role.Flag));
+                .ForMember(dest => dest.Role, m => m.MapFrom(src => src.Role.Flag))
+                .ReverseMap()
+                .ForMember(dest => dest.Role, m => m.Ignore());
             
-            CreateMap<Genre, GenreModel>();
+            CreateMap<Genre, GenreModel>()
+                .ReverseMap();
 
-            CreateMap<Like, LikeModel>();
+            CreateMap<Like, LikeModel>()
+                .ReverseMap();
         }
     }
 }

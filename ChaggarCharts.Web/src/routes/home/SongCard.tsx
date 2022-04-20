@@ -18,7 +18,6 @@ import * as React from "react";
 import { LikesApi, SongModel, UserModel, UserRole } from "../../data/src";
 import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
 
@@ -55,8 +54,9 @@ const SongCard = (props: ISongCardProps) => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(props.userInfo.id) > -1
         ? await call(LikesApi).likesDelete({
-            userId: props.userInfo.id,
-            songId: props.song.id,
+            likeModel: {
+              ...props.song.likes.filter(f => f.userId === props.userInfo.id)[0]
+            },
           })
         : await call(LikesApi).likesPost({
             likeModel: { userId: props.userInfo.id, songId: props.song.id },
