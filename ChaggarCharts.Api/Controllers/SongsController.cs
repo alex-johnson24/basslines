@@ -78,7 +78,7 @@ namespace ChaggarCharts.Api.Controllers
 
             try
             {
-                return Ok(_mapper.Map<SongModel>(_songRepo.SongSearch(search)));
+                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.SongSearch(search)));
             }
             catch (Exception ex)
             {
