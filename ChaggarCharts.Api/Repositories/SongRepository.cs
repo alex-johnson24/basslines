@@ -19,7 +19,8 @@ namespace ChaggarCharts.Api.Repositories
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
-                    .Include(i => i.Likes);
+                    .Include(i => i.Likes)
+                    .ThenInclude(t => t.User);
         }
 
         public Song GetSongById(Guid id)
@@ -29,6 +30,7 @@ namespace ChaggarCharts.Api.Repositories
                     .Include(i => i.Genre)
                     .Include(i => i.User)
                     .Include(i => i.Likes)
+                    .ThenInclude(t => t.User)
                     .FirstOrDefault(w => w.Id == id);
         }
 
@@ -58,8 +60,8 @@ namespace ChaggarCharts.Api.Repositories
             // add the genre to the context to let the db know it exists
             // do the same for the submitting user
             song.Submitteddate = DateTime.Now;
-            _ctx.Attach(song.Genre);
-            _ctx.Attach(song.User);
+            _ctx.Genres.Attach(song.Genre);
+            _ctx.Users.Attach(song.User);
 
             _ctx.Set<Song>().Add(song);
         }
@@ -73,10 +75,9 @@ namespace ChaggarCharts.Api.Repositories
                 _ctx.RemoveRange(likes);
             }
 
-            _ctx.Attach(song.User);
-            _ctx.Attach(song.Genre);
-
-            _ctx.Songs.Update(song);
+            _ctx.Entry<Song>(song).State = EntityState.Modified;
+            _ctx.Entry<Song>(song).Reference(p => p.User).IsModified = false;
+            _ctx.Entry<Song>(song).Property(p => p.Userid).IsModified = false;
         }
 
         public IEnumerable<UserDailyWinsModel> GetUserDailyWins()

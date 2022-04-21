@@ -133,9 +133,9 @@ namespace ChaggarCharts.Api.Controllers
 
                 _songRepo.UpdateSong(toUpdate);
 
-                _songHub.Clients.All.ReceiveSongEvent(userSong);
-
                 _songRepo.SaveChanges();
+
+                _songHub.Clients.All.ReceiveSongEvent(userSong);
 
                 return Ok(userSong);
             }
