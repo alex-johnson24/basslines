@@ -16,6 +16,8 @@ namespace ChaggarCharts.Api.ViewModels
         public decimal? Rating { get; set; }
         public string Link { get; set; }
         public DateTime? Submitteddate { get; set; }
-        public ICollection<LikeModel> Likes {get;set;}
-}
+
+        public DateTime Createddate { get; set; }
+        public ICollection<LikeModel> Likes { get; set; }
+    }
 }
