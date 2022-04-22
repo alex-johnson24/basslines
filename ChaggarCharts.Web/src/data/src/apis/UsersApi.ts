@@ -107,7 +107,7 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersGetPasswordResetTokenGet(requestParameters: UsersGetPasswordResetTokenGetRequest = {}, initOverrides?: RequestInit): Promise<void> {
+    async usersGetPasswordResetTokenGet(requestParameters: UsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<void> {
         await this.usersGetPasswordResetTokenGetRaw(requestParameters, initOverrides);
     }
 
@@ -180,7 +180,7 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersPost(requestParameters: UsersPostRequest = {}, initOverrides?: RequestInit): Promise<void> {
+    async usersPost(requestParameters: UsersPostRequest, initOverrides?: RequestInit): Promise<void> {
         await this.usersPostRaw(requestParameters, initOverrides);
     }
 
@@ -206,7 +206,7 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersResetUserPasswordPost(requestParameters: UsersResetUserPasswordPostRequest = {}, initOverrides?: RequestInit): Promise<void> {
+    async usersResetUserPasswordPost(requestParameters: UsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<void> {
         await this.usersResetUserPasswordPostRaw(requestParameters, initOverrides);
     }
 
@@ -232,7 +232,7 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersSignInPost(requestParameters: UsersSignInPostRequest = {}, initOverrides?: RequestInit): Promise<UserModel> {
+    async usersSignInPost(requestParameters: UsersSignInPostRequest, initOverrides?: RequestInit): Promise<UserModel> {
         const response = await this.usersSignInPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -260,7 +260,7 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersUserMetricsGet(requestParameters: UsersUserMetricsGetRequest = {}, initOverrides?: RequestInit): Promise<UserMetricsModel> {
+    async usersUserMetricsGet(requestParameters: UsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<UserMetricsModel> {
         const response = await this.usersUserMetricsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }

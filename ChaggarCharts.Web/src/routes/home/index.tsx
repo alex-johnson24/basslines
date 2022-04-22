@@ -197,7 +197,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
         maxWidth="xl" className={classes.scrollbar}
       >
         {dailySongs
-          .sort((a, b) => b.rating - a.rating)
+          .sort((a, b) => allSongsRated ? b.rating - a.rating : new Date(b.createdatetime).getTime() - new Date(a.createdatetime).getTime())
           .map((m: SongModel, i: number) => (
             <SongCard
               key={i}

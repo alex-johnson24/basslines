@@ -90,7 +90,7 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsPost(requestParameters: SongsPostRequest = {}, initOverrides?: RequestInit): Promise<SongModel> {
+    async songsPost(requestParameters: SongsPostRequest, initOverrides?: RequestInit): Promise<SongModel> {
         const response = await this.songsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -117,7 +117,7 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsPut(requestParameters: SongsPutRequest = {}, initOverrides?: RequestInit): Promise<SongModel> {
+    async songsPut(requestParameters: SongsPutRequest, initOverrides?: RequestInit): Promise<SongModel> {
         const response = await this.songsPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -145,7 +145,7 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsSongSearchGet(requestParameters: SongsSongSearchGetRequest = {}, initOverrides?: RequestInit): Promise<Array<SongModel>> {
+    async songsSongSearchGet(requestParameters: SongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongModel>> {
         const response = await this.songsSongSearchGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
