@@ -55,7 +55,7 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesDelete(requestParameters: LikesDeleteRequest = {}, initOverrides?: RequestInit): Promise<void> {
+    async likesDelete(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<void> {
         await this.likesDeleteRaw(requestParameters, initOverrides);
     }
 
@@ -81,7 +81,7 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesPost(requestParameters: LikesPostRequest = {}, initOverrides?: RequestInit): Promise<void> {
+    async likesPost(requestParameters: LikesPostRequest, initOverrides?: RequestInit): Promise<void> {
         await this.likesPostRaw(requestParameters, initOverrides);
     }
 

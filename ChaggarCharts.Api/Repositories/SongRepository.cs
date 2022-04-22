@@ -42,7 +42,7 @@ namespace ChaggarCharts.Api.Repositories
                     .Include(i => i.User)
                     .Include(i => i.Likes)
                     .ThenInclude(i => i.User)
-                    .Where(w => w.Submitteddate == submitDate).OrderBy(s => s.Createdatetime);
+                    .Where(w => w.Submitteddate == submitDate);
         }
 
         public IEnumerable<Song> SongSearch(string search)

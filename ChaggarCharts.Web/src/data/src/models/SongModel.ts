@@ -88,6 +88,12 @@ export interface SongModel {
     submitteddate?: Date | null;
     /**
      * 
+     * @type {Date}
+     * @memberof SongModel
+     */
+    createdatetime?: Date | null;
+    /**
+     * 
      * @type {Array<LikeModel>}
      * @memberof SongModel
      */
@@ -112,6 +118,7 @@ export function SongModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'rating': !exists(json, 'rating') ? undefined : json['rating'],
         'link': !exists(json, 'link') ? undefined : json['link'],
         'submitteddate': !exists(json, 'submitteddate') ? undefined : (json['submitteddate'] === null ? null : new Date(json['submitteddate'])),
+        'createdatetime': !exists(json, 'createdatetime') ? undefined : (json['createdatetime'] === null ? null : new Date(json['createdatetime'])),
         'likes': !exists(json, 'likes') ? undefined : (json['likes'] === null ? null : (json['likes'] as Array<any>).map(LikeModelFromJSON)),
     };
 }
@@ -133,6 +140,7 @@ export function SongModelToJSON(value?: SongModel | null): any {
         'rating': value.rating,
         'link': value.link,
         'submitteddate': value.submitteddate === undefined ? undefined : (value.submitteddate === null ? null : value.submitteddate.toISOString()),
+        'createdatetime': value.createdatetime === undefined ? undefined : (value.createdatetime === null ? null : value.createdatetime.toISOString()),
         'likes': value.likes === undefined ? undefined : (value.likes === null ? null : (value.likes as Array<any>).map(LikeModelToJSON)),
     };
 }
