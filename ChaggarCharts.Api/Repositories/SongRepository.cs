@@ -75,7 +75,10 @@ namespace ChaggarCharts.Api.Repositories
                 _ctx.RemoveRange(likes);
             }
 
-            _ctx.Genres.Attach(song.Genre);
+            if (song.Genre != null)
+            {
+                _ctx.Genres.Attach(song.Genre);
+            }
 
             _ctx.Entry<Song>(song).State = EntityState.Modified;
             _ctx.Entry<Song>(song).Reference(p => p.User).IsModified = false;
