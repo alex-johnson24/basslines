@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-#nullable disable
-
 namespace ChaggarCharts.Api.Models
 {
     public partial class ChaggarChartsContext : DbContext
@@ -19,8 +17,6 @@ namespace ChaggarCharts.Api.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
-
             modelBuilder.Entity<Genre>(entity =>
             {
                 entity.ToTable("genres");
@@ -46,35 +42,38 @@ namespace ChaggarCharts.Api.Models
 
             modelBuilder.Entity<Like>(entity =>
             {
+                entity.HasKey(e => new { e.Songid, e.Userid })
+                    .HasName("PK__likes__6F92C020AF780461");
+
                 entity.ToTable("likes");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .HasDefaultValueSql("(newid())");
+                entity.Property(e => e.Songid).HasColumnName("songid");
+
+                entity.Property(e => e.Userid).HasColumnName("userid");
 
                 entity.Property(e => e.Createdatetime)
                     .HasPrecision(3)
                     .HasColumnName("createdatetime")
                     .HasDefaultValueSql("(sysdatetime())");
 
-                entity.Property(e => e.Songid).HasColumnName("songid");
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.Updatedatetime)
                     .HasPrecision(3)
                     .HasColumnName("updatedatetime");
 
-                entity.Property(e => e.Userid).HasColumnName("userid");
-
                 entity.HasOne(d => d.Song)
                     .WithMany(p => p.Likes)
                     .HasForeignKey(d => d.Songid)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_likes_songid");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Likes)
                     .HasForeignKey(d => d.Userid)
-                    .OnDelete(DeleteBehavior.SetNull)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_likes_userid");
             });
 
@@ -132,6 +131,8 @@ namespace ChaggarCharts.Api.Models
                     .HasColumnType("decimal(4, 2)")
                     .HasColumnName("rating");
 
+                entity.Property(e => e.Reviewerid).HasColumnName("reviewerid");
+
                 entity.Property(e => e.Submitteddate)
                     .HasColumnType("date")
                     .HasColumnName("submitteddate");
@@ -153,8 +154,13 @@ namespace ChaggarCharts.Api.Models
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_songs_genreid");
 
+                entity.HasOne(d => d.Reviewer)
+                    .WithMany(p => p.SongReviewers)
+                    .HasForeignKey(d => d.Reviewerid)
+                    .HasConstraintName("FK_songs_reviewerid");
+
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Songs)
+                    .WithMany(p => p.SongUsers)
                     .HasForeignKey(d => d.Userid)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_songs_userid");

@@ -19,6 +19,7 @@ namespace ChaggarCharts.Api.Repositories
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
+                    .Include(i => i.Reviewer)
                     .Include(i => i.Likes)
                     .ThenInclude(t => t.User);
         }
@@ -29,6 +30,7 @@ namespace ChaggarCharts.Api.Repositories
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
+                    .Include(i => i.Reviewer)
                     .Include(i => i.Likes)
                     .ThenInclude(t => t.User)
                     .FirstOrDefault(w => w.Id == id);
@@ -40,6 +42,7 @@ namespace ChaggarCharts.Api.Repositories
                     .AsNoTracking()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
+                    .Include(i => i.Reviewer)
                     .Include(i => i.Likes)
                     .ThenInclude(i => i.User)
                     .Where(w => w.Submitteddate == submitDate);
@@ -51,6 +54,7 @@ namespace ChaggarCharts.Api.Repositories
                 .AsNoTracking()
                 .Include(i => i.Genre)
                 .Include(i => i.User)
+                .Include(i => i.Reviewer)
                 .Where(w => (w.Title.ToLower() + w.Artist.ToLower()).Contains(search) && w.Rating.HasValue);
         }
 
@@ -78,6 +82,16 @@ namespace ChaggarCharts.Api.Repositories
             if (song.Genre != null)
             {
                 _ctx.Genres.Attach(song.Genre);
+            }
+
+            if (song.Reviewer != null)
+            {
+                _ctx.Attach(song.Reviewer);
+                _ctx.Entry<User>(song.Reviewer).Property(p => p.Hpassword).IsModified = false;
+                _ctx.Entry<User>(song.Reviewer).Property(p => p.Salt).IsModified = false;
+                _ctx.Entry<User>(song.Reviewer).Property(p => p.Roleid).IsModified = false;
+                _ctx.Entry<User>(song.Reviewer).Property(p => p.Createdatetime).IsModified = false;
+                _ctx.Entry<User>(song.Reviewer).Property(p => p.Updatedatetime).IsModified = false;
             }
 
             _ctx.Entry<Song>(song).State = EntityState.Modified;

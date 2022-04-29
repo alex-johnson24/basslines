@@ -16,16 +16,16 @@ namespace ChaggarCharts.Api.Services
 
         public static void setAverage(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.Average = Math.Round(usr.Songs.Select(s => s.Rating).Average() ?? 0, 2);
+            ldr.Average = Math.Round(usr.SongUsers.Select(s => s.Rating).Average() ?? 0, 2);
         }
 
         public static void setUniqueGenres(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.UniqueGenres = usr.Songs.Select(s => s.Genre).Distinct().Count();
+            ldr.UniqueGenres = usr.SongUsers.Select(s => s.Genre).Distinct().Count();
         }
         public static void setHighestRatedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.HighestRatedSong = usr.Songs.Where(s => s.Rating != null).Select(s => new
+            ldr.HighestRatedSong = usr.SongUsers.Where(s => s.Rating != null).Select(s => new
             {
                 SongName = s.Title,
                 Rating = s.Rating
@@ -35,7 +35,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setHighestRating(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.HighestRating = usr.Songs.Where(s => s.Rating != null).Select(s => new
+            ldr.HighestRating = usr.SongUsers.Where(s => s.Rating != null).Select(s => new
             {
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating)
@@ -44,7 +44,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setLowestRatedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LowestRatedSong = usr.Songs.Where(s => s.Rating != null).Select(s => new
+            ldr.LowestRatedSong = usr.SongUsers.Where(s => s.Rating != null).Select(s => new
             {
                 SongName = s.Title,
                 Rating = s.Rating
@@ -53,7 +53,7 @@ namespace ChaggarCharts.Api.Services
 
         public static void setLowestRating(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LowestRating = usr.Songs.Where(s => s.Rating != null).Select(s => new
+            ldr.LowestRating = usr.SongUsers.Where(s => s.Rating != null).Select(s => new
             {
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating).LastOrDefault()?.Rating;
@@ -66,7 +66,7 @@ namespace ChaggarCharts.Api.Services
         //fix this
         public static void setMostLikedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.MostLikedSong = usr.Songs.Select(s => new
+            ldr.MostLikedSong = usr.SongUsers.Select(s => new
             {
                 SongName = s.Title,
                 Likes = s.Likes
@@ -76,22 +76,22 @@ namespace ChaggarCharts.Api.Services
 
         public static void setNumberOfLikes(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.NumberOfLikes = usr.Songs.Sum(o => o.Likes.Count);
+            ldr.NumberOfLikes = usr.SongUsers.Sum(o => o.Likes.Count);
         }
 
         public static void setSongsAdded(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.SongsAdded = usr.Songs.Count(o => o.Rating >= 7.0m);
+            ldr.SongsAdded = usr.SongUsers.Count(o => o.Rating >= 7.0m);
         }
 
         public static void setSubmissionsCount(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.SubmissionsCount = usr.Songs.Count;
+            ldr.SubmissionsCount = usr.SongUsers.Count;
         }
 
         public static void setLikesOnMostLikedSong(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.LikesOnMostLikedSong = usr.Songs.Select(s => new
+            ldr.LikesOnMostLikedSong = usr.SongUsers.Select(s => new
             {
                 Likes = s.Likes.Count
             }).OrderByDescending(o => o.Likes)

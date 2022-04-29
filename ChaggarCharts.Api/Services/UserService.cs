@@ -181,6 +181,8 @@ namespace ChaggarCharts.Api.Services
                 {
                     new Claim("id", user.Id.ToString()),
                     new Claim("username", user.Username),
+                    new Claim("firstName", user.Firstname),
+                    new Claim("lastName", user.Lastname),
                     new Claim("role", user.Role.Name),
                 }),
                 Issuer = _authSettings.ValidIssuer,

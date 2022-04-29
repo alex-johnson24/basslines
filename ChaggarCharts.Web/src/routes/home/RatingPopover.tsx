@@ -3,6 +3,7 @@ import Popover from "@mui/material/Popover";
 import { Box, Button, Divider, Rating, Slider, TextField } from "@mui/material";
 import { SongModel, SongsApi } from "../../data/src";
 import { call } from "../../data/callWrapper";
+import { useUserState } from "../../contexts";
 
 interface IRatingPopoverProps {
   anchorEl: EventTarget & HTMLButtonElement;
@@ -14,6 +15,7 @@ interface IRatingPopoverProps {
 const RatingPopover = (props: IRatingPopoverProps) => {
   const open = Boolean(props.anchorEl);
   const id = open ? "rating-popover" : undefined;
+  const { userInfo } = useUserState();
 
   const submitRating = async () => {
     try {
@@ -47,6 +49,7 @@ const RatingPopover = (props: IRatingPopoverProps) => {
             props.setSelectedSong((current) => ({
               ...current,
               rating: Number(event.target.value),
+              reviewer: {...userInfo},
             }));
           }}
         />

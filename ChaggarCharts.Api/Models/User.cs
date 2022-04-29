@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace ChaggarCharts.Api.Models
 {
     public partial class User
@@ -10,7 +8,8 @@ namespace ChaggarCharts.Api.Models
         public User()
         {
             Likes = new HashSet<Like>();
-            Songs = new HashSet<Song>();
+            SongReviewers = new HashSet<Song>();
+            SongUsers = new HashSet<Song>();
         }
 
         public Guid Id { get; set; }
@@ -25,6 +24,7 @@ namespace ChaggarCharts.Api.Models
 
         public virtual Role Role { get; set; }
         public virtual ICollection<Like> Likes { get; set; }
-        public virtual ICollection<Song> Songs { get; set; }
+        public virtual ICollection<Song> SongReviewers { get; set; }
+        public virtual ICollection<Song> SongUsers { get; set; }
     }
 }
