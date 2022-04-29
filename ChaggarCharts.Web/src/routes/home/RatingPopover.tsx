@@ -1,6 +1,6 @@
 import * as React from "react";
 import Popover from "@mui/material/Popover";
-import { Box, Button, Divider, Rating, Slider, TextField } from "@mui/material";
+import { Box, Button, Divider, TextField } from "@mui/material";
 import { SongModel, SongsApi } from "../../data/src";
 import { call } from "../../data/callWrapper";
 import { useUserState } from "../../contexts";
@@ -22,7 +22,7 @@ const RatingPopover = (props: IRatingPopoverProps) => {
       await call(SongsApi).songsPut({ songModel: props.selectedSong });
       props.handleClose();
     } catch (e) {
-      console.log("song rating failed");
+      console.log("song rating failed", e);
     }
   };
 

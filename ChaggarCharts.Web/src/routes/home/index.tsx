@@ -14,7 +14,12 @@ import {
 } from "@mui/material";
 import { call } from "../../data/callWrapper";
 import { useMutation } from "react-query";
-import { SongsApi, SongModel, UserModel } from "../../data/src";
+import {
+  SongsApi,
+  SongModel,
+  UserModel,
+  SongModelFromJSON,
+} from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import SongDialog from "./SongDialog";
@@ -36,19 +41,19 @@ const useStyles = makeStyles(() => {
       alignItems: "center",
     },
     scrollbar: {
-    "&::-webkit-scrollbar": {
-      width: "8px",
-      height: "8px",
+      "&::-webkit-scrollbar": {
+        width: "8px",
+        height: "8px",
+      },
+      "&::-webkit-scrollbar-track": {
+        boxShadow: "rgba(0, 0, 0, 0.2)",
+        borderRadius: "4px",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        borderRadius: "4px",
+      },
     },
-    "&::-webkit-scrollbar-track": {
-      boxShadow: "rgba(0, 0, 0, 0.2)",
-      borderRadius: "4px"
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "rgba(0, 0, 0, 0.4)",
-      borderRadius: "4px"
-    },
-  }
   };
 });
 
@@ -121,7 +126,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       connection.on("ReceiveSongEvent", (song: SongModel) => {
         setDailySongs((current) => [
           ...current.filter((f) => f.id !== song.id),
-          { ...song, submitteddate: new Date(song.submitteddate) },
+          SongModelFromJSON(song),
         ]);
       });
     }
@@ -194,10 +199,15 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       </Grid>
       <Container
         sx={{ height: "calc(100vh - 228px)", overflowY: "auto" }}
-        maxWidth="xl" className={classes.scrollbar}
+        maxWidth="xl"
+        className={classes.scrollbar}
       >
         {dailySongs
-          .sort((a, b) => allSongsRated ? b.rating - a.rating : new Date(b.createdatetime).getTime() - new Date(a.createdatetime).getTime())
+          .sort((a, b) =>
+            allSongsRated
+              ? b.rating - a.rating
+              : b.createdatetime.getTime() - a.createdatetime.getTime()
+          )
           .map((m: SongModel, i: number) => (
             <SongCard
               key={i}
