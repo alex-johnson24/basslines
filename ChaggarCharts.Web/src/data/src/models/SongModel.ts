@@ -70,6 +70,12 @@ export interface SongModel {
     user?: UserModel;
     /**
      * 
+     * @type {UserModel}
+     * @memberof SongModel
+     */
+    reviewer?: UserModel;
+    /**
+     * 
      * @type {number}
      * @memberof SongModel
      */
@@ -115,6 +121,7 @@ export function SongModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'artist': json['artist'],
         'genre': !exists(json, 'genre') ? undefined : GenreModelFromJSON(json['genre']),
         'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
+        'reviewer': !exists(json, 'reviewer') ? undefined : UserModelFromJSON(json['reviewer']),
         'rating': !exists(json, 'rating') ? undefined : json['rating'],
         'link': !exists(json, 'link') ? undefined : json['link'],
         'submitteddate': !exists(json, 'submitteddate') ? undefined : (json['submitteddate'] === null ? null : new Date(json['submitteddate'])),
@@ -137,6 +144,7 @@ export function SongModelToJSON(value?: SongModel | null): any {
         'artist': value.artist,
         'genre': GenreModelToJSON(value.genre),
         'user': UserModelToJSON(value.user),
+        'reviewer': UserModelToJSON(value.reviewer),
         'rating': value.rating,
         'link': value.link,
         'submitteddate': value.submitteddate === undefined ? undefined : (value.submitteddate === null ? null : value.submitteddate.toISOString()),

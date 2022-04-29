@@ -42,7 +42,7 @@ namespace ChaggarCharts.Api.Controllers
                 _likesRepo.CreateLike(toLike);
                 _likesRepo.SaveChanges();
 
-                var likedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toLike.Songid.Value));
+                var likedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toLike.Songid));
 
                 _songHub.Clients.All.ReceiveSongEvent(likedSong);
 
@@ -67,7 +67,7 @@ namespace ChaggarCharts.Api.Controllers
                 _likesRepo.RemoveLike(toUnlike);
                 _likesRepo.SaveChanges();
 
-                var unlikedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toUnlike.Songid.Value));
+                var unlikedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toUnlike.Songid));
 
                 _songHub.Clients.All.ReceiveSongEvent(unlikedSong);
 

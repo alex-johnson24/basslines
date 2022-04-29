@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace ChaggarCharts.Api.Models
 {
     public partial class Song
@@ -22,8 +20,10 @@ namespace ChaggarCharts.Api.Models
         public DateTime? Createdatetime { get; set; }
         public DateTime? Updatedatetime { get; set; }
         public string Link { get; set; }
+        public Guid? Reviewerid { get; set; }
 
         public virtual Genre Genre { get; set; }
+        public virtual User Reviewer { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<Like> Likes { get; set; }
     }

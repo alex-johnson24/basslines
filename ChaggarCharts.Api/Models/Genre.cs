@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-#nullable disable
-
 namespace ChaggarCharts.Api.Models
 {
     public partial class Genre

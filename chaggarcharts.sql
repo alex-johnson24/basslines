@@ -60,14 +60,16 @@ create table songs(
 	id UNIQUEIDENTIFIER DEFAULT NEWID(),
 	title NVARCHAR(100) NOT NULL,
 	artist NVARCHAR(100) NOT NULL,
-	userid UNIQUEIDENTIFIER,
+	userid UNIQUEIDENTIFIER NOT NULL,
 	genreid UNIQUEIDENTIFIER,
+  reviewerid UNIQUEIDENTIFIER NOT NULL,
 	rating int CONSTRAINT CK_songs_rating Check ( rating >= 0 and rating <= 10 ),
 	createdatetime DATETIME2(3) CONSTRAINT songs_createddate DEFAULT (SYSDATETIME()),
     updatedatetime DATETIME2(3),
     PRIMARY KEY (id),
     CONSTRAINT FK_songs_genreid FOREIGN KEY (genreid) REFERENCES genres(id) on delete set null,
     CONSTRAINT FK_songs_userid FOREIGN KEY (userid) REFERENCES users(id) on delete set null,
+    CONSTRAINT FK_songs_reviewerid FOREIGN KEY (reviewerid) REFERENCES users(id) on delete set null
 );
 
 CREATE TRIGGER songs_updatedatetime ON dbo.songs
