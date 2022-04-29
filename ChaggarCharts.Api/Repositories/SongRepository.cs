@@ -94,8 +94,6 @@ namespace ChaggarCharts.Api.Repositories
                 _ctx.Entry<User>(song.Reviewer).Property(p => p.Updatedatetime).IsModified = false;
             }
 
-            _ctx.Attach(song.User);
-
             _ctx.Entry<Song>(song).State = EntityState.Modified;
             _ctx.Entry<Song>(song).Reference(p => p.User).IsModified = false;
             _ctx.Entry<Song>(song).Property(p => p.Userid).IsModified = false;
