@@ -12,8 +12,8 @@ phases:
   pre_build:
     commands:
       - echo Restore started on `date`
-      - dotnet restore ./chaggarcharts.sln
-      - cd ./ChaggarCharts.Web
+      - dotnet restore ./basslines.sln
+      - cd ./BassLines.Web
       - npm install yarn -g
       - yarn install
       - yarn prod:webpack
@@ -22,7 +22,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - dotnet publish ./ChaggarCharts.Api/ChaggarCharts.Api.csproj -c Release
+      - dotnet publish ./BassLines.Api/BassLines.Api.csproj -c Release
 
   # post_build:
   #   commands:
@@ -33,5 +33,5 @@ phases:
 artifacts:
   files:
     - "**/*"
-  base-directory: ./ChaggarCharts.Api/bin/Release/net6.0/publish/
+  base-directory: ./BassLines.Api/bin/Release/net6.0/publish/
   discard-paths: no

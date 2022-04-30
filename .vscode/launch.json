@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/ChaggarCharts.Api/bin/Debug/net6.0/ChaggarCharts.Api.dll",
+            "program": "${workspaceFolder}/BassLines.Api/bin/Debug/net6.0/BassLines.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/ChaggarCharts.Api",
+            "cwd": "${workspaceFolder}/BassLines.Api",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",

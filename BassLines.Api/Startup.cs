@@ -1,0 +1,136 @@
+using BassLines.Api.Hubs;
+using System.IO;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using AutoMapper;
+using BassLines.Api.Interfaces;
+using BassLines.Api.Models;
+using BassLines.Api.Profiles;
+using BassLines.Api.Repositories;
+using BassLines.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
+namespace BassLines
+{
+    public class Startup
+    {
+
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // Auto Mapper Configurations
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ChaggarChartProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+
+            services.AddOptions<AuthSettings>().Bind(Configuration.GetSection("AuthSettings"));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["access_token"];
+                            return Task.CompletedTask;
+                        }
+                    };
+                    cfg.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["AuthSettings:validIssuer"],
+                        ValidAudience = Configuration["AuthSettings:validAudience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthSettings:secretKey"]))
+                    };
+                });
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("AdminUser", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, "Administrator");
+                });
+            });
+            services.AddSingleton(mapper);
+            services.AddScoped<ISongRepository, SongRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMetricsRepository, MetricsRepository>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<ILeaderboardService, LeaderboardService>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+
+            services.AddSignalR();
+
+            services.AddControllers()
+            .AddJsonOptions(x =>
+            {
+                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "BassLines", Version = "v1" });
+            });
+
+            services.AddDbContextFactory<BassLinesContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("BassLinesDatabase"),
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BassLines v1"));
+            }
+            else
+            {
+                app.UseHttpsRedirection();
+            }
+
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<SongHub>("songHub");
+            });
+
+            app.Run(async (context) =>
+            {
+                context.Response.ContentType = "text/html";
+                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
+            });
+        }
+    }
+}

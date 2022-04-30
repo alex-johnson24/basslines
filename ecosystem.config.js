@@ -1,7 +1,7 @@
 module.exports = {
     apps: [{
-      name: 'chaggarcharts',
-      script: 'dotnet /appl/chaggarcharts/ChaggarCharts.Api.dll',
+      name: 'basslines',
+      script: 'dotnet /appl/basslines/BassLines.Api.dll',
       args: '',
       instances: 1,
       autorestart: true,

@@ -2,7 +2,7 @@ version: 0.0
 os: linux  
 files:  
     -  
-        destination: /appl/chaggarcharts  
+        destination: /appl/basslines  
         source: /  
 hooks:  
     ApplicationStop:  

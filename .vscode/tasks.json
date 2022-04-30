@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ChaggarCharts.Api/ChaggarCharts.Api.csproj",
+                "${workspaceFolder}/BassLines.Api/BassLines.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/ChaggarCharts.Api/ChaggarCharts.Api.csproj",
+                "${workspaceFolder}/BassLines.Api/BassLines.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/ChaggarCharts.Api/ChaggarCharts.Api.csproj",
+                "${workspaceFolder}/BassLines.Api/BassLines.Api.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

@@ -37,7 +37,7 @@ Backend:
 To run this project locally in a development environment:
 
 ```
-Create database using chaggarcharts.sql script
+Create database using BassLines.sql script
 Load connection string into appsettings.json file and store in ChaggarCharts.API folder
 
 $ cd ChaggarCharts.API
