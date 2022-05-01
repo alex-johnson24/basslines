@@ -35,23 +35,23 @@ import {
     UserModelToJSON,
 } from '../models';
 
-export interface UsersGetPasswordResetTokenGetRequest {
+export interface ApiUsersGetPasswordResetTokenGetRequest {
     username?: string;
 }
 
-export interface UsersPostRequest {
+export interface ApiUsersPostRequest {
     registrationModel?: RegistrationModel;
 }
 
-export interface UsersResetUserPasswordPostRequest {
+export interface ApiUsersResetUserPasswordPostRequest {
     resetPasswordModel?: ResetPasswordModel;
 }
 
-export interface UsersSignInPostRequest {
+export interface ApiUsersSignInPostRequest {
     loginModel?: LoginModel;
 }
 
-export interface UsersUserMetricsGetRequest {
+export interface ApiUsersUserMetricsGetRequest {
     userId?: string;
 }
 
@@ -62,13 +62,13 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersAllUsersGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserModel>>> {
+    async apiUsersAllUsersGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserModel>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Users/AllUsers`,
+            path: `/api/Users/AllUsers`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -79,14 +79,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersAllUsersGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
-        const response = await this.usersAllUsersGetRaw(initOverrides);
+    async apiUsersAllUsersGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
+        const response = await this.apiUsersAllUsersGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async usersGetPasswordResetTokenGetRaw(requestParameters: UsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiUsersGetPasswordResetTokenGetRaw(requestParameters: ApiUsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         if (requestParameters.username !== undefined) {
@@ -96,7 +96,7 @@ export class UsersApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Users/GetPasswordResetToken`,
+            path: `/api/Users/GetPasswordResetToken`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -107,19 +107,19 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersGetPasswordResetTokenGet(requestParameters: UsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.usersGetPasswordResetTokenGetRaw(requestParameters, initOverrides);
+    async apiUsersGetPasswordResetTokenGet(requestParameters: ApiUsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiUsersGetPasswordResetTokenGetRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async usersLeaderboardMetricsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserLeaderboardModel>>> {
+    async apiUsersLeaderboardMetricsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserLeaderboardModel>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Users/LeaderboardMetrics`,
+            path: `/api/Users/LeaderboardMetrics`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -130,20 +130,20 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersLeaderboardMetricsGet(initOverrides?: RequestInit): Promise<Array<UserLeaderboardModel>> {
-        const response = await this.usersLeaderboardMetricsGetRaw(initOverrides);
+    async apiUsersLeaderboardMetricsGet(initOverrides?: RequestInit): Promise<Array<UserLeaderboardModel>> {
+        const response = await this.apiUsersLeaderboardMetricsGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async usersLogoutGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiUsersLogoutGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Users/Logout`,
+            path: `/api/Users/Logout`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -154,13 +154,13 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersLogoutGet(initOverrides?: RequestInit): Promise<void> {
-        await this.usersLogoutGetRaw(initOverrides);
+    async apiUsersLogoutGet(initOverrides?: RequestInit): Promise<void> {
+        await this.apiUsersLogoutGetRaw(initOverrides);
     }
 
     /**
      */
-    async usersPostRaw(requestParameters: UsersPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiUsersPostRaw(requestParameters: ApiUsersPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -168,7 +168,7 @@ export class UsersApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Users`,
+            path: `/api/Users`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -180,13 +180,13 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersPost(requestParameters: UsersPostRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.usersPostRaw(requestParameters, initOverrides);
+    async apiUsersPost(requestParameters: ApiUsersPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiUsersPostRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async usersResetUserPasswordPostRaw(requestParameters: UsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiUsersResetUserPasswordPostRaw(requestParameters: ApiUsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -194,7 +194,7 @@ export class UsersApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Users/ResetUserPassword`,
+            path: `/api/Users/ResetUserPassword`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -206,13 +206,13 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersResetUserPasswordPost(requestParameters: UsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.usersResetUserPasswordPostRaw(requestParameters, initOverrides);
+    async apiUsersResetUserPasswordPost(requestParameters: ApiUsersResetUserPasswordPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiUsersResetUserPasswordPostRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async usersSignInPostRaw(requestParameters: UsersSignInPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserModel>> {
+    async apiUsersSignInPostRaw(requestParameters: ApiUsersSignInPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserModel>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -220,7 +220,7 @@ export class UsersApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Users/SignIn`,
+            path: `/api/Users/SignIn`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -232,14 +232,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersSignInPost(requestParameters: UsersSignInPostRequest, initOverrides?: RequestInit): Promise<UserModel> {
-        const response = await this.usersSignInPostRaw(requestParameters, initOverrides);
+    async apiUsersSignInPost(requestParameters: ApiUsersSignInPostRequest, initOverrides?: RequestInit): Promise<UserModel> {
+        const response = await this.apiUsersSignInPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async usersUserMetricsGetRaw(requestParameters: UsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserMetricsModel>> {
+    async apiUsersUserMetricsGetRaw(requestParameters: ApiUsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserMetricsModel>> {
         const queryParameters: any = {};
 
         if (requestParameters.userId !== undefined) {
@@ -249,7 +249,7 @@ export class UsersApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Users/UserMetrics`,
+            path: `/api/Users/UserMetrics`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -260,8 +260,8 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async usersUserMetricsGet(requestParameters: UsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<UserMetricsModel> {
-        const response = await this.usersUserMetricsGetRaw(requestParameters, initOverrides);
+    async apiUsersUserMetricsGet(requestParameters: ApiUsersUserMetricsGetRequest, initOverrides?: RequestInit): Promise<UserMetricsModel> {
+        const response = await this.apiUsersUserMetricsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

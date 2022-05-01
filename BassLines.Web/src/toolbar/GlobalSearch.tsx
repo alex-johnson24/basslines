@@ -77,7 +77,7 @@ const GlobalSearch = () => {
 
   const { mutateAsync: getSongs, status: songsStatus } = useMutation(
     async (search: string) => {
-      const songsResults = await call(SongsApi).songsSongSearchGet({
+      const songsResults = await call(SongsApi).apiSongsSongSearchGet({
         search,
       });
       return songsResults;

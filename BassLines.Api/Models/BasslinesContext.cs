@@ -179,6 +179,8 @@ namespace BassLines.Api.Models
                     .HasColumnName("createdatetime")
                     .HasDefaultValueSql("(sysdatetime())");
 
+                entity.Property(e => e.Disablereviewing).HasColumnName("disablereviewing");
+
                 entity.Property(e => e.Firstname)
                     .IsRequired()
                     .HasMaxLength(50)

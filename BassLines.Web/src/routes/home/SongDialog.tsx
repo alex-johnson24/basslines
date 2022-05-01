@@ -41,15 +41,15 @@ const SongDialog = (props: ISongDialogProps) => {
 
   const { mutateAsync: getGenres, status: getGenresStatus } = useMutation(
     async () => {
-      const genreResult = await call(GenresApi).genresGet();
+      const genreResult = await call(GenresApi).apiGenresGet();
       setGenres(genreResult);
     }
   );
 
   const submitSong = async () => {
     const songResult = userSong.id
-      ? await call(SongsApi).songsPut({ songModel: userSong })
-      : await call(SongsApi).songsPost({ songModel: userSong });
+      ? await call(SongsApi).apiSongsPut({ songModel: userSong })
+      : await call(SongsApi).apiSongsPost({ songModel: userSong });
     if (songResult === null) {
       console.log("POST FAILED");
     } else {

@@ -101,7 +101,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     async () => {
       const songsResults = await call(
         SongsApi
-      ).songsSubmissionDateSubmitDateStringGet({
+      ).apiSongsSubmissionDateSubmitDateStringGet({
         submitDateString: formattedDate,
       });
       setDailySongs(songsResults);

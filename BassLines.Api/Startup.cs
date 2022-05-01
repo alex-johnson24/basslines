@@ -27,9 +27,12 @@ namespace BassLines
     {
 
         public IConfiguration Configuration { get; }
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -70,6 +73,18 @@ namespace BassLines
                     policy.RequireClaim(ClaimTypes.Role, "Administrator");
                 });
             });
+
+            if (_env.IsDevelopment())
+            {
+                services.AddMemoryCache();
+                services.AddScoped<IReviewerRotationService, InMemoryReviewerRotationService>();
+            }
+            else
+            {
+                services.AddStackExchangeRedisCache(options => { options.Configuration = Configuration.GetConnectionString("RedisCacheUrl"); });
+                services.AddScoped<IReviewerRotationService, RedisReviewerRotationService>();
+            }
+
             services.AddSingleton(mapper);
             services.AddScoped<ISongRepository, SongRepository>();
             services.AddScoped<IGenreRepository, GenreRepository>();
@@ -83,10 +98,10 @@ namespace BassLines
             services.AddSignalR();
 
             services.AddControllers()
-            .AddJsonOptions(x =>
-            {
-                x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+                    .AddJsonOptions(x =>
+                    {
+                        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    });
 
             services.AddSwaggerGen(c =>
             {

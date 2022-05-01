@@ -10,7 +10,7 @@ namespace BassLines.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class GenresController : ControllerBase
     {
         private readonly ILogger<GenresController> _logger;

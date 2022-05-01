@@ -50,7 +50,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      let result = await call(UsersApi).usersSignInPost({
+      let result = await call(UsersApi).apiUsersSignInPost({
         loginModel: {
           ...loginCreds,
         },
@@ -58,6 +58,7 @@ const Login = () => {
       dispatch({ type: "signIn", payload: result });
       history.push("/home");
     } catch (e) {
+      console.log(e);
       setLoginCreds((current) => ({ ...current, password: "" }));
       setLoading(false);
     }

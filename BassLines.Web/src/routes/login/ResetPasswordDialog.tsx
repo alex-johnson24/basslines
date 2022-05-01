@@ -44,7 +44,7 @@ const ResetPasswordDialog = (props: IProps) => {
 
   const submitReset = async () => {
     try {
-      await call(UsersApi).usersResetUserPasswordPost({
+      await call(UsersApi).apiUsersResetUserPasswordPost({
         resetPasswordModel: {
           username,
           password,

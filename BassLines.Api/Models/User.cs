@@ -21,6 +21,7 @@ namespace BassLines.Api.Models
         public Guid? Roleid { get; set; }
         public DateTime? Createdatetime { get; set; }
         public DateTime? Updatedatetime { get; set; }
+        public bool? Disablereviewing { get; set; }
 
         public virtual Role Role { get; set; }
         public virtual ICollection<Like> Likes { get; set; }

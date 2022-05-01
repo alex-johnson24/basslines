@@ -50,7 +50,7 @@ const Leaderboard = () => {
     useMutation(async () => {
       const leaderboardResults = await call(
         UsersApi
-      ).usersLeaderboardMetricsGet();
+      ).apiUsersLeaderboardMetricsGet();
 
       setLeaderboardModels(leaderboardResults);
     });

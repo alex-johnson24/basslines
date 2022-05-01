@@ -27,13 +27,13 @@ export class GenresApi extends runtime.BaseAPI {
 
     /**
      */
-    async genresGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<GenreModel>>> {
+    async apiGenresGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<GenreModel>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Genres`,
+            path: `/api/Genres`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -44,8 +44,8 @@ export class GenresApi extends runtime.BaseAPI {
 
     /**
      */
-    async genresGet(initOverrides?: RequestInit): Promise<Array<GenreModel>> {
-        const response = await this.genresGetRaw(initOverrides);
+    async apiGenresGet(initOverrides?: RequestInit): Promise<Array<GenreModel>> {
+        const response = await this.apiGenresGetRaw(initOverrides);
         return await response.value();
     }
 

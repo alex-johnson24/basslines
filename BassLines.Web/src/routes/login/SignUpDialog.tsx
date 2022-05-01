@@ -71,7 +71,7 @@ const SignUpDialog = (props: IProps) => {
 
   const { mutateAsync: signUp, status: signUpStatus } = useMutation(
     async () => {
-      const result = await call(UsersApi).usersPost({
+      const result = await call(UsersApi).apiUsersPost({
         registrationModel: {
           ...signUpFields,
         },

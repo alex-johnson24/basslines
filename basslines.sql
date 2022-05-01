@@ -24,10 +24,11 @@ create table users(
 	hpassword NVARCHAR(100) NOT NULL,
 	salt NVARCHAR(100) NOT NULL,
 	roleid UNIQUEIDENTIFIER,
+  disablereviewing BIT NOT NULL,
 	createdatetime DATETIME2(3) CONSTRAINT users_createddate DEFAULT (SYSDATETIME()),
-    updatedatetime DATETIME2(3),
-    PRIMARY KEY (id),
-    CONSTRAINT FK_users_roleid FOREIGN KEY (roleid) REFERENCES roles(id) on delete set null
+  updatedatetime DATETIME2(3),
+  PRIMARY KEY (id),
+  CONSTRAINT FK_users_roleid FOREIGN KEY (roleid) REFERENCES roles(id) on delete set null
 );
 
 CREATE TRIGGER users_updatedatetime ON dbo.users

@@ -134,7 +134,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
 
   const logout = async () => {
     try {
-      await call(UsersApi).usersLogoutGet();
+      await call(UsersApi).apiUsersLogoutGet();
       history.push("/login");
     } catch (e) {
       console.log("logout failed");

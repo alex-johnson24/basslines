@@ -16,7 +16,7 @@ namespace BassLines.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SongsController : ControllerBase
     {
         private readonly ILogger<SongsController> _logger;
@@ -39,6 +39,7 @@ namespace BassLines.Api.Controllers
         {
             try
             {
+
                 return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.GetSongs()));
             }
             catch (Exception ex)
@@ -124,7 +125,7 @@ namespace BassLines.Api.Controllers
         public IActionResult UpdateSong(SongModel userSong)
         {
             if (userSong.Id == null) return BadRequest("Given song for update is missing id");
-            
+
             if (!ModelState.IsValid) return BadRequest(ModelState.ValidationState);
 
             try

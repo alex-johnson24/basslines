@@ -19,7 +19,7 @@ const RatingPopover = (props: IRatingPopoverProps) => {
 
   const submitRating = async () => {
     try {
-      await call(SongsApi).songsPut({ songModel: props.selectedSong });
+      await call(SongsApi).apiSongsPut({ songModel: props.selectedSong });
       props.handleClose();
     } catch (e) {
       console.log("song rating failed", e);

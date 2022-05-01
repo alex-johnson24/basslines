@@ -46,7 +46,7 @@ namespace BassLines
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
                 .Enrich.WithExceptionDetails()
-                .WriteTo.File("chaggarlog-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("./logs/basslines-.txt", rollingInterval: RollingInterval.Day)
                 .WriteTo.Console()
                 .WriteTo.Debug()
                 .Enrich.WithProperty("Environment", environment)

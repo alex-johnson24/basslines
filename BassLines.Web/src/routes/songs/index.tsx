@@ -26,7 +26,7 @@ const Songs = () => {
 
   const { mutateAsync: getSongs, status: songsStatus } = useMutation(
     async () => {
-      const songsResults = await call(SongsApi).songsGet();
+      const songsResults = await call(SongsApi).apiSongsGet();
       let filteredResults = songsResults.filter(
         (f) =>
           format(f.submitteddate, "yyyy-MM-dd") !==

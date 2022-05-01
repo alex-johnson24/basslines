@@ -53,12 +53,12 @@ const SongCard = (props: ISongCardProps) => {
   const saveLike = async () => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(props.userInfo.id) > -1
-        ? await call(LikesApi).likesDelete({
+        ? await call(LikesApi).apiLikesDelete({
             likeModel: {
               ...props.song.likes.filter(f => f.userId === props.userInfo.id)[0]
             },
           })
-        : await call(LikesApi).likesPost({
+        : await call(LikesApi).apiLikesPost({
             likeModel: { userId: props.userInfo.id, songId: props.song.id },
           });
       props.refreshSongs();

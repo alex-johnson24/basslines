@@ -20,11 +20,11 @@ import {
     LikeModelToJSON,
 } from '../models';
 
-export interface LikesDeleteRequest {
+export interface ApiLikesDeleteRequest {
     likeModel?: LikeModel;
 }
 
-export interface LikesPostRequest {
+export interface ApiLikesPostRequest {
     likeModel?: LikeModel;
 }
 
@@ -35,7 +35,7 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesDeleteRaw(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiLikesDeleteRaw(requestParameters: ApiLikesDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -43,7 +43,7 @@ export class LikesApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Likes`,
+            path: `/api/Likes`,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -55,13 +55,13 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesDelete(requestParameters: LikesDeleteRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.likesDeleteRaw(requestParameters, initOverrides);
+    async apiLikesDelete(requestParameters: ApiLikesDeleteRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiLikesDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async likesPostRaw(requestParameters: LikesPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiLikesPostRaw(requestParameters: ApiLikesPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -69,7 +69,7 @@ export class LikesApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Likes`,
+            path: `/api/Likes`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -81,8 +81,8 @@ export class LikesApi extends runtime.BaseAPI {
 
     /**
      */
-    async likesPost(requestParameters: LikesPostRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.likesPostRaw(requestParameters, initOverrides);
+    async apiLikesPost(requestParameters: ApiLikesPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiLikesPostRaw(requestParameters, initOverrides);
     }
 
 }

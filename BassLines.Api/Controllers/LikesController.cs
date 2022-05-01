@@ -13,7 +13,7 @@ namespace BassLines.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class LikesController : ControllerBase
     {
         private readonly ILogger<LikesController> _logger;

@@ -23,19 +23,19 @@ import {
     SongModelToJSON,
 } from '../models';
 
-export interface SongsPostRequest {
+export interface ApiSongsPostRequest {
     songModel?: SongModel;
 }
 
-export interface SongsPutRequest {
+export interface ApiSongsPutRequest {
     songModel?: SongModel;
 }
 
-export interface SongsSongSearchGetRequest {
+export interface ApiSongsSongSearchGetRequest {
     search?: string;
 }
 
-export interface SongsSubmissionDateSubmitDateStringGetRequest {
+export interface ApiSongsSubmissionDateSubmitDateStringGetRequest {
     submitDateString: string;
 }
 
@@ -46,13 +46,13 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
+    async apiSongsGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Songs`,
+            path: `/api/Songs`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -63,14 +63,14 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsGet(initOverrides?: RequestInit): Promise<Array<SongModel>> {
-        const response = await this.songsGetRaw(initOverrides);
+    async apiSongsGet(initOverrides?: RequestInit): Promise<Array<SongModel>> {
+        const response = await this.apiSongsGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async songsPostRaw(requestParameters: SongsPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
+    async apiSongsPostRaw(requestParameters: ApiSongsPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -78,7 +78,7 @@ export class SongsApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Songs`,
+            path: `/api/Songs`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -90,14 +90,14 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsPost(requestParameters: SongsPostRequest, initOverrides?: RequestInit): Promise<SongModel> {
-        const response = await this.songsPostRaw(requestParameters, initOverrides);
+    async apiSongsPost(requestParameters: ApiSongsPostRequest, initOverrides?: RequestInit): Promise<SongModel> {
+        const response = await this.apiSongsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async songsPutRaw(requestParameters: SongsPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
+    async apiSongsPutRaw(requestParameters: ApiSongsPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SongModel>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -105,7 +105,7 @@ export class SongsApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/Songs`,
+            path: `/api/Songs`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -117,14 +117,14 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsPut(requestParameters: SongsPutRequest, initOverrides?: RequestInit): Promise<SongModel> {
-        const response = await this.songsPutRaw(requestParameters, initOverrides);
+    async apiSongsPut(requestParameters: ApiSongsPutRequest, initOverrides?: RequestInit): Promise<SongModel> {
+        const response = await this.apiSongsPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async songsSongSearchGetRaw(requestParameters: SongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
+    async apiSongsSongSearchGetRaw(requestParameters: ApiSongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
         const queryParameters: any = {};
 
         if (requestParameters.search !== undefined) {
@@ -134,7 +134,7 @@ export class SongsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Songs/SongSearch`,
+            path: `/api/Songs/SongSearch`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -145,16 +145,16 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsSongSearchGet(requestParameters: SongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongModel>> {
-        const response = await this.songsSongSearchGetRaw(requestParameters, initOverrides);
+    async apiSongsSongSearchGet(requestParameters: ApiSongsSongSearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongModel>> {
+        const response = await this.apiSongsSongSearchGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async songsSubmissionDateSubmitDateStringGetRaw(requestParameters: SongsSubmissionDateSubmitDateStringGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
+    async apiSongsSubmissionDateSubmitDateStringGetRaw(requestParameters: ApiSongsSubmissionDateSubmitDateStringGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongModel>>> {
         if (requestParameters.submitDateString === null || requestParameters.submitDateString === undefined) {
-            throw new runtime.RequiredError('submitDateString','Required parameter requestParameters.submitDateString was null or undefined when calling songsSubmissionDateSubmitDateStringGet.');
+            throw new runtime.RequiredError('submitDateString','Required parameter requestParameters.submitDateString was null or undefined when calling apiSongsSubmissionDateSubmitDateStringGet.');
         }
 
         const queryParameters: any = {};
@@ -162,7 +162,7 @@ export class SongsApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/Songs/SubmissionDate/{submitDateString}`.replace(`{${"submitDateString"}}`, encodeURIComponent(String(requestParameters.submitDateString))),
+            path: `/api/Songs/SubmissionDate/{submitDateString}`.replace(`{${"submitDateString"}}`, encodeURIComponent(String(requestParameters.submitDateString))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -173,8 +173,8 @@ export class SongsApi extends runtime.BaseAPI {
 
     /**
      */
-    async songsSubmissionDateSubmitDateStringGet(requestParameters: SongsSubmissionDateSubmitDateStringGetRequest, initOverrides?: RequestInit): Promise<Array<SongModel>> {
-        const response = await this.songsSubmissionDateSubmitDateStringGetRaw(requestParameters, initOverrides);
+    async apiSongsSubmissionDateSubmitDateStringGet(requestParameters: ApiSongsSubmissionDateSubmitDateStringGetRequest, initOverrides?: RequestInit): Promise<Array<SongModel>> {
+        const response = await this.apiSongsSubmissionDateSubmitDateStringGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

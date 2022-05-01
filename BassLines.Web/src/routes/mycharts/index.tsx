@@ -91,7 +91,7 @@ const MyCharts = () => {
   React.useEffect(() => {
     const getUsers = async () => {
       try {
-        let users = await call(UsersApi).usersAllUsersGet();
+        let users = await call(UsersApi).apiUsersAllUsersGet();
         setUsers(users);
       } catch (e) {}
     };
@@ -102,7 +102,7 @@ const MyCharts = () => {
     if (selectedUser) {
       const getUserMetrics = async (userId: string) => {
         try {
-          let userData = await call(UsersApi).usersUserMetricsGet({ userId });
+          let userData = await call(UsersApi).apiUsersUserMetricsGet({ userId });
           setUserMetrics(userData);
         } catch (e) {}
       };

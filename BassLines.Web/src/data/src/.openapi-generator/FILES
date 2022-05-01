@@ -1,5 +1,6 @@
 apis/GenresApi.ts
 apis/LikesApi.ts
+apis/ReviewersApi.ts
 apis/SongsApi.ts
 apis/UsersApi.ts
 apis/index.ts
