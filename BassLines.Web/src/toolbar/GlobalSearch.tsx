@@ -180,7 +180,7 @@ const GlobalSearch = () => {
           sx={{
             position: "absolute",
             top: refBounds?.bottom,
-            left: refBounds?.left,
+            left: refBounds?.left - 240,
             width: refBounds?.width,
             display: searchString || listCursor !== null ? "flex" : "none",
             height: "300px",

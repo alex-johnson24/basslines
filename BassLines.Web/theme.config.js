@@ -1,6 +1,6 @@
 export const themeConfig = {
     "typography": {
-        "fontFamily": "Kufam",
+        "fontFamily": "Lato",
     },
     "palette": {
         mode: "light",
