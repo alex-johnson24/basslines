@@ -23,6 +23,9 @@ export default function Root(props: IRootProps) {
   const { userInfo } = useUserState();
   const history = useHistory();
   const dispatch = useUserDispatch();
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
+    new Date()
+  );
 
   React.useEffect(() => {
     const token = getCookieByName("access_token");
@@ -41,11 +44,13 @@ export default function Root(props: IRootProps) {
       {userInfo ? (
         <MiniDrawer
           basepath={props.basepath}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
           content={
             <>
               <Route
                 path="/home"
-                component={() => <HomeDashboard userInfo={userInfo} />}
+                component={() => <HomeDashboard userInfo={userInfo} selectedDate={selectedDate} />}
               />
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />

@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
-import DatePicker from "@mui/lab/DatePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   Box,
   Container,
@@ -59,16 +59,13 @@ const useStyles = makeStyles(() => {
 
 interface IHomeDashboardProps {
   userInfo: UserModel;
+  selectedDate: Date;
 }
 
 const HomeDashboard = (props: IHomeDashboardProps) => {
   const theme = useTheme();
 
   const classes = useStyles(theme);
-
-  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
-    new Date()
-  );
 
   const [dailySongs, setDailySongs] = React.useState<SongModel[]>([]);
   const [songDialogOpen, setSongDialogOpen] = React.useState<boolean>(false);
@@ -81,7 +78,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     (a, b) => b - a
   );
 
-  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+  const formattedDate = format(props.selectedDate, "yyyy-MM-dd");
 
   const allSongsRated =
     dailySongs.filter((f) => typeof f.rating !== "number").length === 0;
@@ -110,7 +107,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   React.useEffect(() => {
     getSongs();
-  }, [selectedDate]);
+  }, [props.selectedDate]);
 
   const handleSongDialogClose = () => {
     setSongDialogOpen(false);
@@ -171,35 +168,9 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
         userInfo={props.userInfo}
         userSong={currentUserSong}
       />
-      <Grid sx={{ marginBottom: "10px" }} container>
-        <Grid item xs={4}>
-          <DatePicker
-            label="Submission Date"
-            value={selectedDate}
-            onChange={(newValue) => {
-              setSelectedDate(newValue);
-            }}
-            renderInput={(params) => <TextField {...params} />}
-          />
-        </Grid>
-        <Grid className={classes.vCenteredGrid} item xs={4}>
-          <Typography color="inherit" variant="h4">
-            Daily Songs: {dailySongs.length}
-          </Typography>
-        </Grid>
-        <Grid className={classes.vCenteredGrid} item xs={4}>
-          <Typography color="inherit" variant="h4">
-            Daily Avg:{" "}
-            {(
-              dailySongs.reduce((a, b) => a + b.rating, 0) /
-              (1.0 * dailySongs.length)
-            ).toFixed(2)}
-          </Typography>
-        </Grid>
-      </Grid>
       <Container
         sx={{ height: "calc(100vh - 228px)", overflowY: "auto" }}
-        maxWidth="xl"
+        maxWidth={false}
         className={classes.scrollbar}
       >
         {dailySongs
