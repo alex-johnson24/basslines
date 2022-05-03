@@ -10,6 +10,7 @@ import {
   ListItemButton,
   ListItemText,
   styled,
+  useMediaQuery,
 } from "@mui/material";
 import { debounce } from "lodash";
 import { SongModel, SongsApi } from "../data/src";
@@ -17,6 +18,7 @@ import { call } from "../data/callWrapper";
 import { useMutation } from "react-query";
 import SearchIcon from "@mui/icons-material/Search";
 import SongDetailDialog from "./SongDetailDialog";
+import { useTheme } from "@mui/material/styles";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -83,6 +85,9 @@ const GlobalSearch = () => {
       return songsResults;
     }
   );
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const getOptionsDelayed = React.useCallback(
     debounce((text: string, callback: () => SongModel[]) => {
@@ -180,7 +185,7 @@ const GlobalSearch = () => {
           sx={{
             position: "absolute",
             top: refBounds?.bottom,
-            left: refBounds?.left - 240,
+            left: isSmallScreen ? refBounds?.left : refBounds?.left - 240,
             width: refBounds?.width,
             display: searchString || listCursor !== null ? "flex" : "none",
             height: "300px",

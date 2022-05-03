@@ -96,6 +96,7 @@ const WhiteBorderTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     "& > fieldset": { borderColor: theme.palette.secondary.main },
     color: theme.palette.secondary.main,
+    maxWidth: 185,
   },
   "& .MuiOutlinedInput-root.Mui-focused": {
     "& > fieldset": {
