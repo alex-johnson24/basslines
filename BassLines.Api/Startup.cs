@@ -1,3 +1,6 @@
+//using Internal;
+using System;
+using System.ComponentModel;
 using BassLines.Api.Hubs;
 using System.IO;
 using System.Security.Claims;
@@ -47,6 +50,8 @@ namespace BassLines
             IMapper mapper = mapperConfig.CreateMapper();
 
             services.AddOptions<AuthSettings>().Bind(Configuration.GetSection("AuthSettings"));
+            
+            services.AddOptions<SpotifySettings>().Bind(Configuration.GetSection("SpotifySettings"));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -56,6 +61,14 @@ namespace BassLines
                         OnMessageReceived = context =>
                         {
                             context.Token = context.Request.Cookies["access_token"];
+                            Console.WriteLine("*** *** *** *** *** ***");
+                            foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(context))
+                            {
+                                string name = descriptor.Name;
+                                object value = descriptor.GetValue(context);
+                                Console.WriteLine("{0}={1}", name, value);
+                            }
+                            Console.WriteLine("*** *** *** *** *** ***");
                             return Task.CompletedTask;
                         }
                     };
@@ -94,6 +107,7 @@ namespace BassLines
             services.AddScoped<ILikeRepository, LikeRepository>();
             services.AddScoped<ILeaderboardService, LeaderboardService>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ISpotifyService, SpotifyService>();
 
             services.AddSignalR();
 
@@ -111,6 +125,11 @@ namespace BassLines
             services.AddDbContextFactory<BassLinesContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BassLinesDatabase"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+            services.AddHttpClient("SpotifyAuth", c => 
+            {
+                c.BaseAddress = new Uri("https://accounts.spotify.com/authorize");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
