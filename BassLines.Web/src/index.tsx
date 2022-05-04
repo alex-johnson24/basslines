@@ -54,7 +54,7 @@ const App = (props: AppProps) => {
 
 ReactDOM.render(
   <BrowserRouter basename={basename}>
-    <App appName="ChaggarCharts" version={version} basename={basename} />
+    <App appName="BassLines" version={version} basename={basename} />
   </BrowserRouter>,
   document.getElementById("mountNode")
 );

@@ -44,7 +44,7 @@ namespace BassLines
             // Auto Mapper Configurations
             var mapperConfig = new MapperConfiguration(mc =>
             {
-                mc.AddProfile(new ChaggarChartProfile());
+                mc.AddProfile(new BassLinesProfile());
             });
 
             IMapper mapper = mapperConfig.CreateMapper();

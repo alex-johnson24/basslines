@@ -61,7 +61,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        baseUrl: argv.mode === "development" ? "/" : "/chaggarcharts/",
+        baseUrl: "/",
         template: "index.ejs",
         version: argv.mode === "development" ? devVersion : prodVersion,
       }),

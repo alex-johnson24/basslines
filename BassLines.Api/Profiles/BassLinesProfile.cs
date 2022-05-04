@@ -4,9 +4,9 @@ using BassLines.Api.Models;
 
 namespace BassLines.Api.Profiles
 {
-    public class ChaggarChartProfile : Profile
+    public class BassLinesProfile : Profile
     {
-        public ChaggarChartProfile()
+        public BassLinesProfile()
         {
             CreateMap<Song, SongModel>()
                 .ReverseMap();
