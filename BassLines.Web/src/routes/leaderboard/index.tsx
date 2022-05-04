@@ -21,8 +21,8 @@ const Leaderboard = () => {
     { itemToBeRanked: "daysWon", title: "Most Days Won" },
     { itemToBeRanked: "numberOfLikes", title: "Users' Total Likes Received" },
     {
-      itemToBeRanked: "songsAdded",
-      title: "Songs Added to Chaggar's Playlist",
+      itemToBeRanked: "medalsEarned",
+      title: "Medals Earned",
     },
     {
       itemToBeRanked: "submissionsCount",

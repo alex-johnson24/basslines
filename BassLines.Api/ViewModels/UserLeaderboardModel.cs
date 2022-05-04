@@ -14,7 +14,7 @@ namespace BassLines.Api.ViewModels
         public string MostLikedSong { get; set; }
         public int? LikesOnMostLikedSong { get; set; }
         public int NumberOfLikes { get; set; }
-        public int SongsAdded { get; set; }
+        public int MedalsEarned { get; set; }
         public int SubmissionsCount { get; set; }
     }
 }
