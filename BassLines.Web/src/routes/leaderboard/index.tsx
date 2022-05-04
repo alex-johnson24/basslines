@@ -22,7 +22,7 @@ const Leaderboard = () => {
     { itemToBeRanked: "numberOfLikes", title: "Users' Total Likes Received" },
     {
       itemToBeRanked: "songsAdded",
-      title: "Songs Added to Chaggar's Playlist",
+      title: "BassLines Replay Songs",
     },
     {
       itemToBeRanked: "submissionsCount",

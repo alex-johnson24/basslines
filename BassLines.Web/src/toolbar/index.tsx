@@ -208,7 +208,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           }}
         >
           <Typography variant="h4" color="secondary">
-            Chaggar
+            Base
           </Typography>
           <Typography
             sx={{
@@ -218,7 +218,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             }}
             variant="h4"
           >
-            Charts
+            Lines
           </Typography>
         </DrawerHeader>
         <Divider />

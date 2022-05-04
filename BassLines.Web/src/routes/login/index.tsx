@@ -85,7 +85,7 @@ const Login = () => {
           </Avatar>
           <Box sx={{ display: "flex" }}>
             <Typography variant="h4" color="secondary">
-              Chaggar
+              Base
             </Typography>
             <Typography
               sx={{
@@ -95,7 +95,7 @@ const Login = () => {
               }}
               variant="h4"
             >
-              Charts
+              Lines
             </Typography>
           </Box>
           <Box component="form" onSubmit={submitLogin} sx={{ mt: 1 }}>
