@@ -208,7 +208,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           }}
         >
           <Typography variant="h4" color="secondary">
-            Base
+            Bass
           </Typography>
           <Typography
             sx={{

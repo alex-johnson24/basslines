@@ -85,7 +85,7 @@ const Login = () => {
           </Avatar>
           <Box sx={{ display: "flex" }}>
             <Typography variant="h4" color="secondary">
-              Base
+              Bass
             </Typography>
             <Typography
               sx={{
