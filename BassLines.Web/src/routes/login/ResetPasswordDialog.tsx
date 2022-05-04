@@ -133,7 +133,7 @@ const ResetPasswordDialog = (props: IProps) => {
                   const val = e.target?.value;
                   setResetToken(val);
                 }}
-                helperText="ChaggarCharts admins can generate tokens via the API"
+                helperText="BassLines admins can generate tokens via the API"
               />
             </Grid>
           </Grid>

@@ -1,4 +1,4 @@
-# ChaggarCharts
+# BassLines
 
 React app with ASP.NET Core backend providing a platform to submit and rate songs while tracking their statistics.
 
@@ -16,7 +16,7 @@ to show items such as total days won or highest average rating.
 
 ## Technologies
 
-ChaggarCharts is created using:
+BassLines is created using:
 
 Frontend:
 
@@ -38,14 +38,14 @@ To run this project locally in a development environment:
 
 ```
 Create database using BassLines.sql script
-Load connection string into appsettings.json file and store in ChaggarCharts.API folder
+Load connection string into appsettings.json file and store in BassLines.API folder
 
-$ cd ChaggarCharts.API
+$ cd BassLines.API
 $ dotnet restore
-$ dotnet ChaggarCharts.API.dll
+$ dotnet BassLines.API.dll
 
 $ cd ..
-$ cd ChaggarCharts.Web
+$ cd BassLines.Web
 $ yarn install
 $ yarn dev:start
 ```

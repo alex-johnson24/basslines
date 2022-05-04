@@ -19,7 +19,7 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      basePath: window.__BASENAME__ === "/" ? "https://localhost:5001" : "https://alexanderdev.com/chaggarcharts",
+      basePath: window.__BASENAME__ === "/" ? "https://localhost:5001" : "https://basslines.co/",
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );
