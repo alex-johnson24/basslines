@@ -5,9 +5,9 @@ import {
   DialogActions,
   DialogContent,
   Grid,
-  Typography
+  Typography,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { SongModel } from "../data/src";
 import { format } from "date-fns";
 
@@ -34,8 +34,8 @@ const SongDetailDialog = (props: IProps) => {
       onClose={props.handleClose}
       maxWidth="lg"
       open={props.open}
-      sx={{ minHeight: "300px"}}
-      >
+      sx={{ minHeight: "300px" }}
+    >
       <DialogContent>
         <CloseIcon
           onClick={props.handleClose}
@@ -126,6 +126,7 @@ const SongDetailDialog = (props: IProps) => {
               </div>
             </Grid>
           </Grid>
+        </Grid>
       </DialogContent>
     </Dialog>
   );
