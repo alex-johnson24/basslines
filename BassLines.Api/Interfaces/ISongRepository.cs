@@ -14,5 +14,6 @@ namespace BassLines.Api.Interfaces
         void SubmitSong(Song song);
         void UpdateSong(Song song);
         IEnumerable<UserDailyWinsModel> GetUserDailyWins();
+        IEnumerable<UserMedalsEarnedModel> GetUserMedalsEarned();
     }
 }

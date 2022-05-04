@@ -102,5 +102,15 @@ namespace BassLines.Api.Repositories
                     Wins = g.Count()
                 });
         }
+
+        public IEnumerable<UserMedalsEarnedModel> GetUserMedalsEarned()
+        {
+            return _ctx.Set<Song>()
+                .GroupBy(songDay => songDay.Submitteddate, songDay => songDay, (k, g) => new { Key = k, Songs = g.ToList() })
+                .AsEnumerable().Select(s => new { s.Key, Songs = s.Songs, dRatings = s.Songs.Select(s => s.Rating).Distinct().OrderByDescending(u => u).Take(3) })
+                .Select(s => s.Songs.Where(w => s.dRatings.Contains(w.Rating)))
+                .SelectMany(s => s.Select(s => new { s.Userid, s.Id }))
+                .GroupBy(g => g.Userid, (key, g) => new UserMedalsEarnedModel { UserID = key, Medals = g.Count() });
+        }
     }
 }

@@ -90,7 +90,7 @@ export interface UserLeaderboardModel {
      * @type {number}
      * @memberof UserLeaderboardModel
      */
-    songsAdded?: number;
+    medalsEarned?: number;
     /**
      * 
      * @type {number}
@@ -120,7 +120,7 @@ export function UserLeaderboardModelFromJSONTyped(json: any, ignoreDiscriminator
         'mostLikedSong': !exists(json, 'mostLikedSong') ? undefined : json['mostLikedSong'],
         'likesOnMostLikedSong': !exists(json, 'likesOnMostLikedSong') ? undefined : json['likesOnMostLikedSong'],
         'numberOfLikes': !exists(json, 'numberOfLikes') ? undefined : json['numberOfLikes'],
-        'songsAdded': !exists(json, 'songsAdded') ? undefined : json['songsAdded'],
+        'medalsEarned': !exists(json, 'medalsEarned') ? undefined : json['medalsEarned'],
         'submissionsCount': !exists(json, 'submissionsCount') ? undefined : json['submissionsCount'],
     };
 }
@@ -145,7 +145,7 @@ export function UserLeaderboardModelToJSON(value?: UserLeaderboardModel | null):
         'mostLikedSong': value.mostLikedSong,
         'likesOnMostLikedSong': value.likesOnMostLikedSong,
         'numberOfLikes': value.numberOfLikes,
-        'songsAdded': value.songsAdded,
+        'medalsEarned': value.medalsEarned,
         'submissionsCount': value.submissionsCount,
     };
 }
