@@ -10,6 +10,8 @@ import { useUserDispatch, useUserState } from "../contexts";
 import jwt_decode from "jwt-decode";
 import { getCookieByName } from "../utils/textUtils";
 import { UserModel } from "../data/src";
+import SpotifyRedirect from "./spotify/Redirect";
+import SpotifyHandler from "./spotify/Handler";
 
 interface IRootProps {
   basepath: string;
@@ -55,10 +57,12 @@ export default function Root(props: IRootProps) {
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />
               <Route path="/leaderboard" component={Leaderboard} />
+              <SpotifyHandler />
             </>
           }
-        />
-      ) : null}
+          />
+          ) : null}
+      <Route path="/redirect" component={SpotifyRedirect} />
       {!userInfo ? <Redirect to="/login" /> : null}
     </Switch>
   );

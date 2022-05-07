@@ -1,4 +1,3 @@
-//using Internal;
 using System;
 using System.ComponentModel;
 using BassLines.Api.Hubs;
@@ -23,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net.Http.Headers;
 
 namespace BassLines
 {
@@ -61,14 +61,6 @@ namespace BassLines
                         OnMessageReceived = context =>
                         {
                             context.Token = context.Request.Cookies["access_token"];
-                            Console.WriteLine("*** *** *** *** *** ***");
-                            foreach(PropertyDescriptor descriptor in TypeDescriptor.GetProperties(context))
-                            {
-                                string name = descriptor.Name;
-                                object value = descriptor.GetValue(context);
-                                Console.WriteLine("{0}={1}", name, value);
-                            }
-                            Console.WriteLine("*** *** *** *** *** ***");
                             return Task.CompletedTask;
                         }
                     };
@@ -126,9 +118,10 @@ namespace BassLines
                 options.UseSqlServer(Configuration.GetConnectionString("BassLinesDatabase"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
-            services.AddHttpClient("SpotifyAuth", c => 
+            services.AddHttpClient("Spotify", c => 
             {
-                c.BaseAddress = new Uri("https://accounts.spotify.com/authorize");
+                c.BaseAddress = new Uri("https://api.spotify.com/v1");
+                c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
         }
 

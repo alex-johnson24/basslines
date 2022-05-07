@@ -5,14 +5,14 @@ import "regenerator-runtime/runtime";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { UserProvider } from "./contexts";
 import Root from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { CssBaseline } from "@mui/material";
 import ColorModeWithProvider from "./helpers/useTheme";
-
+import { SpotifyProvider } from "./contexts/spotifyContext";
 
 declare global {
   interface Window {
@@ -24,7 +24,6 @@ declare global {
 const basename = window.__BASENAME__;
 const version = window.__APP_VERSION__;
 
-
 interface AppProps {
   appName: string;
   version: string;
@@ -32,8 +31,6 @@ interface AppProps {
 }
 
 const App = (props: AppProps) => {
-    
-
   const queryClient = new QueryClient();
 
   return (
@@ -41,10 +38,10 @@ const App = (props: AppProps) => {
       <UserProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <ColorModeWithProvider>
-            <>
+            <SpotifyProvider>
               <CssBaseline />
               <Root basepath={props.basename} />
-            </>
+            </SpotifyProvider>
           </ColorModeWithProvider>
         </LocalizationProvider>
       </UserProvider>
