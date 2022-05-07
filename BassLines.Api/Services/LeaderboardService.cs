@@ -58,12 +58,17 @@ namespace BassLines.Api.Services
                 Rating = s.Rating
             }).OrderByDescending(x => x.Rating).LastOrDefault()?.Rating;
         }
-        //fix this
+
         public static void setDailyWins(this User usr, UserLeaderboardModel ldr, IEnumerable<UserDailyWinsModel> userWinCounts)
         {
             ldr.DaysWon = userWinCounts.FirstOrDefault(s => s.UserID == usr.Id)?.Wins ?? 0;
         }
-        //fix this
+
+        public static void setMedalsEarned(this User usr, UserLeaderboardModel ldr, IEnumerable<UserMedalsEarnedModel> userMedalsEarned)
+        {
+            ldr.MedalsEarned = userMedalsEarned.FirstOrDefault(s => s.UserID == usr.Id)?.Medals ?? 0;
+        }
+
         public static void setMostLikedSong(this User usr, UserLeaderboardModel ldr)
         {
             ldr.MostLikedSong = usr.SongUsers.Select(s => new
@@ -77,11 +82,6 @@ namespace BassLines.Api.Services
         public static void setNumberOfLikes(this User usr, UserLeaderboardModel ldr)
         {
             ldr.NumberOfLikes = usr.SongUsers.Sum(o => o.Likes.Count);
-        }
-
-        public static void setSongsAdded(this User usr, UserLeaderboardModel ldr)
-        {
-            ldr.SongsAdded = usr.SongUsers.Count(o => o.Rating >= 7.0m);
         }
 
         public static void setSubmissionsCount(this User usr, UserLeaderboardModel ldr)
@@ -113,6 +113,7 @@ namespace BassLines.Api.Services
         {
             var users = _userRepo.GetLeaderboardUsers();
             var UsersDailyWins = _songRepo.GetUserDailyWins();
+            var UsersMedalsEarned = _songRepo.GetUserMedalsEarned();
 
             return users.Select(s =>
             {
@@ -124,9 +125,9 @@ namespace BassLines.Api.Services
                 s.setLowestRatedSong(ldr);
                 s.setLowestRating(ldr);
                 s.setDailyWins(ldr, UsersDailyWins);
+                s.setMedalsEarned(ldr, UsersMedalsEarned);
                 s.setMostLikedSong(ldr);
                 s.setNumberOfLikes(ldr);
-                s.setSongsAdded(ldr);
                 s.setSubmissionsCount(ldr);
                 s.setLikesOnMostLikedSong(ldr);
                 s.setUniqueGenres(ldr);
