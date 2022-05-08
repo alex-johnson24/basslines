@@ -10,11 +10,13 @@ models/ArtistCountModel.ts
 models/DailyRatingModel.ts
 models/GenreCountModel.ts
 models/GenreModel.ts
+models/Image.ts
 models/LikeModel.ts
 models/LoginModel.ts
 models/ModelValidationState.ts
 models/RegistrationModel.ts
 models/ResetPasswordModel.ts
+models/SongBase.ts
 models/SongModel.ts
 models/UserLeaderboardModel.ts
 models/UserMetricsModel.ts

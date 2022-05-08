@@ -22,6 +22,7 @@ import { useHistory } from "react-router-dom";
 import GlobalSearch from "./GlobalSearch";
 import { ColorModeContext } from "../contexts/colorModeContext";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useSpotify } from "../contexts/spotifyContext";
 
 const drawerWidth = 240;
 
@@ -147,6 +148,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
+  const test = useSpotify()
 
   const logout = async () => {
     try {

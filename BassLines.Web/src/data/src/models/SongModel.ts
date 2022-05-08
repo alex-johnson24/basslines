@@ -20,6 +20,12 @@ import {
     GenreModelToJSON,
 } from './GenreModel';
 import {
+    Image,
+    ImageFromJSON,
+    ImageFromJSONTyped,
+    ImageToJSON,
+} from './Image';
+import {
     LikeModel,
     LikeModelFromJSON,
     LikeModelFromJSONTyped,
@@ -43,12 +49,6 @@ export interface SongModel {
      * @type {string}
      * @memberof SongModel
      */
-    id?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof SongModel
-     */
     title: string;
     /**
      * 
@@ -56,6 +56,24 @@ export interface SongModel {
      * @memberof SongModel
      */
     artist: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SongModel
+     */
+    link?: string | null;
+    /**
+     * 
+     * @type {Array<Image>}
+     * @memberof SongModel
+     */
+    photos?: Array<Image> | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof SongModel
+     */
+    id?: string | null;
     /**
      * 
      * @type {GenreModel}
@@ -80,12 +98,6 @@ export interface SongModel {
      * @memberof SongModel
      */
     rating?: number | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof SongModel
-     */
-    link?: string | null;
     /**
      * 
      * @type {Date}
@@ -116,14 +128,15 @@ export function SongModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
         'title': json['title'],
         'artist': json['artist'],
+        'link': !exists(json, 'link') ? undefined : json['link'],
+        'photos': !exists(json, 'photos') ? undefined : (json['photos'] === null ? null : (json['photos'] as Array<any>).map(ImageFromJSON)),
+        'id': !exists(json, 'id') ? undefined : json['id'],
         'genre': !exists(json, 'genre') ? undefined : GenreModelFromJSON(json['genre']),
         'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
         'reviewer': !exists(json, 'reviewer') ? undefined : UserModelFromJSON(json['reviewer']),
         'rating': !exists(json, 'rating') ? undefined : json['rating'],
-        'link': !exists(json, 'link') ? undefined : json['link'],
         'submitteddate': !exists(json, 'submitteddate') ? undefined : (json['submitteddate'] === null ? null : new Date(json['submitteddate'])),
         'createdatetime': !exists(json, 'createdatetime') ? undefined : (json['createdatetime'] === null ? null : new Date(json['createdatetime'])),
         'likes': !exists(json, 'likes') ? undefined : (json['likes'] === null ? null : (json['likes'] as Array<any>).map(LikeModelFromJSON)),
@@ -139,14 +152,15 @@ export function SongModelToJSON(value?: SongModel | null): any {
     }
     return {
         
-        'id': value.id,
         'title': value.title,
         'artist': value.artist,
+        'link': value.link,
+        'photos': value.photos === undefined ? undefined : (value.photos === null ? null : (value.photos as Array<any>).map(ImageToJSON)),
+        'id': value.id,
         'genre': GenreModelToJSON(value.genre),
         'user': UserModelToJSON(value.user),
         'reviewer': UserModelToJSON(value.reviewer),
         'rating': value.rating,
-        'link': value.link,
         'submitteddate': value.submitteddate === undefined ? undefined : (value.submitteddate === null ? null : value.submitteddate.toISOString()),
         'createdatetime': value.createdatetime === undefined ? undefined : (value.createdatetime === null ? null : value.createdatetime.toISOString()),
         'likes': value.likes === undefined ? undefined : (value.likes === null ? null : (value.likes as Array<any>).map(LikeModelToJSON)),

@@ -21,10 +21,13 @@ export function SpotifyIcon() {
  */
 export default function SpotifyRedirect() {
   const { code } = getQueryParams();
-  const { handleSpotifyAuth, dispatch } = useSpotify();
+  const {
+    dispatch,
+    state: { handleSpotifyAuth },
+  } = useSpotify();
 
   React.useEffect(() => {
-    dispatch({type: "clearAuthorization"})
+    dispatch({ type: "clearAuthorization" });
     const authorize = async () => {
       try {
         await call(SpotifyApi)

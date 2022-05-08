@@ -90,26 +90,19 @@ namespace BassLines.Api.Services
 
     public async Task<object> Search(string accessCode, string query)
     {
-      var c = GetClient($"https://api.spotify.com/v1/search?q={query}&type=track");
+      var c = GetClient($"https://api.spotify.com/v1/search?q={query}&type=track&limit=8");
       var request = new HttpRequestMessage(HttpMethod.Get, c.BaseAddress);
       request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Base64Decode(accessCode));
       var response = await c.SendAsync(request);
       var json = await response.Content.ReadFromJsonAsync<SearchResponse>();
-      var tracks = json.tracks.items.Select(t => new {
-        Title = t.name,
-        Id = t.id,
-        Link = t.href,
-        Preview = t.preview_url,
-        Artist = new { Name = t.artists.FirstOrDefault().name, Id = t.artists.FirstOrDefault().id, Link = t.artists.FirstOrDefault().href },
-        Images = t.album.images,
-      });
 
-      var songs = json.tracks.items.Select(s => new SongModel {
+      var songs = json.tracks.items.Select(s => new SongBase {
         Title = s.name,
         Artist = s.artists.FirstOrDefault().name,
-        Link = s.href
+        Link = s.external_urls.spotify,
+        Photos = s.album.images
       });
-      return new { songs, tracks };
+      return songs;
     }
 
 
@@ -154,103 +147,22 @@ namespace BassLines.Api.Services
     }
 
     public string GenerateToken(SpotifyClientAuth auth, string refreshToken = null)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_authSettings.SecretKey);
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_authSettings.SecretKey);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            Subject = new ClaimsIdentity(new[]
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim("accessToken", auth.AccessToken),
-                    new Claim("expiryTime", auth.ExpiryTime.ToString()),
-                    new Claim("refreshToken", !String.IsNullOrWhiteSpace(auth.RefreshToken) ? auth.RefreshToken : refreshToken )
-                }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-
-            public class ExternalUrls
-    {
-        public string spotify { get; set; }
-    }
-
-    public class Artist
-    {
-        public ExternalUrls external_urls { get; set; }
-        public string href { get; set; }
-        public string id { get; set; }
-        public string name { get; set; }
-        public string type { get; set; }
-        public string uri { get; set; }
-    }
-
-    public class Image
-    {
-        public int height { get; set; }
-        public string url { get; set; }
-        public int width { get; set; }
-    }
-
-    public class Album
-    {
-        public string album_type { get; set; }
-        public List<Artist> artists { get; set; }
-        public List<string> available_markets { get; set; }
-        public ExternalUrls external_urls { get; set; }
-        public string href { get; set; }
-        public string id { get; set; }
-        public List<Image> images { get; set; }
-        public string name { get; set; }
-        public string release_date { get; set; }
-        public string release_date_precision { get; set; }
-        public int total_tracks { get; set; }
-        public string type { get; set; }
-        public string uri { get; set; }
-    }
-
-    public class ExternalIds
-    {
-        public string isrc { get; set; }
-    }
-
-    public class Item
-    {
-        public Album album { get; set; }
-        public List<Artist> artists { get; set; }
-        public List<string> available_markets { get; set; }
-        public int disc_number { get; set; }
-        public int duration_ms { get; set; }
-        public bool @explicit { get; set; }
-        public ExternalIds external_ids { get; set; }
-        public ExternalUrls external_urls { get; set; }
-        public string href { get; set; }
-        public string id { get; set; }
-        public bool is_local { get; set; }
-        public string name { get; set; }
-        public int popularity { get; set; }
-        public string preview_url { get; set; }
-        public int track_number { get; set; }
-        public string type { get; set; }
-        public string uri { get; set; }
-    }
-
-    public class Tracks
-    {
-        public string href { get; set; }
-        public List<Item> items { get; set; }
-        public int limit { get; set; }
-        public string next { get; set; }
-        public int offset { get; set; }
-        public object previous { get; set; }
-        public int total { get; set; }
-    }
-
-    public class SearchResponse
-    {
-        public Tracks tracks { get; set; }
+                new Claim("accessToken", auth.AccessToken),
+                new Claim("expiryTime", auth.ExpiryTime.ToString()),
+                new Claim("refreshToken", !String.IsNullOrWhiteSpace(auth.RefreshToken) ? auth.RefreshToken : refreshToken )
+            }),
+            Expires = DateTime.UtcNow.AddHours(1),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
   }
 }

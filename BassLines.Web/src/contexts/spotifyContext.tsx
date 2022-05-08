@@ -1,21 +1,27 @@
 import * as React from "react";
 import { ApiConstructor, call } from "../data/callWrapper";
-import { BaseAPI, SpotifyApi, SpotifyClientAuth } from "../data/src";
+import { BaseAPI, SpotifyApi } from "../data/src";
 import jwt_decode from "jwt-decode";
 
-type SpotifyClientInitialAuth = SpotifyClientAuth & { refreshToken?: string };
+type SpotifyClientAuth = {
+  accessToken?: string;
+  expiryTime?: number;
+  refreshToken?: string;
+};
 
 type Action = {
   type: "authorize" | "clearAuthorization";
-  payload?: SpotifyClientInitialAuth;
+  payload?: SpotifyClientAuth;
 };
 
 type Dispatch = (action: Action) => void;
 
 type State = {
-  spotifyAuth?: SpotifyClientInitialAuth;
+  spotifyAuth?: SpotifyClientAuth;
   authorized?: boolean;
   expireTime?: Date;
+  handleSpotifyRefresh: (refreshToken: string) => Promise<void>;
+  handleSpotifyAuth: (spotifyJwt: string) => Promise<void>;
 };
 
 const SpotifyStateContext = React.createContext<State>(undefined);
@@ -52,49 +58,16 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
   const initalState: State = {
     spotifyAuth: {},
     authorized: false,
+    handleSpotifyAuth,
+    handleSpotifyRefresh,
   };
 
   const [state, dispatch] = React.useReducer(spotifyReducer, initalState);
 
-  return (
-    <SpotifyStateContext.Provider value={state}>
-      <SpotifyDispatchContext.Provider value={dispatch}>
-        {children}
-      </SpotifyDispatchContext.Provider>
-    </SpotifyStateContext.Provider>
-  );
-}
-
-function useSpotify() {
-  const dispatch = React.useContext(SpotifyDispatchContext);
-  if (dispatch === undefined) {
-    throw new Error("useSpotifyDispatch must be used within a SpotifyProvider");
-  }
-
-  const state = React.useContext(SpotifyStateContext);
-  if (state === undefined) {
-    throw new Error("useSpotifyState must be used within a SpotifyProvider");
-  }
-
-  const {
-    spotifyAuth: { accessToken, refreshToken, expiryTime },
-  } = state;
-
-  /**
-   * authorizes spotify with raw jwt
-   */
-  const handleSpotifyAuth = async (spotifyJwt: string) => {
-    const auth = jwt_decode(spotifyJwt) as SpotifyClientInitialAuth;
-    const authorized = auth.expiryTime < new Date().getTime();
-    if (!authorized) {
-      handleSpotifyRefresh(auth.refreshToken);
-    } else dispatch({ type: "authorize", payload: auth });
-  };
-
   /**
    * refreshes spotify access token
    */
-  const handleSpotifyRefresh = async (refreshToken: string) => {
+  async function handleSpotifyRefresh(refreshToken: string) {
     let payload: SpotifyClientAuth;
     try {
       await call(SpotifyApi)
@@ -120,7 +93,51 @@ function useSpotify() {
     } catch (e) {
       console.error("Could not refresh your token ", e);
     }
-  };
+  }
+
+  /**
+   * authorizes spotify with raw jwt
+   */
+  async function handleSpotifyAuth(spotifyJwt: string) {
+    const auth = jwt_decode(spotifyJwt) as any;
+    const expiryTime = parseInt(auth.expiryTime);
+    const authorized = auth.expiryTime > new Date().getTime();
+    if (!authorized) {
+      handleSpotifyRefresh(auth.refreshToken);
+    } else
+      dispatch({
+        type: "authorize",
+        payload: {
+          accessToken: auth.accessToken,
+          refreshToken: auth.refreshToken,
+          expiryTime,
+        },
+      });
+  }
+
+  return (
+    <SpotifyStateContext.Provider value={state}>
+      <SpotifyDispatchContext.Provider value={dispatch}>
+        {children}
+      </SpotifyDispatchContext.Provider>
+    </SpotifyStateContext.Provider>
+  );
+}
+
+function useSpotify() {
+  const dispatch = React.useContext(SpotifyDispatchContext);
+  if (dispatch === undefined) {
+    throw new Error("useSpotifyDispatch must be used within a SpotifyProvider");
+  }
+
+  const state = React.useContext(SpotifyStateContext);
+  if (state === undefined) {
+    throw new Error("useSpotifyState must be used within a SpotifyProvider");
+  }
+
+  const {
+    spotifyAuth: { accessToken },
+  } = state;
 
   /**
    * adds middleware to call wrapper to attach base64 encoded spotify access token as request header
@@ -134,37 +151,10 @@ function useSpotify() {
     });
   }
 
-  // using refs to prevent stale closure in interval
-  const expiryRef = React.useRef(expiryTime);
-  const tokenRef = React.useRef(refreshToken);
-
-  React.useEffect(() => {
-    expiryRef.current = expiryTime;
-    tokenRef.current = refreshToken;
-  }, [refreshToken]);
-
-  /**
-   * checks spotify authorization every 30 seconds, refreshes token if set to expire
-   */
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      if (
-        expiryRef.current <= new Date().getTime() + 1000 * 60 * 5 &&
-        tokenRef.current
-      ) {
-        handleSpotifyRefresh(tokenRef.current);
-      }
-    }, 1000 * 30);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return {
     state,
     dispatch,
     callSpotify,
-    handleSpotifyAuth,
-    handleSpotifyRefresh,
   };
 }
 

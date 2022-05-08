@@ -6,7 +6,10 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Autocomplete, Grid, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Grid,
+} from "@mui/material";
 import { call } from "../../data/callWrapper";
 import {
   GenresApi,
@@ -14,8 +17,11 @@ import {
   UserModel,
   SongModel,
   SongsApi,
+  SongBase,
 } from "../../data/src";
 import { useMutation } from "react-query";
+import { useSpotify } from "../../contexts/spotifyContext";
+import SongAutoComplete from "../spotify/SongAutocomplete";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -34,6 +40,9 @@ interface ISongDialogProps {
 }
 
 const SongDialog = (props: ISongDialogProps) => {
+  const {
+    state: { authorized },
+  } = useSpotify();
   const classes = useStyles();
 
   const [genres, setGenres] = React.useState<GenreModel[]>([]);
@@ -66,7 +75,7 @@ const SongDialog = (props: ISongDialogProps) => {
         setUserSong({
           id: null,
           user: {
-            ...props.userInfo
+            ...props.userInfo,
           },
           genre: {
             id: null,
@@ -79,6 +88,15 @@ const SongDialog = (props: ISongDialogProps) => {
     }
   }, [props.open]);
 
+  const genreRef = React.useRef<HTMLInputElement>(null)
+  const handleSongChange = (
+    e: React.SyntheticEvent<Element, Event>,
+    { title, artist, link }: SongBase
+  ) => {
+    setUserSong((current) => ({ ...current, title, artist, link }));
+    genreRef.current.focus()
+  };
+
   return (
     <Dialog
       fullWidth
@@ -90,22 +108,29 @@ const SongDialog = (props: ISongDialogProps) => {
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12} md={4} className={classes.centeredBox}>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Song Title"
-              color="secondary"
-              fullWidth
-              variant="standard"
-              value={userSong?.title}
-              onChange={(e) => {
-                const val = e.target?.value;
-                setUserSong((current) => ({
-                  ...current,
-                  title: val || "",
-                }));
-              }}
-            />
+            {authorized ? (
+              <SongAutoComplete
+                setSong={setUserSong}
+                handleChange={handleSongChange}
+              />
+            ) : (
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Song Title"
+                color="secondary"
+                fullWidth
+                variant="standard"
+                value={userSong?.title}
+                onChange={(e) => {
+                  const val = e.target?.value;
+                  setUserSong((current) => ({
+                    ...current,
+                    title: val || "",
+                  }));
+                }}
+              />
+            )}
           </Grid>
           <Grid item xs={12} md={4} className={classes.centeredBox}>
             <TextField
@@ -114,7 +139,7 @@ const SongDialog = (props: ISongDialogProps) => {
               fullWidth
               color="secondary"
               variant="standard"
-              value={userSong?.artist}
+              value={userSong?.artist ?? ""}
               onChange={(e) => {
                 const val = e.target?.value;
                 setUserSong((current) => ({
@@ -143,8 +168,10 @@ const SongDialog = (props: ISongDialogProps) => {
               options={genres.map((m) => m.name).sort()}
               sx={{ width: 300 }}
               renderInput={(params) => (
+                // @ts-ignore
                 <TextField
                   {...params}
+                  inputRef={genreRef}
                   fullWidth
                   color="secondary"
                   label="Genre"
@@ -160,7 +187,7 @@ const SongDialog = (props: ISongDialogProps) => {
               fullWidth
               variant="standard"
               color="secondary"
-              value={userSong?.link}
+              value={userSong?.link ?? ""}
               onChange={(e) => {
                 const val = e.target?.value;
                 setUserSong((current) => ({

@@ -14,6 +14,11 @@
 
 
 import * as runtime from '../runtime';
+import {
+    SongBase,
+    SongBaseFromJSON,
+    SongBaseToJSON,
+} from '../models';
 
 export interface ModelGetRequest {
     code?: string;
@@ -80,7 +85,7 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async searchGetRaw(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<any>> {
+    async searchGetRaw(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongBase>>> {
         const queryParameters: any = {};
 
         if (requestParameters.query !== undefined) {
@@ -96,12 +101,12 @@ export class SpotifyApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.TextApiResponse(response) as any;
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SongBaseFromJSON));
     }
 
     /**
      */
-    async searchGet(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<any> {
+    async searchGet(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongBase>> {
         const response = await this.searchGetRaw(requestParameters, initOverrides);
         return await response.value();
     }

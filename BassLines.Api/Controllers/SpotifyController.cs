@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -101,14 +102,15 @@ namespace BassLines.Api.Controllers
 
         [HttpGet]
         [Route("/search")]
-        [ProducesResponseType(typeof (object), 200)]
+        [ProducesResponseType(typeof (List<SongBase>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> Search([FromQuery] string query)
         {
             try
             {
                 var accessToken = HttpContext.Request.Headers["spotify_token"];
-                return Ok(await _spotifyService.Search(accessToken, query));
+                var songs = await _spotifyService.Search(accessToken, query);
+                return Ok(songs);
             }
             catch (Exception ex)
             {

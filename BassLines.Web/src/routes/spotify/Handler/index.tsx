@@ -18,9 +18,13 @@ import SpotifyLogo from "../spotifyLogo";
 
 export default function SpotifyHandler() {
   const {
-    handleSpotifyAuth,
     dispatch,
-    state: { authorized },
+    state: {
+      authorized,
+      handleSpotifyAuth,
+      handleSpotifyRefresh,
+      spotifyAuth: { expiryTime, refreshToken },
+    },
   } = useSpotify();
 
   const [open, setOpen] = React.useState(false);
@@ -43,6 +47,30 @@ export default function SpotifyHandler() {
     } else dispatch({ type: "clearAuthorization" });
   }, []);
 
+  // using refs to prevent stale closure in interval
+  const expiryRef = React.useRef(expiryTime);
+  const tokenRef = React.useRef(refreshToken);
+  const fiveMinutesLater = React.useRef(new Date().getTime() + 1000 * 60 * 5);
+
+  React.useEffect(() => {
+    expiryRef.current = expiryTime;
+    tokenRef.current = refreshToken;
+    fiveMinutesLater.current = new Date().getTime() + 1000 * 60 * 5;
+  });
+
+  /**
+   * checks spotify authorization every 30 seconds, refreshes token if set to expire
+   */
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (expiryRef.current <= fiveMinutesLater.current && tokenRef.current) {
+        handleSpotifyRefresh(tokenRef.current);
+      }
+    }, 1000 * 30);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const handleClose = () => setOpen(false);
 
   return (
@@ -53,7 +81,7 @@ export default function SpotifyHandler() {
       PaperProps={{ elevation: 1, sx: { borderRadius: "10px" } }}
     >
       <Grid
-        p={4}
+        p={6}
         container
         display="flex"
         flexDirection="column"
