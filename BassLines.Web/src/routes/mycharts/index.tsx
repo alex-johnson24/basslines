@@ -58,7 +58,7 @@ const renderTooltip = ({ active, payload, label }) => {
 };
 
 const renderPieTooltip = ({ active, payload, label }) => {
-    const theme = useTheme();
+  const theme = useTheme();
 
   return (
     payload?.length > 0 && (
@@ -91,7 +91,7 @@ const MyCharts = () => {
   React.useEffect(() => {
     const getUsers = async () => {
       try {
-        let users = await call(UsersApi).apiUsersAllUsersGet();
+        const users = await call(UsersApi).apiUsersAllUsersGet();
         setUsers(users);
       } catch (e) {}
     };
@@ -102,7 +102,9 @@ const MyCharts = () => {
     if (selectedUser) {
       const getUserMetrics = async (userId: string) => {
         try {
-          let userData = await call(UsersApi).apiUsersUserMetricsGet({ userId });
+          let userData = await call(UsersApi).apiUsersUserMetricsGet({
+            userId,
+          });
           setUserMetrics(userData);
         } catch (e) {}
       };
@@ -288,7 +290,11 @@ const MyCharts = () => {
                     fill={theme.palette.secondary.main}
                     barSize={6}
                   >
-                    <LabelList dataKey="title" position="top" fill={theme.palette.text.primary} />
+                    <LabelList
+                      dataKey="title"
+                      position="top"
+                      fill={theme.palette.text.primary}
+                    />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

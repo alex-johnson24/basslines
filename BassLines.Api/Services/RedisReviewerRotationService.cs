@@ -1,22 +1,30 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using AutoMapper;
 using BassLines.Api.Models;
+using BassLines.Api.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
+using BassLines.Api.Interfaces;
 
 namespace BassLines.Api.Services
 {
     public class RedisReviewerRotationService : BaseReviewerRotationService
     {
         private readonly IDistributedCache _cache;
+        private readonly IUserRepository _userRepo;
+        private readonly IMapper _mapper;
         private readonly DistributedCacheEntryOptions _opts = new DistributedCacheEntryOptions
         {
             SlidingExpiration = TimeSpan.MaxValue
         };
-        public RedisReviewerRotationService(IDistributedCache cache, BassLinesContext ctx) : base(ctx)
+        public RedisReviewerRotationService(IDistributedCache cache, IUserRepository userRepo, IMapper mapper, BassLinesContext ctx) : base(ctx)
         {
             _cache = cache;
+            _userRepo = userRepo;
+            _mapper = mapper;
         }
 
         public override string GetCurrentReviewer() => _cache.Get(CURRENT_REVIEWER_KEY).FromRedisCache<string>();
@@ -55,6 +63,17 @@ namespace BassLines.Api.Services
                 var listAsBytes = reviewerQueue.ToRedisCache();
                 _cache.Set(REVIEWER_LIST_KEY, listAsBytes, _opts);
             }
+        }
+
+        public override IEnumerable<UserModel> GetReviewerQueue()
+        {
+            var reviewerQueueBytes = _cache.Get(REVIEWER_LIST_KEY);
+
+            if (reviewerQueueBytes == null) return new List<UserModel>();
+
+            var strReviewerQueue = reviewerQueueBytes.FromRedisCache<IEnumerable<string>>().Select(u => _userRepo.GetUserByUsername(u));
+
+            return _mapper.Map<List<UserModel>>(strReviewerQueue);
         }
 
 

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using BassLines.Api.ViewModels;
+
 namespace BassLines.Api.Interfaces
 {
     public interface IReviewerRotationService
@@ -7,5 +10,7 @@ namespace BassLines.Api.Interfaces
         void RotateReviewer();
 
         string GetCurrentReviewer();
+
+        IEnumerable<UserModel> GetReviewerQueue();
     }
 }
