@@ -1,13 +1,12 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   Box,
+  CircularProgress,
   Container,
   Fab,
-  Grid,
+  Icon,
   Theme,
   Tooltip,
   Typography,
@@ -19,6 +18,7 @@ import {
   SongModel,
   UserModel,
   SongModelFromJSON,
+  ReviewersApi,
 } from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
@@ -26,6 +26,7 @@ import SongDialog from "./SongDialog";
 import RatingPopover from "./RatingPopover";
 import SongCard from "./SongCard";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
+import HeadphoneIcon from "./HeadphoneIcon";
 
 const useStyles = makeStyles(() => {
   return {
@@ -68,6 +69,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const classes = useStyles(theme);
 
   const [dailySongs, setDailySongs] = React.useState<SongModel[]>([]);
+  const [reviewerQueue, setReviewerQueue] = React.useState<UserModel[]>([]);
+  const [currentReviewer, setCurrentReviewer] = React.useState<UserModel>(null);
   const [songDialogOpen, setSongDialogOpen] = React.useState<boolean>(false);
   const [currentUserSong, setCurrentUserSong] = React.useState<SongModel>(null);
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
@@ -104,6 +107,17 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       setDailySongs(songsResults);
     }
   );
+
+  React.useEffect(() => {
+    (async () => {
+      try {
+        setCurrentReviewer(await call(ReviewersApi).apiReviewersActiveGet());
+        setReviewerQueue(
+          await call(ReviewersApi).apiReviewersGetReviewerQueueGet()
+        );
+      } catch (e) {}
+    })();
+  }, []);
 
   React.useEffect(() => {
     getSongs();
@@ -173,6 +187,33 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
         maxWidth={false}
         className={classes.scrollbar}
       >
+        <Box sx={{ display: "flex", alignItems: "flex-end", marginBottom: 4 }}>
+          <HeadphoneIcon
+            sx={{ height: "54px", width: "54px", marginRight: "20px" }}
+            reviewerQueue={reviewerQueue}
+          />
+          <Box>
+            <Typography sx={{ fontSize: "16px", color: "text.textColor" }}>
+              Current Reviewer
+            </Typography>
+            <Typography sx={{ fontSize: "20px" }}>
+              {currentReviewer?.firstName ? (
+                `${currentReviewer?.firstName} ${currentReviewer?.lastName}`
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "20px",
+                  }}
+                >
+                  --
+                </div>
+              )}
+            </Typography>
+          </Box>
+        </Box>
         {dailySongs
           .sort((a, b) =>
             allSongsRated

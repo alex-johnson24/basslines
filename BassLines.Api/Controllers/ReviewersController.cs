@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using System.Collections.Generic;
 
 namespace BassLines.Api.Controllers
 {
@@ -76,6 +77,24 @@ namespace BassLines.Api.Controllers
             {
                 _reviewerRotationService.RotateReviewer();
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
+        [ProducesResponseType(typeof(string), 500)]
+        [Route("GetReviewerQueue")]
+        public IActionResult GetReviewerQueue()
+        {
+            try
+            {
+                var reviewerQueue = _reviewerRotationService.GetReviewerQueue();
+                return Ok(reviewerQueue);
             }
             catch (Exception ex)
             {
