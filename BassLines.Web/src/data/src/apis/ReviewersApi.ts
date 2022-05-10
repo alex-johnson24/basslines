@@ -51,6 +51,30 @@ export class ReviewersApi extends runtime.BaseAPI {
 
     /**
      */
+    async apiReviewersGetReviewerQueueGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserModel>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Reviewers/GetReviewerQueue`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
+    }
+
+    /**
+     */
+    async apiReviewersGetReviewerQueueGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
+        const response = await this.apiReviewersGetReviewerQueueGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async apiReviewersRebuildReviewerQueueGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 

@@ -4,6 +4,7 @@ using BassLines.Api.Enums;
 using BassLines.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using BassLines.Api.Interfaces;
+using BassLines.Api.ViewModels;
 
 namespace BassLines.Api.Services
 {
@@ -48,7 +49,7 @@ namespace BassLines.Api.Services
             // if an admin is the reviewer, they have the perms to review songs already
             foreach (User usr in eligibleUsers)
             {
-                usr.Roleid = roles.FirstOrDefault(f => 
+                usr.Roleid = roles.FirstOrDefault(f =>
                                     f.Name == (usr.Username == newReviewer ? UserRole.Reviewer.ToString() : UserRole.Contributor.ToString())).Id;
                 _ctx.Entry(usr).State = EntityState.Modified;
             }
@@ -61,5 +62,7 @@ namespace BassLines.Api.Services
         public abstract void RotateReviewer();
 
         public abstract string GetCurrentReviewer();
+
+        public abstract IEnumerable<UserModel> GetReviewerQueue();
     }
 }
