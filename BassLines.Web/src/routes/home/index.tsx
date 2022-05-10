@@ -182,12 +182,14 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
         userInfo={props.userInfo}
         userSong={currentUserSong}
       />
-      <Container
-        sx={{ height: "calc(100vh - 228px)", overflowY: "auto" }}
-        maxWidth={false}
-        className={classes.scrollbar}
-      >
-        <Box sx={{ display: "flex", alignItems: "flex-end", marginBottom: 4 }}>
+      <Container maxWidth={false}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "flex-end",
+            marginBottom: 2,
+          }}
+        >
           <HeadphoneIcon
             sx={{ height: "54px", width: "54px", marginRight: "20px" }}
             reviewerQueue={reviewerQueue}
@@ -214,49 +216,54 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
             </Typography>
           </Box>
         </Box>
-        {dailySongs
-          .sort((a, b) =>
-            allSongsRated
-              ? b.rating - a.rating
-              : b.createdatetime.getTime() - a.createdatetime.getTime()
-          )
-          .map((m: SongModel, i: number) => (
-            <SongCard
-              key={i}
-              song={m}
-              allSongsRated={allSongsRated}
-              setSelectedSong={setSongToRate}
-              setRatingAnchor={setRatingPopoverAnchor}
-              userInfo={props.userInfo}
-              refreshSongs={getSongs}
-              setEditSongDialogOpen={setSongDialogOpen}
-              ranking={getSongRanking(m)}
-            />
-          ))}
-        <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
-          <Tooltip
-            title={
-              formattedDate !== format(new Date(), "yyyy-MM-dd")
-                ? ""
-                : "Submit Daily Song"
-            }
-          >
-            <span>
-              <Fab
-                onClick={() => setSongDialogOpen(true)}
-                color="primary"
-                size="medium"
-                disabled={
-                  formattedDate !== format(new Date(), "yyyy-MM-dd") ||
-                  dailySongs
-                    .map((m) => m.user?.username)
-                    .indexOf(props.userInfo?.username) > -1
-                }
-              >
-                <AddIcon />
-              </Fab>
-            </span>
-          </Tooltip>
+        <Box
+          sx={{ height: "calc(100vh - 312px)", overflowY: "auto" }}
+          className={classes.scrollbar}
+        >
+          {dailySongs
+            .sort((a, b) =>
+              allSongsRated
+                ? b.rating - a.rating
+                : b.createdatetime.getTime() - a.createdatetime.getTime()
+            )
+            .map((m: SongModel, i: number) => (
+              <SongCard
+                key={i}
+                song={m}
+                allSongsRated={allSongsRated}
+                setSelectedSong={setSongToRate}
+                setRatingAnchor={setRatingPopoverAnchor}
+                userInfo={props.userInfo}
+                refreshSongs={getSongs}
+                setEditSongDialogOpen={setSongDialogOpen}
+                ranking={getSongRanking(m)}
+              />
+            ))}
+          <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
+            <Tooltip
+              title={
+                formattedDate !== format(new Date(), "yyyy-MM-dd")
+                  ? ""
+                  : "Submit Daily Song"
+              }
+            >
+              <span>
+                <Fab
+                  onClick={() => setSongDialogOpen(true)}
+                  color="primary"
+                  size="medium"
+                  disabled={
+                    formattedDate !== format(new Date(), "yyyy-MM-dd") ||
+                    dailySongs
+                      .map((m) => m.user?.username)
+                      .indexOf(props.userInfo?.username) > -1
+                  }
+                >
+                  <AddIcon />
+                </Fab>
+              </span>
+            </Tooltip>
+          </Box>
         </Box>
       </Container>
     </>
