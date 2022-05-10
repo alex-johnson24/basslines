@@ -56,7 +56,7 @@ export default function SongAutoComplete({
         songs.filter(
           (s, i, a) =>
             a.findIndex(
-              ({ title, artist }) => title === s.title && artist === s.artist
+              ({ title, artist, link }) => title === s.title && artist === s.artist
             ) === i
         )
       );
@@ -96,7 +96,8 @@ export default function SongAutoComplete({
       fullWidth
       loading={loading}
       ListboxProps={{ className: classes.scrollbar }}
-      renderInput={(params) => {
+      renderOption={(props, song) => <SongListItem {...props} song={song} />}
+      renderInput={({ InputProps, ...params }) => {
         return (
           // @ts-ignore
           <TextField
@@ -107,49 +108,60 @@ export default function SongAutoComplete({
             color="secondary"
             variant="standard"
             InputProps={{
-              ...params.InputProps,
+              ...InputProps,
               endAdornment: (
                 <React.Fragment>
                   {loading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : null}
-                  {params.InputProps.endAdornment}
+                  {InputProps.endAdornment}
                 </React.Fragment>
               ),
             }}
           />
         );
       }}
-      renderOption={(props, song) => {
-        return (
-          <Box
-            {...props}
-            component={"li"}
-            key={props.id}
-            sx={{
-              height: 65,
-              display: "flex",
-              width: "100%",
-              p: 0,
-            }}
-          >
-            <Box
-              component="img"
-              src={song.photos.sort((a, b) => a.height - b.height)[0].url}
-              height="65px"
-              p="2px 8px 2px 0"
-            />
-            <Grid display="flex" flexDirection="column" width="100%">
-              <Typography children={song.title} />
-              <Typography
-                variant="caption"
-                fontWeight={300}
-                children={song.artist}
-              />
-            </Grid>
-          </Box>
-        );
-      }}
     />
   );
 }
+
+const SongListItem = ({
+  song,
+  ...props
+}: React.HTMLAttributes<HTMLLIElement> & { song: SongBase }) => {
+  const imgHeight = "65px";
+
+  return (
+    <Box
+      {...props}
+      component={"li"}
+      key={props.id}
+      sx={{
+        height: imgHeight,
+        display: "flex",
+        width: "100%",
+        p: 0,
+      }}
+    >
+      <Box
+        component="img"
+        src={song.images?.sort((a, b) => a.height - b.height)?.[0]?.url}
+        height={imgHeight}
+        p="2px 8px 2px 0"
+      />
+      <Grid
+        display="flex"
+        flexDirection="column"
+        width={`calc(100% - ${imgHeight})`}
+      >
+        <Typography noWrap children={song.title} />
+        <Typography
+          noWrap
+          variant="caption"
+          fontWeight={300}
+          children={song.artist}
+        />
+      </Grid>
+    </Box>
+  );
+};

@@ -20,6 +20,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
+import { parseSpotifyId } from "../../utils";
+import { MoreVert } from "@material-ui/icons";
+import { useSpotify } from "../../contexts/spotifyContext";
 
 interface ISongCardProps {
   song: SongModel;
@@ -49,6 +52,7 @@ const SongCard = (props: ISongCardProps) => {
   const isCurrentSubmissionDate =
     format(props.song.submitteddate, "yyyy-MM-dd") ===
     format(new Date(), "yyyy-MM-dd");
+  const { state: authorized } = useSpotify();
 
   const saveLike = async () => {
     try {
@@ -66,6 +70,8 @@ const SongCard = (props: ISongCardProps) => {
       console.log(err);
     }
   };
+
+  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link)
 
   const userCanReview =
     props.userInfo.role === UserRole.Administrator ||
@@ -117,6 +123,16 @@ const SongCard = (props: ISongCardProps) => {
               <Typography sx={{ m: 0 }} variant="h6" noWrap>
                 {props.song.title}
               </Typography>
+            )}
+            {isValid && authorized && (
+              <IconButton
+                sx={{p: "3px"}}
+                onClick={() =>
+                  console.log(`Go to spotify track details ${spotifyTrackId}.`)
+                }
+              >
+                <MoreVert style={{fontSize: "1.1rem" }} />
+              </IconButton>
             )}
           </Grid>
           <Grid container alignItems="center" item xs={12}>

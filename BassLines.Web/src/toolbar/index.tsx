@@ -15,7 +15,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button, Switch, TextField } from "@mui/material";
+import { Button, Grid, Switch, TextField } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
@@ -148,7 +148,6 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
-  const test = useSpotify()
 
   const logout = async () => {
     try {
@@ -289,4 +288,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       </Box>
     </Box>
   );
+}
+
+const SpotifyPlayer = () => {
+  const spotify = useSpotify();
+
+  return <Grid width="100%" position="fixed" bottom={0} bgcolor={(theme)=>theme.palette.primary.main} height="80px">
+
+  </Grid>
 }

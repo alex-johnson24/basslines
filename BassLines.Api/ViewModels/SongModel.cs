@@ -23,6 +23,6 @@ namespace BassLines.Api.ViewModels
         [Required]
         public string Artist { get; set; }
         public string Link { get; set; }
-        public List<Image> Photos { get; set; }
+        public List<Image> Images { get; set; }
     }
 }

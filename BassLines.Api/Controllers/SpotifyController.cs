@@ -14,7 +14,7 @@ namespace BassLines.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SpotifyController : ControllerBase
     {
         private readonly ISpotifyService _spotifyService;
@@ -31,7 +31,6 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         [ProducesResponseType(typeof (string), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public IActionResult GetUrl()
@@ -59,9 +58,7 @@ namespace BassLines.Api.Controllers
             }
             try
             {
-                var payload =
-                    _spotifyService
-                        .GenerateToken(await _spotifyService.GetTokens(code));
+                var payload = _spotifyService.GenerateToken(await _spotifyService.GetTokens(code));
                 HttpContext.Response.Headers.Add("spotify_auth", payload);
                 HttpContext.Response.Cookies.Append("spotify_auth", payload);
                 return Ok();
@@ -86,12 +83,11 @@ namespace BassLines.Api.Controllers
             }
             try
             {
-                var payload = await _spotifyService.RefreshToken(refreshToken);
                 HttpContext
                     .Response
                     .Headers
                     .Add("spotify_auth",
-                    _spotifyService.GenerateToken(payload, refreshToken));
+                    _spotifyService.GenerateToken(await _spotifyService.RefreshToken(refreshToken), refreshToken));
                 return Ok();
             }
             catch (Exception ex)
@@ -102,15 +98,65 @@ namespace BassLines.Api.Controllers
 
         [HttpGet]
         [Route("/search")]
-        [ProducesResponseType(typeof (List<SongBase>), 200)]
+        [ProducesResponseType(typeof (IEnumerable<SongBase>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> Search([FromQuery] string query)
         {
             try
             {
                 var accessToken = HttpContext.Request.Headers["spotify_token"];
-                var songs = await _spotifyService.Search(accessToken, query);
-                return Ok(songs);
+                return Ok(await _spotifyService.SearchTracks(accessToken, query));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/me")]
+        [ProducesResponseType(typeof (SpotifyProfile), 200)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.GetProfile(accessToken));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/track/{id}")]
+        [ProducesResponseType(typeof (SpotifyTrack), 200)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> GetTrack([FromRoute] string id)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.GetTrack(accessToken, id));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        
+        [HttpGet]
+        [Route("/track/{id}/details")]
+        [ProducesResponseType(typeof (SpotifyTrackDetails), 200)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> GetTrackDetails([FromRoute] string id)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.GetTrackDetails(accessToken, id));
             }
             catch (Exception ex)
             {

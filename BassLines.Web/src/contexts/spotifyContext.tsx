@@ -100,11 +100,8 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
    */
   async function handleSpotifyAuth(spotifyJwt: string) {
     const auth = jwt_decode(spotifyJwt) as any;
+    localStorage.setItem("refreshToken", auth.refreshToken)
     const expiryTime = parseInt(auth.expiryTime);
-    const authorized = auth.expiryTime > new Date().getTime();
-    if (!authorized) {
-      handleSpotifyRefresh(auth.refreshToken);
-    } else
       dispatch({
         type: "authorize",
         payload: {
@@ -137,6 +134,8 @@ function useSpotify() {
 
   const {
     spotifyAuth: { accessToken },
+    handleSpotifyRefresh,
+    authorized
   } = state;
 
   /**

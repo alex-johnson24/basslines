@@ -18,6 +18,13 @@ models/RegistrationModel.ts
 models/ResetPasswordModel.ts
 models/SongBase.ts
 models/SongModel.ts
+models/SpotifyAlbum.ts
+models/SpotifyArtistDetails.ts
+models/SpotifyBase.ts
+models/SpotifyProfile.ts
+models/SpotifyTrack.ts
+models/SpotifyTrackDetails.ts
+models/TrackFeatures.ts
 models/UserLeaderboardModel.ts
 models/UserMetricsModel.ts
 models/UserModel.ts

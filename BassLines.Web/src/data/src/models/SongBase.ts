@@ -49,7 +49,7 @@ export interface SongBase {
      * @type {Array<Image>}
      * @memberof SongBase
      */
-    photos?: Array<Image> | null;
+    images?: Array<Image> | null;
 }
 
 export function SongBaseFromJSON(json: any): SongBase {
@@ -65,7 +65,7 @@ export function SongBaseFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'title': json['title'],
         'artist': json['artist'],
         'link': !exists(json, 'link') ? undefined : json['link'],
-        'photos': !exists(json, 'photos') ? undefined : (json['photos'] === null ? null : (json['photos'] as Array<any>).map(ImageFromJSON)),
+        'images': !exists(json, 'images') ? undefined : (json['images'] === null ? null : (json['images'] as Array<any>).map(ImageFromJSON)),
     };
 }
 
@@ -81,7 +81,7 @@ export function SongBaseToJSON(value?: SongBase | null): any {
         'title': value.title,
         'artist': value.artist,
         'link': value.link,
-        'photos': value.photos === undefined ? undefined : (value.photos === null ? null : (value.photos as Array<any>).map(ImageToJSON)),
+        'images': value.images === undefined ? undefined : (value.images === null ? null : (value.images as Array<any>).map(ImageToJSON)),
     };
 }
 

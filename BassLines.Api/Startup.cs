@@ -120,7 +120,7 @@ namespace BassLines
 
             services.AddHttpClient("Spotify", c => 
             {
-                c.BaseAddress = new Uri("https://api.spotify.com/v1");
+                c.BaseAddress = new Uri("https://api.spotify.com/v1/");
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
         }

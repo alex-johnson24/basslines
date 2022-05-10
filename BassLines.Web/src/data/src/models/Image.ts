@@ -24,7 +24,7 @@ export interface Image {
      * @type {number}
      * @memberof Image
      */
-    height?: number;
+    height?: number | null;
     /**
      * 
      * @type {string}
@@ -36,7 +36,7 @@ export interface Image {
      * @type {number}
      * @memberof Image
      */
-    width?: number;
+    width?: number | null;
 }
 
 export function ImageFromJSON(json: any): Image {

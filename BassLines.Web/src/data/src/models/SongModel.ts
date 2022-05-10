@@ -67,7 +67,7 @@ export interface SongModel {
      * @type {Array<Image>}
      * @memberof SongModel
      */
-    photos?: Array<Image> | null;
+    images?: Array<Image> | null;
     /**
      * 
      * @type {string}
@@ -131,7 +131,7 @@ export function SongModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'title': json['title'],
         'artist': json['artist'],
         'link': !exists(json, 'link') ? undefined : json['link'],
-        'photos': !exists(json, 'photos') ? undefined : (json['photos'] === null ? null : (json['photos'] as Array<any>).map(ImageFromJSON)),
+        'images': !exists(json, 'images') ? undefined : (json['images'] === null ? null : (json['images'] as Array<any>).map(ImageFromJSON)),
         'id': !exists(json, 'id') ? undefined : json['id'],
         'genre': !exists(json, 'genre') ? undefined : GenreModelFromJSON(json['genre']),
         'user': !exists(json, 'user') ? undefined : UserModelFromJSON(json['user']),
@@ -155,7 +155,7 @@ export function SongModelToJSON(value?: SongModel | null): any {
         'title': value.title,
         'artist': value.artist,
         'link': value.link,
-        'photos': value.photos === undefined ? undefined : (value.photos === null ? null : (value.photos as Array<any>).map(ImageToJSON)),
+        'images': value.images === undefined ? undefined : (value.images === null ? null : (value.images as Array<any>).map(ImageToJSON)),
         'id': value.id,
         'genre': GenreModelToJSON(value.genre),
         'user': UserModelToJSON(value.user),

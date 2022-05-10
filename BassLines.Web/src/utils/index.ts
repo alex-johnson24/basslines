@@ -30,16 +30,29 @@ export const buildQueryString = (params?: KeyValuePairs) => {
 /**
  * Extracts the unique spotify entity ID from URL
  * @param url
- * @returns parsed spotify type and id as a key value pair
+ * @returns [id: string, isValid: boolean]
  */
-export const parseSpotifyId = (url: string) => {
+export const parseSpotifyId = (url: string): [string, boolean] => {
   try {
     const tuple = url
       .split("https://open.spotify.com/")[1]
       .split("?")[0]
-      .split("/");
-    return { [tuple[0]]: tuple[1] };
+      .split("/" || "");
+    return [tuple[1], tuple[0] === "track" ?? false];
   } catch (e) {
-    return {error: true};
+    return [undefined, false];
   }
 };
+
+/**
+ * converts seconds to a user-friendly string
+ * @param seconds 
+ * @returns string 'm:ss'
+ */
+export const convertSecondsToLengthString = (seconds?: number) => {
+  if (!seconds) return undefined;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+
+  return `${m}:${s < 10 ? "0" : ""}${s}`
+}

@@ -21,7 +21,6 @@ export default function SpotifyHandler() {
     dispatch,
     state: {
       authorized,
-      handleSpotifyAuth,
       handleSpotifyRefresh,
       spotifyAuth: { expiryTime, refreshToken },
     },
@@ -40,30 +39,34 @@ export default function SpotifyHandler() {
   );
 
   React.useEffect(() => {
-    const spotifyCookie = getCookieByName("spotify_auth");
-
-    if (spotifyCookie) {
-      handleSpotifyAuth(spotifyCookie);
-    } else dispatch({ type: "clearAuthorization" });
+    // const spotifyCookie = getCookieByName("spotify_auth");
+    // if (spotifyCookie) {
+    //   handleSpotifyAuth(spotifyCookie);
+    // } else dispatch({ type: "clearAuthorization" });
   }, []);
 
   // using refs to prevent stale closure in interval
   const expiryRef = React.useRef(expiryTime);
   const tokenRef = React.useRef(refreshToken);
-  const fiveMinutesLater = React.useRef(new Date().getTime() + 1000 * 60 * 5);
 
   React.useEffect(() => {
     expiryRef.current = expiryTime;
     tokenRef.current = refreshToken;
-    fiveMinutesLater.current = new Date().getTime() + 1000 * 60 * 5;
-  });
+  }, [expiryTime, refreshToken]);
 
-  /**
-   * checks spotify authorization every 30 seconds, refreshes token if set to expire
-   */
   React.useEffect(() => {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (refreshToken) {
+      handleSpotifyRefresh(refreshToken);
+    } else dispatch({ type: "clearAuthorization" });
+    
+    /**
+     * checks spotify authorization every 30 seconds, refreshes token if set to expire
+     */
     const interval = setInterval(() => {
-      if (expiryRef.current <= fiveMinutesLater.current && tokenRef.current) {
+      const fiveMinutesFromNow = new Date().getTime() + 1000 * 60 * 5;
+      if (expiryRef.current <= fiveMinutesFromNow && tokenRef.current) {
         handleSpotifyRefresh(tokenRef.current);
       }
     }, 1000 * 30);
@@ -107,7 +110,7 @@ export default function SpotifyHandler() {
           style={{ margin: "14px 0" }}
           onClick={() =>
             call(SpotifyApi)
-              .spotifyGet()
+              .apiSpotifyGet()
               .then((uri) => (window.location.href = uri))
               .catch(console.error)
           }
