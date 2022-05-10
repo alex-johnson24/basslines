@@ -50,7 +50,9 @@ namespace BassLines.Api.Services
             foreach (User usr in eligibleUsers)
             {
                 usr.Roleid = roles.FirstOrDefault(f =>
-                                    f.Name == (usr.Username == newReviewer ? UserRole.Reviewer.ToString() : UserRole.Contributor.ToString())).Id;
+                                    f.Name == (usr.Username == newReviewer ?
+                                    UserRole.Reviewer.ToString() :
+                                    UserRole.Contributor.ToString())).Id;
                 _ctx.Entry(usr).State = EntityState.Modified;
             }
 

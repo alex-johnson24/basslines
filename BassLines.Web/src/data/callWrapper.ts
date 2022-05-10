@@ -19,8 +19,8 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      // swap out 'https://basslines.co/' for local
-      basePath: "https://localhost:5001",
+      // swap out 'https://localhost:5001' for local
+      basePath: "https://basslines.co",
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );

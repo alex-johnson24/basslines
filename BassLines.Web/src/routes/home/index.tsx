@@ -109,25 +109,14 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   );
 
   React.useEffect(() => {
-    const getReviewerQueue = async () => {
+    (async () => {
       try {
-        const reviewers = await call(
-          ReviewersApi
-        ).apiReviewersGetReviewerQueueGet();
-        setReviewerQueue(reviewers);
+        setCurrentReviewer(await call(ReviewersApi).apiReviewersActiveGet());
+        setReviewerQueue(
+          await call(ReviewersApi).apiReviewersGetReviewerQueueGet()
+        );
       } catch (e) {}
-    };
-    getReviewerQueue();
-  }, []);
-
-  React.useEffect(() => {
-    const getReviewer = async () => {
-      try {
-        const reviewer = await call(ReviewersApi).apiReviewersActiveGet();
-        setCurrentReviewer(reviewer);
-      } catch (e) {}
-    };
-    getReviewer();
+    })();
   }, []);
 
   React.useEffect(() => {
@@ -207,15 +196,22 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
             <Typography sx={{ fontSize: "16px", color: "text.textColor" }}>
               Current Reviewer
             </Typography>
-            {currentReviewer?.firstName ? (
-              <Typography
-                sx={{ fontSize: "20px" }}
-              >{`${currentReviewer?.firstName} ${currentReviewer?.lastName}`}</Typography>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgress color="secondary" size={20} />
-              </div>
-            )}
+            <Typography sx={{ fontSize: "20px" }}>
+              {currentReviewer?.firstName ? (
+                `${currentReviewer?.firstName} ${currentReviewer?.lastName}`
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "20px",
+                  }}
+                >
+                  --
+                </div>
+              )}
+            </Typography>
           </Box>
         </Box>
         {dailySongs

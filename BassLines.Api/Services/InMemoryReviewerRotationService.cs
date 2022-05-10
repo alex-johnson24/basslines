@@ -55,7 +55,8 @@ namespace BassLines.Api.Services
 
         public override IEnumerable<UserModel> GetReviewerQueue()
         {
-            var userQueue = _cache.Get<IEnumerable<string>>(REVIEWER_LIST_KEY).Select(u => _userRepo.GetUserByUsername(u));
+            var userQueue = _cache.Get<IEnumerable<string>>(REVIEWER_LIST_KEY)?.Select(u => _userRepo.GetUserByUsername(u));
+            if (userQueue == null) return new List<UserModel>();
             return _mapper.Map<List<UserModel>>(userQueue);
         }
     }
