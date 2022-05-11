@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using BassLines.Api.Hubs;
 using System.IO;
 using System.Security.Claims;
@@ -12,6 +11,7 @@ using BassLines.Api.Models;
 using BassLines.Api.Profiles;
 using BassLines.Api.Repositories;
 using BassLines.Api.Services;
+using BassLines.Api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -122,6 +122,13 @@ namespace BassLines
             {
                 c.BaseAddress = new Uri("https://api.spotify.com/v1/");
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+            
+            services.AddHttpClient("SpotifyToken", c => 
+            {
+                c.BaseAddress = new Uri("https://accounts.spotify.com/api/token");
+                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", 
+                    $"{Configuration["SpotifySettings:clientId"]}:{Configuration["SpotifySettings:clientSecret"]}".Base64Encode());
             });
         }
 
