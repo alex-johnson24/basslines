@@ -1,10 +1,9 @@
 import { Tooltip } from "@mui/material";
-import SvgIcon from "@mui/material/SvgIcon";
+import SvgIcon, {SvgIconProps} from "@mui/material/SvgIcon";
 import { UserModel } from "../../data/src";
 import * as React from "react";
 
-interface IProps {
-  sx: React.CSSProperties;
+interface IProps extends SvgIconProps {
   reviewerQueue: UserModel[];
 }
 
@@ -25,13 +24,13 @@ const TooltipQueue = (reviewerQueue: UserModel[]) => {
   );
 };
 
-const HeadphoneIcon = (props: IProps) => {
+const HeadphoneIcon = ({reviewerQueue, ...props}: IProps) => {
   return (
-    <Tooltip title={TooltipQueue(props.reviewerQueue)}>
+    <Tooltip title={TooltipQueue(reviewerQueue)}>
       <SvgIcon
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 115.93 84.57"
-        sx={props.sx}
+        {...props}
       >
         <defs></defs>
         <g id="Layer_2">
