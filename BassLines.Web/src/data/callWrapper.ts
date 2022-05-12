@@ -2,7 +2,7 @@
 import * as Fetch from "whatwg-fetch";
 import { BaseAPI, Configuration, Middleware, ResponseContext } from "./src";
 
-type ApiConstructor<T extends BaseAPI> = new (config: Configuration) => T;
+export type ApiConstructor<T extends BaseAPI> = new (config: Configuration) => T;
 
 const unauthenticatedResponseHandlerMiddleware: Middleware = {
   post: async (context: ResponseContext): Promise<Response | void> => {

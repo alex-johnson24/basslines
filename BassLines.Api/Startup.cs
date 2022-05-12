@@ -1,3 +1,4 @@
+using System;
 using BassLines.Api.Hubs;
 using System.IO;
 using System.Security.Claims;
@@ -10,6 +11,7 @@ using BassLines.Api.Models;
 using BassLines.Api.Profiles;
 using BassLines.Api.Repositories;
 using BassLines.Api.Services;
+using BassLines.Api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net.Http.Headers;
 
 namespace BassLines
 {
@@ -47,6 +50,8 @@ namespace BassLines
             IMapper mapper = mapperConfig.CreateMapper();
 
             services.AddOptions<AuthSettings>().Bind(Configuration.GetSection("AuthSettings"));
+            
+            services.AddOptions<SpotifySettings>().Bind(Configuration.GetSection("SpotifySettings"));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -94,6 +99,7 @@ namespace BassLines
             services.AddScoped<ILikeRepository, LikeRepository>();
             services.AddScoped<ILeaderboardService, LeaderboardService>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ISpotifyService, SpotifyService>();
 
             services.AddSignalR();
 
@@ -111,6 +117,19 @@ namespace BassLines
             services.AddDbContextFactory<BassLinesContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BassLinesDatabase"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+            services.AddHttpClient("Spotify", c => 
+            {
+                c.BaseAddress = new Uri("https://api.spotify.com/v1/");
+                c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+            
+            services.AddHttpClient("SpotifyToken", c => 
+            {
+                c.BaseAddress = new Uri("https://accounts.spotify.com/api/token");
+                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", 
+                    $"{Configuration["SpotifySettings:clientId"]}:{Configuration["SpotifySettings:clientSecret"]}".Base64Encode());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
