@@ -124,7 +124,7 @@ const SongCard = (props: ISongCardProps) => {
                 {props.song.title}
               </Typography>
             )}
-            {isValid && authorized && (
+            {/* {isValid && authorized && (
               <IconButton
                 sx={{p: "3px"}}
                 onClick={() =>
@@ -133,7 +133,7 @@ const SongCard = (props: ISongCardProps) => {
               >
                 <MoreVert style={{fontSize: "1.1rem" }} />
               </IconButton>
-            )}
+            )} */}
           </Grid>
           <Grid container alignItems="center" item xs={12}>
             <Typography
