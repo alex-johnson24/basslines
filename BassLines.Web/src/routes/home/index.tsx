@@ -191,7 +191,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
           }}
         >
           <HeadphoneIcon
-            sx={{ height: "54px", width: "54px", marginRight: "20px" }}
+            style={{ height: "54px", width: "54px", marginRight: "20px" }}
             reviewerQueue={reviewerQueue}
           />
           <Box>
