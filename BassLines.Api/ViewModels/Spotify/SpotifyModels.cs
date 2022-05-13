@@ -76,6 +76,19 @@ namespace BassLines.Api.ViewModels
         public string product { get; set; }
         public string type { get; set; }
     }
+
+
+    public class Copyright
+    {
+        public string text { get; set; }
+        public string type { get; set; }
+    }
+
+    public class ExternalIds
+    {
+        public string upc { get; set; }
+    }
+
     public class ExternalUrls
     {
         public string spotify { get; set; }
@@ -83,19 +96,49 @@ namespace BassLines.Api.ViewModels
 
     public class Image
     {
-        public int? height { get; set; }
+        public int height { get; set; }
         public string url { get; set; }
-        public int? width { get; set; }
+        public int width { get; set; }
     }
 
-
-    public class ExternalIds
-
+    public class Item
     {
-        public string isrc { get; set; }
-        public string upc { get; set; }
+        public List<Artist> artists { get; set; }
+        public List<string> available_markets { get; set; }
+        public int disc_number { get; set; }
+        public int duration_ms { get; set; }
+        public bool @explicit { get; set; }
+        public ExternalUrls external_urls { get; set; }
+        public string href { get; set; }
+        public string id { get; set; }
+        public bool is_local { get; set; }
+        public string name { get; set; }
+        public string preview_url { get; set; }
+        public int track_number { get; set; }
+        public string type { get; set; }
+        public string uri { get; set; }
     }
 
+    public class AlbumDetails : AlbumRoot
+    {
+        public List<Copyright> copyrights { get; set; }
+        public ExternalIds external_ids { get; set; }
+        public List<object> genres { get; set; }
+        public string label { get; set; }
+        public int popularity { get; set; }
+        public Tracks tracks { get; set; }
+    }
+
+    public class Tracks
+    {
+        public string href { get; set; }
+        public List<Item> items { get; set; }
+        public int limit { get; set; }
+        public object next { get; set; }
+        public int offset { get; set; }
+        public object previous { get; set; }
+        public int total { get; set; }
+    }
 
     public class SearchRoot
     {
@@ -178,13 +221,7 @@ namespace BassLines.Api.ViewModels
         public int? duration_ms { get; set; }
         public int? time_signature { get; set; }
     }
-    
-    public class Copyright
-    {
-        public string text { get; set; }
-        public string type { get; set; }
-    }
-
+ 
     public class GenreSeeds
     {
         public List<string> genres { get; set; }

@@ -212,6 +212,19 @@ namespace BassLines.Api.Services
             track.ArtistDetails.Images = artistDetails.images;
             track.ArtistDetails.Genres = artistDetails.genres;
 
+            var albumDetails = await(await _spotifyClient.GetAsync($"albums/{track.Album.SpotifyId}")).DeserializeHttp<AlbumDetails>();
+            
+            track.Album.Tracks = albumDetails.tracks.items.Select(t => new SpotifyAlbumTrack 
+            {
+                Title = t.name,
+                SpotifyId = t.id,
+                DurationSeconds = t.duration_ms / 1000,
+                Explicit = t.@explicit,
+                Artist = t.artists.FirstOrDefault()?.name,
+                Link = t.external_urls.spotify
+            }
+            ).ToList();
+
             return track;
         }
 
