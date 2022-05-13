@@ -81,7 +81,7 @@ namespace BassLines.Api.Services
 
         public static void setNumberOfLikes(this User usr, UserLeaderboardModel ldr)
         {
-            ldr.NumberOfLikes = usr.SongUsers.Sum(o => o.Likes.Count);
+            ldr.NumberOfLikes = usr.SongUsers.Sum(s => s.Likes.Count);
         }
 
         public static void setSubmissionsCount(this User usr, UserLeaderboardModel ldr)
