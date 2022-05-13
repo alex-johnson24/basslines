@@ -83,6 +83,8 @@ export default function SongAutoComplete({
     <Autocomplete
       id="song-picker"
       freeSolo
+      autoComplete
+      autoHighlight
       open={songsOpen}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
@@ -91,12 +93,13 @@ export default function SongAutoComplete({
       isOptionEqualToValue={(option, value) =>
         option.title === value.title && option.artist === value.artist
       }
-      getOptionLabel={(option: SongBase) => option.title}
+      // @ts-ignore
+      getOptionLabel={(option: SongBase) => option.title || option || ""}
       options={options}
       fullWidth
       loading={loading}
       ListboxProps={{ className: classes.scrollbar }}
-      renderOption={(props, song) => <SongListItem {...props} song={song} />}
+      renderOption={(props, song) => <SongListItem {...props} key={props.id} song={song} />}
       renderInput={({ InputProps, ...params }) => {
         return (
           // @ts-ignore

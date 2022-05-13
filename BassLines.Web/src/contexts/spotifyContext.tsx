@@ -3,15 +3,19 @@ import { ApiConstructor, call } from "../data/callWrapper";
 import { BaseAPI, SpotifyApi } from "../data/src";
 import jwt_decode from "jwt-decode";
 
-type SpotifyClientAuth = {
+export type SpotifyClientAuth = {
   accessToken?: string;
   expiryTime?: number;
   refreshToken?: string;
 };
 
+export type WebPlayerState = {
+  device_id?: string;
+};
+
 type Action = {
-  type: "authorize" | "clearAuthorization";
-  payload?: SpotifyClientAuth;
+  type: "authorize" | "clearAuthorization" | "setWebPlayerState";
+  payload?: any;
 };
 
 type Dispatch = (action: Action) => void;
@@ -20,6 +24,7 @@ type State = {
   spotifyAuth?: SpotifyClientAuth;
   authorized?: boolean;
   expireTime?: Date;
+  webPlayerState: WebPlayerState;
   handleSpotifyRefresh: (refreshToken: string) => Promise<void>;
   handleSpotifyAuth: (spotifyJwt: string) => Promise<void>;
 };
@@ -43,6 +48,11 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
           : undefined,
       };
     }
+    case "setWebPlayerState":
+      return {
+        ...state,
+        webPlayerState: payload,
+      };
 
     default: {
       // eslint-disable-nextline @typescript-eslint/ban-ts-ignore
@@ -58,6 +68,7 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
   const initalState: State = {
     spotifyAuth: {},
     authorized: false,
+    webPlayerState: {},
     handleSpotifyAuth,
     handleSpotifyRefresh,
   };
@@ -100,16 +111,16 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
    */
   async function handleSpotifyAuth(spotifyJwt: string) {
     const auth = jwt_decode(spotifyJwt) as any;
-    localStorage.setItem("refreshToken", auth.refreshToken)
+    localStorage.setItem("refreshToken", auth.refreshToken);
     const expiryTime = parseInt(auth.expiryTime);
-      dispatch({
-        type: "authorize",
-        payload: {
-          accessToken: auth.accessToken,
-          refreshToken: auth.refreshToken,
-          expiryTime,
-        },
-      });
+    dispatch({
+      type: "authorize",
+      payload: {
+        accessToken: auth.accessToken,
+        refreshToken: auth.refreshToken,
+        expiryTime,
+      },
+    });
   }
 
   return (
@@ -135,7 +146,7 @@ function useSpotify() {
   const {
     spotifyAuth: { accessToken },
     handleSpotifyRefresh,
-    authorized
+    authorized,
   } = state;
 
   /**

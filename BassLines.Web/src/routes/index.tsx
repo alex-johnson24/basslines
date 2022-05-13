@@ -12,6 +12,7 @@ import { getCookieByName } from "../utils/textUtils";
 import { UserModel } from "../data/src";
 import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
+import SpotifyWebPlayer from "./spotify/WebPlayer";
 
 
 interface IRootProps {

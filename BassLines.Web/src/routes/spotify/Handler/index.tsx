@@ -15,6 +15,7 @@ import { call } from "../../../data/callWrapper";
 import { SpotifyApi } from "../../../data/src";
 import { getCookieByName } from "../../../utils/textUtils";
 import SpotifyLogo from "../spotifyLogo";
+import useSpotifyWebPlayer from "../WebPlayer";
 
 export default function SpotifyHandler() {
   const {
@@ -25,6 +26,7 @@ export default function SpotifyHandler() {
       spotifyAuth: { expiryTime, refreshToken },
     },
   } = useSpotify();
+  useSpotifyWebPlayer();
 
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();

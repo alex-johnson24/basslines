@@ -86,17 +86,17 @@ namespace BassLines.Api.Services
         }
 
 
-        public async Task<IEnumerable<SongBase>> SearchTracks(string accessCode, string query)
+        public async Task<IEnumerable<SongBaseWithImages>> SearchTracks(string accessToken, string query)
         {
-            ApplyBearerAuth(accessCode);
+            ApplyBearerAuth(accessToken);
 
             var result = await _spotifyClient.GetAsync($"search?q={query}&type=track&limit=10");
 
             var searchResponse = await result.DeserializeHttp<SearchResponse>();
 
-            if (searchResponse == default) return Enumerable.Empty<SongBase>();
+            if (searchResponse == default) return Enumerable.Empty<SongBaseWithImages>();
 
-            var songs = searchResponse.tracks.items.Select(s => new SongBase
+            var songs = searchResponse.tracks.items.Select(s => new SongBaseWithImages
             {
                 Title = s.name,
                 Artist = s.artists.FirstOrDefault().name,
@@ -107,14 +107,14 @@ namespace BassLines.Api.Services
             return songs;
         }
 
-        public async Task<SpotifyProfile> GetProfile(string accessCode)
+        public async Task<SpotifyProfile> GetProfile(string accessToken)
         {
 
-            ApplyBearerAuth(accessCode);
+            ApplyBearerAuth(accessToken);
 
             var result = await _spotifyClient.GetAsync("me");
 
-            var json = await result.DeserializeHttp<RawSpotifyProfile>();
+            var json = await result.DeserializeHttp<SpotifyUserProfile>();
 
             if (json == default) return null;
 
@@ -128,10 +128,10 @@ namespace BassLines.Api.Services
             };
         }
 
-        public async Task<SpotifyTrack> GetTrack(string accessCode, string trackId)
+        public async Task<SpotifyTrack> GetTrack(string accessToken, string trackId)
         {
 
-            var json = await GetBaseTrack(accessCode, trackId);
+            var json = await GetBaseTrack(accessToken, trackId);
 
             if (json == default) return null;
 
@@ -162,14 +162,13 @@ namespace BassLines.Api.Services
                 Explicit = json.@explicit,
                 DurationSeconds = json.duration_ms.HasValue ? json.duration_ms / 1000 : null,
                 Link = json.external_urls?.spotify,
-                Images = json.album?.images
             };
 
             return track;
         }
-        public async Task<SpotifyTrackDetails> GetTrackDetails(string accessCode, string trackId)
+        public async Task<SpotifyTrackDetails> GetTrackDetails(string accessToken, string trackId)
         {
-            var trackJson = await GetBaseTrack(accessCode, trackId);
+            var trackJson = await GetBaseTrack(accessToken, trackId);
 
             if (trackJson == default) return null;
 
@@ -183,7 +182,7 @@ namespace BassLines.Api.Services
                     Link = trackJson.artists.FirstOrDefault()?.external_urls.spotify,
                     SpotifyId = trackJson.artists.FirstOrDefault()?.id
                 },
-                Album = new SpotifyAlbum
+                Album = new SpotifyAlbumDetails
                 {
                     Name = trackJson.album.name,
                     ReleaseDate = DateTime
@@ -200,7 +199,6 @@ namespace BassLines.Api.Services
                 Explicit = trackJson.@explicit,
                 DurationSeconds = trackJson.duration_ms.HasValue ? trackJson.duration_ms / 1000 : null,
                 Link = trackJson.external_urls?.spotify,
-                Images = trackJson.album?.images
             };
 
             // we already refreshed the httpClient with this access code via the base track call
@@ -236,14 +234,14 @@ namespace BassLines.Api.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private void ApplyBearerAuth(string accessCode)
+        private void ApplyBearerAuth(string accessToken)
         {
-            _spotifyClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessCode.Base64Decode());
+            _spotifyClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Base64Decode());
         }
 
-        private async Task<TrackDetails> GetBaseTrack(string accessCode, string trackId)
+        private async Task<TrackDetails> GetBaseTrack(string accessToken, string trackId)
         {
-            ApplyBearerAuth(accessCode);
+            ApplyBearerAuth(accessToken);
 
             var result = await _spotifyClient.GetAsync($"tracks/{trackId}");
 

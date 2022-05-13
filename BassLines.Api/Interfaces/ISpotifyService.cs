@@ -12,7 +12,7 @@ namespace BassLines.Api.Interfaces
         string GenerateToken(SpotifyClientAuth auth, string refreshToken = null);
         Task<SpotifyClientAuth> GetTokens(string code);
         Task<SpotifyClientAuth> RefreshToken(string refreshToken);
-        Task<IEnumerable<SongBase>> SearchTracks(string accessCode, string query);
+        Task<IEnumerable<SongBaseWithImages>> SearchTracks(string accessCode, string query);
         Task<SpotifyProfile> GetProfile(string accessCode);
         Task<SpotifyTrack> GetTrack(string accessCode, string songId);
         Task<SpotifyTrackDetails> GetTrackDetails(string accessCode, string songId);

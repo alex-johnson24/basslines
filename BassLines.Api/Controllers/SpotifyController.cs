@@ -98,7 +98,7 @@ namespace BassLines.Api.Controllers
 
         [HttpGet]
         [Route("/search")]
-        [ProducesResponseType(typeof (IEnumerable<SongBase>), 200)]
+        [ProducesResponseType(typeof (IEnumerable<SongBaseWithImages>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> Search([FromQuery] string query)
         {

@@ -13,9 +13,9 @@ namespace BassLines.Api.ViewModels
   }
   public class SpotifyTrackDetails : SpotifyTrack
   {
+    public new SpotifyAlbumDetails Album { get; set; }
     public new SpotifyArtistDetails ArtistDetails { get; set; }
     public TrackFeatures Features { get; set; }
+    public List<SpotifyAlbumTrack> RecommendedTracks { get; set; }
   }
-
-
 }
