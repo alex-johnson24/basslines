@@ -197,11 +197,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       await connection.start();
       connection.on("ReceiveSongEvent", (song: SongModel) => {
         dispatch({
-          type: "setDailySongs",
-          payload: [
-            ...dailySongs.filter((f) => f.id !== song.id),
-            SongModelFromJSON(song),
-          ],
+          type: "receiveSongEvent",
+          payload: song,
         });
       });
       connection.on("ReceiveNoteEvent", (notes: string) => {

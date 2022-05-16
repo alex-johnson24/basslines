@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SongModel } from "../data/src";
+import { SongModel, SongModelFromJSON } from "../data/src";
 
 // TODO: moving the add song fab to the toolbar will require the song dialog disconnected from the home page
 // put those properties here
@@ -8,7 +8,8 @@ type Action =
   | { type: "setSelectedDate"; payload: Date }
   | { type: "setDraftSong"; payload: SongModel }
   | { type: "setSongDialogOpen"; payload: boolean }
-  | { type: "setReviewerNotes"; payload: string };
+  | { type: "setReviewerNotes"; payload: string }
+  | { type: "receiveSongEvent"; payload: SongModel };
 
 type Dispatch = (action: Action) => void;
 
@@ -57,6 +58,15 @@ function songReducer(state: State, action: Action): State {
       return {
         ...state,
         reviewerNotes: action.payload,
+      };
+    }
+    case "receiveSongEvent": {
+      return {
+        ...state,
+        dailySongs: [
+          ...state.dailySongs.filter((f) => f.id !== action.payload.id),
+          SongModelFromJSON(action.payload),
+        ],
       };
     }
     default: {
