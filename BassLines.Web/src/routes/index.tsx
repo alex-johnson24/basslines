@@ -60,7 +60,6 @@ export default React.memo(function Root(props: IRootProps) {
                 path="/home"
                 component={() => (
                   <HomeDashboard
-                    userInfo={userInfo}
                     selectedDate={selectedDate}
                   />
                 )}

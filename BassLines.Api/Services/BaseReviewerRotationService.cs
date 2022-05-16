@@ -13,6 +13,7 @@ namespace BassLines.Api.Services
 
         protected static readonly string REVIEWER_LIST_KEY = "reviewerList";
         protected static readonly string CURRENT_REVIEWER_KEY = "currentReviewer";
+        protected static readonly string REVIEWER_NOTES_KEY = "reviewerNotes";
         protected readonly BassLinesContext _ctx;
 
         protected BaseReviewerRotationService(BassLinesContext ctx)
@@ -66,5 +67,9 @@ namespace BassLines.Api.Services
         public abstract string GetCurrentReviewer();
 
         public abstract IEnumerable<UserModel> GetReviewerQueue();
+
+        public abstract string GetReviewerNotes();
+
+        public abstract void SetReviewerNotes(string notes);
     }
 }

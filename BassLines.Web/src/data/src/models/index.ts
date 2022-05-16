@@ -13,6 +13,8 @@ export * from './MyDevices';
 export * from './RegistrationModel';
 export * from './ResetPasswordModel';
 export * from './SongBaseWithImages';
+export * from './SongBase';
+export * from './ReviewerNotesModel';
 export * from './SongModel';
 export * from './SpotifyAlbum';
 export * from './SpotifyAlbumDetails';

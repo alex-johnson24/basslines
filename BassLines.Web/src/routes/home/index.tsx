@@ -3,10 +3,14 @@ import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
 import {
   Box,
-  CircularProgress,
   Container,
   Fab,
-  Icon,
+  FilledInput,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  Snackbar,
   Theme,
   Tooltip,
   Typography,
@@ -27,6 +31,11 @@ import RatingPopover from "./RatingPopover";
 import SongCard from "./SongCard";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import HeadphoneIcon from "./HeadphoneIcon";
+import SendIcon from "@mui/icons-material/Send";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import { useUserState } from "../../contexts";
+import { useSongDispatch, useSongState } from "../../contexts/songContext";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 const useStyles = makeStyles(() => {
   return {
@@ -58,8 +67,14 @@ const useStyles = makeStyles(() => {
   };
 });
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 interface IHomeDashboardProps {
-  userInfo: UserModel;
   selectedDate: Date;
 }
 
@@ -68,7 +83,8 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   const classes = useStyles(theme);
 
-  const [dailySongs, setDailySongs] = React.useState<SongModel[]>([]);
+  const { userInfo, userCanReview } = useUserState();
+
   const [reviewerQueue, setReviewerQueue] = React.useState<UserModel[]>([]);
   const [currentReviewer, setCurrentReviewer] = React.useState<UserModel>(null);
   const [songDialogOpen, setSongDialogOpen] = React.useState<boolean>(false);
@@ -76,6 +92,15 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
   const [connection, setConnection] = React.useState<HubConnection>(null);
+  const [localReviewerNotes, setLocalReviewerNotes] =
+    React.useState<string>("");
+
+  const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
+
+  const dispatch = useSongDispatch();
+
+  const { dailySongs, reviewerNotes } = useSongState();
 
   const uniqueDailyRatings = [...new Set(dailySongs.map((m) => m.rating))].sort(
     (a, b) => b - a
@@ -104,9 +129,15 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
       ).apiSongsSubmissionDateSubmitDateStringGet({
         submitDateString: formattedDate,
       });
-      setDailySongs(songsResults);
+      dispatch({ type: "setDailySongs", payload: songsResults });
     }
   );
+
+  const getReviewerNotes = async () => {
+    const results = await call(ReviewersApi).apiReviewersNotesGet();
+    setLocalReviewerNotes(results);
+    dispatch({ type: "setReviewerNotes", payload: results });
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -115,6 +146,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         setReviewerQueue(
           await call(ReviewersApi).apiReviewersGetReviewerQueueGet()
         );
+        await getReviewerNotes();
       } catch (e) {}
     })();
   }, []);
@@ -131,14 +163,50 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
     setRatingPopoverAnchor(null);
   };
 
+  const handleSnackbarClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackbarOpen(false);
+  };
+
+  const putReviewerNotes = async () => {
+    try {
+      await call(ReviewersApi).apiReviewersNotesPut({
+        reviewerNotesModel: {
+          notes: localReviewerNotes,
+        },
+      });
+      dispatch({
+        type: "setReviewerNotes",
+        payload: localReviewerNotes,
+      });
+      setSnackbarMessage("Note posted!");
+      setSnackbarOpen(true);
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
+
   const registerSongEvents = async () => {
     if (connection) {
       await connection.start();
       connection.on("ReceiveSongEvent", (song: SongModel) => {
-        setDailySongs((current) => [
-          ...current.filter((f) => f.id !== song.id),
-          SongModelFromJSON(song),
-        ]);
+        dispatch({
+          type: "receiveSongEvent",
+          payload: song,
+        });
+      });
+      connection.on("ReceiveNoteEvent", (notes: string) => {
+        dispatch({
+          type: "setReviewerNotes",
+          payload: notes,
+        });
+        setLocalReviewerNotes(notes);
       });
     }
   };
@@ -161,9 +229,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   React.useEffect(() => {
     if (dailySongs.length > 0) {
       setCurrentUserSong(
-        dailySongs.filter(
-          (f) => f.user?.username === props.userInfo?.username
-        )[0]
+        dailySongs.filter((f) => f.user?.username === userInfo?.username)[0]
       );
     } else {
       setCurrentUserSong(null);
@@ -178,6 +244,20 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   return (
     <>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <RatingPopover
         anchorEl={ratingPopoverAnchor}
         handleClose={closeRatingPopover}
@@ -187,7 +267,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
       <SongDialog
         open={songDialogOpen}
         handleClose={handleSongDialogClose}
-        userInfo={props.userInfo}
+        userInfo={userInfo}
         userSong={currentUserSong}
       />
       <Container maxWidth={false}>
@@ -202,28 +282,62 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
             style={{ height: "54px", width: "54px", marginRight: "20px" }}
             reviewerQueue={reviewerQueue}
           />
-          <Box>
+          <Box sx={{ minWidth: "250px" }}>
             <Typography sx={{ fontSize: "16px", color: "text.textColor" }}>
               Current Reviewer
             </Typography>
-            {currentReviewer ? (
-              <Typography
-                sx={{ fontSize: "20px" }}
-                children={`${currentReviewer.firstName} ${currentReviewer.lastName}`}
-              />
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontSize: "20px",
-                }}
-              >
-                --
-              </div>
-            )}
+            <Typography
+              sx={{
+                fontSize: "20px",
+                paddingLeft: currentReviewer?.firstName ? "unset" : "55px",
+              }}
+              noWrap
+            >
+              {currentReviewer?.firstName
+                ? `${currentReviewer?.firstName} ${currentReviewer?.lastName}`
+                : "--"}
+            </Typography>
           </Box>
+          <FormControl style={{ width: "100%" }} variant="filled">
+            <InputLabel style={{ fontSize: "16px" }}>Reviewer Notes</InputLabel>
+            <FilledInput
+              style={{
+                fontSize: "20px",
+                caretColor: userCanReview ? "unset" : "transparent",
+              }}
+              fullWidth
+              value={localReviewerNotes}
+              onChange={(event) => setLocalReviewerNotes(event.target.value)}
+              disableUnderline
+              readOnly={!userCanReview}
+              endAdornment={
+                userCanReview && (
+                  <InputAdornment position="end">
+                    {reviewerNotes !== localReviewerNotes && (
+                      <Tooltip title="Reset">
+                        <IconButton
+                          onClick={getReviewerNotes}
+                          sx={{ marginRight: "5px" }}
+                          edge="end"
+                        >
+                          <RefreshIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    <Tooltip title="Post Note">
+                      <IconButton
+                        onClick={putReviewerNotes}
+                        sx={{ marginRight: "5px" }}
+                        edge="end"
+                      >
+                        <SendIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                )
+              }
+            />
+          </FormControl>
         </Box>
         <Box
           sx={{ height: "calc(100vh - 312px)", overflowY: "auto" }}
@@ -242,7 +356,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                 allSongsRated={allSongsRated}
                 setSelectedSong={setSongToRate}
                 setRatingAnchor={setRatingPopoverAnchor}
-                userInfo={props.userInfo}
                 refreshSongs={getSongs}
                 setEditSongDialogOpen={setSongDialogOpen}
                 ranking={getSongRanking(m)}
@@ -265,7 +378,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                     formattedDate !== format(new Date(), "yyyy-MM-dd") ||
                     dailySongs
                       .map((m) => m.user?.username)
-                      .indexOf(props.userInfo?.username) > -1
+                      .indexOf(userInfo?.username) > -1
                   }
                 >
                   <AddIcon />

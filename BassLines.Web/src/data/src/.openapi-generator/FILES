@@ -19,6 +19,8 @@ models/MyDevices.ts
 models/RegistrationModel.ts
 models/ResetPasswordModel.ts
 models/SongBaseWithImages.ts
+models/SongBase.ts
+models/ReviewerNotesModel.ts
 models/SongModel.ts
 models/SpotifyAlbum.ts
 models/SpotifyAlbumDetails.ts

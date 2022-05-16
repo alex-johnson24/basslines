@@ -15,10 +15,17 @@
 
 import * as runtime from '../runtime';
 import {
+    ReviewerNotesModel,
+    ReviewerNotesModelFromJSON,
+    ReviewerNotesModelToJSON,
     UserModel,
     UserModelFromJSON,
     UserModelToJSON,
 } from '../models';
+
+export interface ApiReviewersNotesPutRequest {
+    reviewerNotesModel?: ReviewerNotesModel;
+}
 
 /**
  * 
@@ -71,6 +78,56 @@ export class ReviewersApi extends runtime.BaseAPI {
     async apiReviewersGetReviewerQueueGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
         const response = await this.apiReviewersGetReviewerQueueGetRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async apiReviewersNotesGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<string>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Reviewers/Notes`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.TextApiResponse(response) as any;
+    }
+
+    /**
+     */
+    async apiReviewersNotesGet(initOverrides?: RequestInit): Promise<string> {
+        const response = await this.apiReviewersNotesGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiReviewersNotesPutRaw(requestParameters: ApiReviewersNotesPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Reviewers/Notes`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReviewerNotesModelToJSON(requestParameters.reviewerNotesModel),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async apiReviewersNotesPut(requestParameters: ApiReviewersNotesPutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiReviewersNotesPutRaw(requestParameters, initOverrides);
     }
 
     /**

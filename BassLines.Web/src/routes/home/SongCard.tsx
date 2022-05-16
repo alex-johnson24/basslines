@@ -21,16 +21,16 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
 import { parseSpotifyId } from "../../utils";
-import { MoreVert } from "@material-ui/icons";
 import { SpotifyEntityType, useSpotify } from "../../contexts/spotifyContext";
-import { useHistory } from "react-router-dom";
+import { useUserState } from "../../contexts";
+import {useHistory} from 'react-router-dom';
+import { MoreVert } from "@material-ui/icons";
 
 interface ISongCardProps {
   song: SongModel;
   allSongsRated: boolean;
   setSelectedSong: React.Dispatch<React.SetStateAction<SongModel>>;
   setRatingAnchor: React.Dispatch<React.SetStateAction<unknown>>;
-  userInfo: UserModel;
   refreshSongs: () => void;
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   ranking?: "first" | "second" | "third";
@@ -43,15 +43,15 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const SongCard = (props: ISongCardProps) => {
-  const theme = useTheme();
+  const {userInfo, userCanReview} = useUserState();
   const { dispatch: spotifyDispatch } = useSpotify();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   const firstName = props.song?.user?.firstName;
   const lastName = props.song?.user?.lastName;
   const history = useHistory();
 
   const songIsRated = typeof props.song.rating === "number";
-  const isUserSong = props.song.user.username === props.userInfo?.username;
+  const isUserSong = props.song.user.username === userInfo?.username;
   const isCurrentSubmissionDate =
     format(props.song.submitteddate, "yyyy-MM-dd") ===
     format(new Date(), "yyyy-MM-dd");
@@ -59,16 +59,14 @@ const SongCard = (props: ISongCardProps) => {
 
   const saveLike = async () => {
     try {
-      props.song.likes?.map((m) => m.userId).indexOf(props.userInfo.id) > -1
+      props.song.likes?.map((m) => m.userId).indexOf(userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
             likeModel: {
-              ...props.song.likes.filter(
-                (f) => f.userId === props.userInfo.id
-              )[0],
+              ...props.song.likes.filter(f => f.userId === userInfo.id)[0]
             },
           })
         : await call(LikesApi).apiLikesPost({
-            likeModel: { userId: props.userInfo.id, songId: props.song.id },
+            likeModel: { userId: userInfo.id, songId: props.song.id },
           });
       props.refreshSongs();
     } catch (err) {
@@ -77,10 +75,6 @@ const SongCard = (props: ISongCardProps) => {
   };
 
   const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
-
-  const userCanReview =
-    props.userInfo.role === UserRole.Administrator ||
-    props.userInfo.role === UserRole.Reviewer;
 
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
@@ -225,7 +219,7 @@ const SongCard = (props: ISongCardProps) => {
                       ? "disabled"
                       : props.song.likes
                           .map((m) => m.userId)
-                          .indexOf(props.userInfo.id) > -1
+                          .indexOf(userInfo.id) > -1
                       ? "secondary.main"
                       : "",
                   }}

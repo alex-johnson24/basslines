@@ -53,6 +53,7 @@ namespace BassLines.Api.Services
             var userAsBytes = newReviewer.ToRedisCache();
 
             _cache.Set(CURRENT_REVIEWER_KEY, userAsBytes, _opts);
+            _cache.Remove(REVIEWER_NOTES_KEY);
 
             if (reviewerQueue.Count == 0)
             {
@@ -76,7 +77,17 @@ namespace BassLines.Api.Services
             return _mapper.Map<List<UserModel>>(strReviewerQueue);
         }
 
+        public override string GetReviewerNotes()
+        {
+            var reviewerNotesBytes = _cache.Get(REVIEWER_NOTES_KEY);
+            return reviewerNotesBytes.FromRedisCache<string>() ?? "";
+        }
 
+        public override void SetReviewerNotes(string notes)
+        {
+            var notesAsBytes = notes.ToRedisCache();
+            _cache.Set(REVIEWER_NOTES_KEY, notesAsBytes, _opts);
+        }
     }
 
     public static class RedisHelpers
