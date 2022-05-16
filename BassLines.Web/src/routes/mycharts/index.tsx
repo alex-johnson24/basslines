@@ -27,9 +27,16 @@ import {
   LabelList,
 } from "recharts";
 import { call } from "../../data/callWrapper";
-import { UserMetricsModel, UserModel, UsersApi } from "../../data/src";
+import {
+  SpotifyApi,
+  UserMetricsModel,
+  UserModel,
+  UsersApi,
+} from "../../data/src";
 import { useUserState } from "../../contexts";
+import { useSpotify } from "../../contexts/spotifyContext";
 import { format } from "date-fns";
+import { parseSpotifyId } from "../../utils";
 
 const useStyles = makeStyles(() => {
   return {
@@ -83,6 +90,10 @@ const MyCharts = () => {
   const theme = useTheme();
 
   const { userInfo } = useUserState();
+  const {
+    state: { player, deviceId },
+    callSpotify,
+  } = useSpotify();
 
   const [userMetrics, setUserMetrics] = React.useState<UserMetricsModel>();
   const [selectedUser, setSelectedUser] = React.useState<string>("");
@@ -129,8 +140,11 @@ const MyCharts = () => {
           onChange={(e) => setSelectedUser(e.target.value as string)}
           variant="outlined"
         >
-          {users.map((m) => (
-            <MenuItem value={m.id}>{`${m.firstName} ${m.lastName}`}</MenuItem>
+          {users.map((m, i) => (
+            <MenuItem
+              key={i}
+              value={m.id}
+            >{`${m.firstName} ${m.lastName}`}</MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -301,6 +315,31 @@ const MyCharts = () => {
             </div>
           </Grid>
         </Grid>
+        {userMetrics?.spotifySongs?.map((s, i) => {
+          const [spotifyId, valid] = parseSpotifyId(s.link);
+          return (
+            <Grid display={"flex"} width={"100%"} key={i}>
+              <div>{s.title}</div>
+              <div style={{ marginLeft: 8 }}>{s.artist}</div>
+              <button
+                style={{ marginLeft: 8 }}
+                onClick={() => {
+                  console.log(spotifyId, valid);
+                  if (valid) {
+                    callSpotify(
+                      SpotifyApi
+                    ).playSpotifyIdDeviceDeviceIdPut({
+                      deviceId,
+                      spotifyId,
+                    })
+                  }
+                }}
+              >
+                Click me
+              </button>
+            </Grid>
+          );
+        })}
       </Container>
     </>
   );

@@ -5,79 +5,118 @@ declare global {
   }
 }
 
+type Callback<T> = (o?: T) => void;
+type ReadyObject = { device_id?: string };
+type ErrorObject = { message?: string };
+export interface SpotifyPlayer {
+  connect: () => Promise<boolean>;
+  disconnect: () => void;
+  addListener: (
+    event: string,
+    cb:
+      | Callback<SpotifyPlayerState>
+      | Callback<ReadyObject>
+      | Callback<ErrorObject>
+  ) => boolean;
+  removeListener: (event: string, cb: Callback<undefined>) => boolean;
+  getCurrentState: () => Promise<SpotifyPlayerState | null>;
+  setName: (name: string) => Promise<void>;
+  getVolume: () => Promise<number>;
+  setVolume: (v: number) => Promise<void>;
+  pause: () => Promise<void>;
+  resume: () => Promise<void>;
+  togglePlay: () => Promise<void>;
+  seek: (ms: number) => Promise<void>;
+  previousTrack: () => Promise<void>;
+  nextTrack: () => Promise<void>;
+  activateElement: () => Promise<void>;
+}
+
 window.onSpotifyWebPlaybackSDKReady = window.onSpotifyWebPlaybackSDKReady;
 window.Spotify = window.Spotify || {};
 
 import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
+import { SpotifyPlayerState } from "./types";
 
 export default function useSpotifyWebPlayer() {
   const {
     state: {
       spotifyAuth: { accessToken },
-      webPlayerState,
+      authorized,
     },
-    dispatch,
   } = useSpotify();
 
+  const [player, setPlayer] = React.useState<SpotifyPlayer>();
+  const [playerState, setPlayerState] = React.useState<SpotifyPlayerState>();
+  const [deviceId, setDeviceId] = React.useState<string>();
+
   React.useEffect(() => {
+    if (!authorized) return undefined;
+    let player: SpotifyPlayer;
     (async () => {
       if (!window.onSpotifyWebPlaybackSDKReady) {
         window.onSpotifyWebPlaybackSDKReady = initializePlayer;
       } else {
-        initializePlayer();
+        player = initializePlayer();
       }
-
-      await loadSpotifyPlayer();
     })();
-  }, [window.onSpotifyWebPlaybackSDKReady, accessToken]);
+    loadSpotifyPlayer();
 
-  const initializePlayer = () => {
+    return () => player.disconnect();
+  }, [accessToken, authorized]);
+  // }, [window.onSpotifyWebPlaybackSDKReady, accessToken, authorized]);
+
+  function initializePlayer() {
+    let player: SpotifyPlayer;
     (() => {
       return new Promise<void>((resolve) => {
         if (window.Spotify) {
-          const player = new window.Spotify.Player({
+          player = new window.Spotify.Player({
             getOAuthToken: (callback: any) => {
               callback(accessToken);
             },
             name: "BassLines",
             volume: 0.5,
-          }) as any;
+          }) as SpotifyPlayer;
 
-          
-          player.addListener("ready", ({ device_id }) =>
-          dispatch({
-            type: "setWebPlayerState",
-            payload: { ...webPlayerState, device_id },
-          })
-          );
-          player.addListener("not_ready", (...args) =>
-            console.log("not_ready", args)
-            );
-            player.addListener("player_state_changed", (...args) =>
-            console.log(" player_state_changed", args)
-            );
-            player.addListener("initialization_error", (...error) =>
-            console.warn("initialization_error", error)
-            );
-            player.addListener("authentication_error", (...error) =>
-            console.warn("authentication_error", error)
-          );
-          player.addListener("account_error", (...error) =>
-            console.warn("account_error", error)
-          );
-          player.addListener("playback_error", (...error) =>
-          console.warn("playback_error", error)
-          );
-          
-          console.log(player)
           player.connect();
+
+          setPlayer(player);
+
+          player.addListener("ready", async ({ device_id }) => {
+            setDeviceId(device_id);
+          });
+          player.addListener("not_ready", (args) =>
+            console.log("not_ready", args)
+          );
+          player.addListener(
+            "player_state_changed",
+            (state: SpotifyPlayerState) => {
+              setPlayerState(state);
+            }
+          );
+          player.addListener("initialization_error", ({ message }) =>
+            console.warn("initialization_error", message)
+          );
+          player.addListener("authentication_error", ({ message }) =>
+            console.warn("authentication_error", message)
+          );
+          player.addListener("account_error", ({ message }) =>
+            console.warn("account_error", message)
+          );
+          player.addListener("playback_error", ({ message }) =>
+            console.warn("playback_error", message)
+          );
         } else {
           window.onSpotifyWebPlaybackSDKReady = resolve;
         }
       });
     })();
-  };
+    return player;
+  }
+
+  return { player, playerState, setPlayerState, deviceId };
 }
 
 function loadSpotifyPlayer(): Promise<any> {
@@ -96,7 +135,7 @@ function loadSpotifyPlayer(): Promise<any> {
       script.onerror = (error: any) =>
         reject(new Error(`loadScript: ${error.message}`));
 
-      document.head.appendChild(script);
+      document.getElementById("mountNode").appendChild(script);
     } else {
       resolve();
     }

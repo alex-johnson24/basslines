@@ -22,7 +22,8 @@ import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
 import { parseSpotifyId } from "../../utils";
 import { MoreVert } from "@material-ui/icons";
-import { useSpotify } from "../../contexts/spotifyContext";
+import { SpotifyEntityType, useSpotify } from "../../contexts/spotifyContext";
+import { useHistory } from "react-router-dom";
 
 interface ISongCardProps {
   song: SongModel;
@@ -43,9 +44,11 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 
 const SongCard = (props: ISongCardProps) => {
   const theme = useTheme();
+  const { dispatch: spotifyDispatch } = useSpotify();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const firstName = props.song?.user?.firstName;
   const lastName = props.song?.user?.lastName;
+  const history = useHistory();
 
   const songIsRated = typeof props.song.rating === "number";
   const isUserSong = props.song.user.username === props.userInfo?.username;
@@ -59,7 +62,9 @@ const SongCard = (props: ISongCardProps) => {
       props.song.likes?.map((m) => m.userId).indexOf(props.userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
             likeModel: {
-              ...props.song.likes.filter(f => f.userId === props.userInfo.id)[0]
+              ...props.song.likes.filter(
+                (f) => f.userId === props.userInfo.id
+              )[0],
             },
           })
         : await call(LikesApi).apiLikesPost({
@@ -71,7 +76,7 @@ const SongCard = (props: ISongCardProps) => {
     }
   };
 
-  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link)
+  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
 
   const userCanReview =
     props.userInfo.role === UserRole.Administrator ||
@@ -124,16 +129,23 @@ const SongCard = (props: ISongCardProps) => {
                 {props.song.title}
               </Typography>
             )}
-            {/* {isValid && authorized && (
+            {isValid && authorized && (
               <IconButton
-                sx={{p: "3px"}}
-                onClick={() =>
-                  console.log(`Go to spotify track details ${spotifyTrackId}.`)
-                }
+                sx={{ p: "3px" }}
+                onClick={() => {
+                  spotifyDispatch({
+                    type: "setNavigatorTarget",
+                    payload: {
+                      id: spotifyTrackId,
+                      type: SpotifyEntityType.Track,
+                    },
+                  });
+                  history.push("/navigator");
+                }}
               >
-                <MoreVert style={{fontSize: "1.1rem" }} />
+                <MoreVert style={{ fontSize: "1.1rem" }} />
               </IconButton>
-            )} */}
+            )}
           </Grid>
           <Grid container alignItems="center" item xs={12}>
             <Typography

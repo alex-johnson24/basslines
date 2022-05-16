@@ -63,7 +63,7 @@ interface IHomeDashboardProps {
   selectedDate: Date;
 }
 
-const HomeDashboard = (props: IHomeDashboardProps) => {
+const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const theme = useTheme();
 
   const classes = useStyles(theme);
@@ -143,6 +143,12 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     }
   };
 
+  const cleanupConnection = () => {
+    if (connection) {
+      connection.stop();
+    }
+  };
+
   React.useEffect(() => {
     const newConnection = new HubConnectionBuilder()
       .withUrl("songHub")
@@ -166,6 +172,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   React.useEffect(() => {
     registerSongEvents();
+
+    return () => cleanupConnection();
   }, [connection]);
 
   return (
@@ -198,22 +206,23 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
             <Typography sx={{ fontSize: "16px", color: "text.textColor" }}>
               Current Reviewer
             </Typography>
-            <Typography sx={{ fontSize: "20px" }}>
-              {currentReviewer?.firstName ? (
-                `${currentReviewer?.firstName} ${currentReviewer?.lastName}`
-              ) : (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    fontSize: "20px",
-                  }}
-                >
-                  --
-                </div>
-              )}
-            </Typography>
+            {currentReviewer ? (
+              <Typography
+                sx={{ fontSize: "20px" }}
+                children={`${currentReviewer.firstName} ${currentReviewer.lastName}`}
+              />
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "20px",
+                }}
+              >
+                --
+              </div>
+            )}
           </Box>
         </Box>
         <Box
@@ -268,6 +277,6 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       </Container>
     </>
   );
-};
+});
 
 export default HomeDashboard;

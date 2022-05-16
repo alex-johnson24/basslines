@@ -31,6 +31,12 @@ import {
     GenreCountModelFromJSONTyped,
     GenreCountModelToJSON,
 } from './GenreCountModel';
+import {
+    SpotifyLinkReference,
+    SpotifyLinkReferenceFromJSON,
+    SpotifyLinkReferenceFromJSONTyped,
+    SpotifyLinkReferenceToJSON,
+} from './SpotifyLinkReference';
 
 /**
  * 
@@ -86,6 +92,12 @@ export interface UserMetricsModel {
      * @memberof UserMetricsModel
      */
     uniqueGenreCount?: number;
+    /**
+     * 
+     * @type {Array<SpotifyLinkReference>}
+     * @memberof UserMetricsModel
+     */
+    spotifySongs?: Array<SpotifyLinkReference> | null;
 }
 
 export function UserMetricsModelFromJSON(json: any): UserMetricsModel {
@@ -106,6 +118,7 @@ export function UserMetricsModelFromJSONTyped(json: any, ignoreDiscriminator: bo
         'songSubmissionCount': !exists(json, 'songSubmissionCount') ? undefined : json['songSubmissionCount'],
         'uniqueArtistCount': !exists(json, 'uniqueArtistCount') ? undefined : json['uniqueArtistCount'],
         'uniqueGenreCount': !exists(json, 'uniqueGenreCount') ? undefined : json['uniqueGenreCount'],
+        'spotifySongs': !exists(json, 'spotifySongs') ? undefined : (json['spotifySongs'] === null ? null : (json['spotifySongs'] as Array<any>).map(SpotifyLinkReferenceFromJSON)),
     };
 }
 
@@ -126,6 +139,7 @@ export function UserMetricsModelToJSON(value?: UserMetricsModel | null): any {
         'songSubmissionCount': value.songSubmissionCount,
         'uniqueArtistCount': value.uniqueArtistCount,
         'uniqueGenreCount': value.uniqueGenreCount,
+        'spotifySongs': value.spotifySongs === undefined ? undefined : (value.spotifySongs === null ? null : (value.spotifySongs as Array<any>).map(SpotifyLinkReferenceToJSON)),
     };
 }
 

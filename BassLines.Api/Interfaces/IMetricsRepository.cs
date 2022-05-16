@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BassLines.Api.Models;
 using BassLines.Api.ViewModels;
 
 namespace BassLines.Api.Interfaces
@@ -15,5 +16,6 @@ namespace BassLines.Api.Interfaces
         Task<int> GetSongSubmissionCount(Guid userId);
         Task<int> GetUniqueArtistCount(Guid userId);
         Task<int> GetUniqueGenreCount(Guid userId);
+        Task<List<SpotifyLinkReference>> GetSpotifyTracks(Guid userId);
     }
 }

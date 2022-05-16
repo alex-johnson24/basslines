@@ -17,7 +17,7 @@ import {
   UserModel,
   SongModel,
   SongsApi,
-  SongBase,
+  SongBaseWithImages,
 } from "../../data/src";
 import { useMutation } from "react-query";
 import { useSpotify } from "../../contexts/spotifyContext";
@@ -91,7 +91,7 @@ const SongDialog = (props: ISongDialogProps) => {
   const genreRef = React.useRef<HTMLInputElement>(null)
   const handleSongChange = (
     e: React.SyntheticEvent<Element, Event>,
-    { title, artist, link }: SongBase
+    { title, artist, link }: SongBaseWithImages
   ) => {
     setUserSong((current) => ({ ...current, title, artist, link }));
     genreRef.current.focus()

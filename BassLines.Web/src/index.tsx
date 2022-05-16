@@ -13,6 +13,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { CssBaseline } from "@mui/material";
 import ColorModeWithProvider from "./helpers/useTheme";
 import { SpotifyProvider } from "./contexts/spotifyContext";
+import ControlPanel from "./routes/spotify/ControlPanel";
 
 declare global {
   interface Window {
@@ -41,6 +42,7 @@ const App = (props: AppProps) => {
             <SpotifyProvider>
               <CssBaseline />
               <Root basepath={props.basename} />
+              {/* <ControlPanel /> */}
             </SpotifyProvider>
           </ColorModeWithProvider>
         </LocalizationProvider>

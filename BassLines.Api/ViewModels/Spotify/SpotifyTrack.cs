@@ -8,8 +8,8 @@ namespace BassLines.Api.ViewModels
     public bool? Explicit { get; set; }
     public int? Popularity { get; set; }
     public string SpotifyId { get; set; }
-    public SpotifyBase ArtistDetails { get; set; }
     public SpotifyAlbum Album { get; set; }
+    public SpotifyBase ArtistDetails { get; set; }
   }
   public class SpotifyTrackDetails : SpotifyTrack
   {

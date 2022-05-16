@@ -14,12 +14,6 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    Image,
-    ImageFromJSON,
-    ImageFromJSONTyped,
-    ImageToJSON,
-} from './Image';
-import {
     SpotifyAlbum,
     SpotifyAlbumFromJSON,
     SpotifyAlbumFromJSONTyped,
@@ -58,12 +52,6 @@ export interface SpotifyTrack {
     link?: string | null;
     /**
      * 
-     * @type {Array<Image>}
-     * @memberof SpotifyTrack
-     */
-    images?: Array<Image> | null;
-    /**
-     * 
      * @type {number}
      * @memberof SpotifyTrack
      */
@@ -88,16 +76,16 @@ export interface SpotifyTrack {
     spotifyId?: string | null;
     /**
      * 
-     * @type {SpotifyBase}
-     * @memberof SpotifyTrack
-     */
-    artistDetails?: SpotifyBase;
-    /**
-     * 
      * @type {SpotifyAlbum}
      * @memberof SpotifyTrack
      */
     album?: SpotifyAlbum;
+    /**
+     * 
+     * @type {SpotifyBase}
+     * @memberof SpotifyTrack
+     */
+    artistDetails?: SpotifyBase;
 }
 
 export function SpotifyTrackFromJSON(json: any): SpotifyTrack {
@@ -113,13 +101,12 @@ export function SpotifyTrackFromJSONTyped(json: any, ignoreDiscriminator: boolea
         'title': json['title'],
         'artist': json['artist'],
         'link': !exists(json, 'link') ? undefined : json['link'],
-        'images': !exists(json, 'images') ? undefined : (json['images'] === null ? null : (json['images'] as Array<any>).map(ImageFromJSON)),
         'durationSeconds': !exists(json, 'durationSeconds') ? undefined : json['durationSeconds'],
         'explicit': !exists(json, 'explicit') ? undefined : json['explicit'],
         'popularity': !exists(json, 'popularity') ? undefined : json['popularity'],
         'spotifyId': !exists(json, 'spotifyId') ? undefined : json['spotifyId'],
-        'artistDetails': !exists(json, 'artistDetails') ? undefined : SpotifyBaseFromJSON(json['artistDetails']),
         'album': !exists(json, 'album') ? undefined : SpotifyAlbumFromJSON(json['album']),
+        'artistDetails': !exists(json, 'artistDetails') ? undefined : SpotifyBaseFromJSON(json['artistDetails']),
     };
 }
 
@@ -135,13 +122,12 @@ export function SpotifyTrackToJSON(value?: SpotifyTrack | null): any {
         'title': value.title,
         'artist': value.artist,
         'link': value.link,
-        'images': value.images === undefined ? undefined : (value.images === null ? null : (value.images as Array<any>).map(ImageToJSON)),
         'durationSeconds': value.durationSeconds,
         'explicit': value.explicit,
         'popularity': value.popularity,
         'spotifyId': value.spotifyId,
-        'artistDetails': SpotifyBaseToJSON(value.artistDetails),
         'album': SpotifyAlbumToJSON(value.album),
+        'artistDetails': SpotifyBaseToJSON(value.artistDetails),
     };
 }
 

@@ -12,8 +12,9 @@ import { getCookieByName } from "../utils/textUtils";
 import { UserModel } from "../data/src";
 import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
-import SpotifyWebPlayer from "./spotify/WebPlayer";
-
+import SpotifyNavigator from "./spotify/Navigator";
+import { useSpotify } from "../contexts/spotifyContext";
+import ControlPanel from "./spotify/ControlPanel";
 
 interface IRootProps {
   basepath: string;
@@ -23,13 +24,16 @@ interface Jwt extends UserModel {
   exp: number;
 }
 
-export default function Root(props: IRootProps) {
+export default React.memo(function Root(props: IRootProps) {
   const { userInfo } = useUserState();
   const history = useHistory();
   const dispatch = useUserDispatch();
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(
     new Date()
   );
+  const {
+    state: { authorized },
+  } = useSpotify();
 
   React.useEffect(() => {
     const token = getCookieByName("access_token");
@@ -54,18 +58,25 @@ export default function Root(props: IRootProps) {
             <>
               <Route
                 path="/home"
-                component={() => <HomeDashboard userInfo={userInfo} selectedDate={selectedDate} />}
+                component={() => (
+                  <HomeDashboard
+                    userInfo={userInfo}
+                    selectedDate={selectedDate}
+                  />
+                )}
               />
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />
               <Route path="/leaderboard" component={Leaderboard} />
+              <Route path="/navigator" component={SpotifyNavigator} />
               <SpotifyHandler />
+              {authorized && <ControlPanel />}
             </>
           }
-          />
-          ) : null}
+        />
+      ) : null}
       <Route path="/redirect" component={SpotifyRedirect} />
       {!userInfo ? <Redirect to="/login" /> : null}
     </Switch>
   );
-}
+});

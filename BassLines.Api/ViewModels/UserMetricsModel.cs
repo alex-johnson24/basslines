@@ -12,5 +12,6 @@ namespace BassLines.Api.ViewModels
         public int SongSubmissionCount { get; set; }
         public int UniqueArtistCount { get; set; }
         public int UniqueGenreCount { get; set; }
+        public List<SpotifyLinkReference> SpotifySongs { get; set; }
     }
 }

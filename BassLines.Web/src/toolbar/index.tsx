@@ -289,11 +289,3 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
     </Box>
   );
 }
-
-const SpotifyPlayer = () => {
-  const spotify = useSpotify();
-
-  return <Grid width="100%" position="fixed" bottom={0} bgcolor={(theme)=>theme.palette.primary.main} height="80px">
-
-  </Grid>
-}

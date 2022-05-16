@@ -1,3 +1,4 @@
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using BassLines.Api.Interfaces;
@@ -14,6 +15,7 @@ using System.Security.Claims;
 using AutoMapper;
 using BassLines.Api.Utils;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace BassLines.Api.Services
 {
@@ -225,9 +227,66 @@ namespace BassLines.Api.Services
             }
             ).ToList();
 
+            var genreSeeds = await(await _spotifyClient.GetAsync("recommendations/available-genre-seeds")).DeserializeHttp<GenreSeeds>();
+            var genres = String.Join(",", String.Join("," , track.ArtistDetails.Genres).Split(" ")).Split("-");
+            var g = genres.Where(g => genreSeeds.genres.Contains(g));
+            var recommendedTracks = await(await _spotifyClient.GetAsync($"recommendations?seeds_artists={track.ArtistDetails.SpotifyId}&seed_tracks={trackId}&seed_genres={String.Join(",", g)}")).DeserializeHttp<RecommendationsResponse>();
+            
+            track.RecommendedTracks = recommendedTracks.tracks.Select(t => new SpotifyAlbumTrack
+            {  
+                Title = t?.name,
+                SpotifyId = t?.id,
+                DurationSeconds = t?.duration_ms / 1000,
+                Explicit = t.@explicit,
+                Artist = t.artists?.FirstOrDefault()?.name,
+                Link = t.external_urls?.spotify
+            }).ToList();
+
             return track;
         }
 
+        public async Task<HttpStatusCode> TransferPlayerState(string accessToken, TransferStateRequest request)
+        {
+            ApplyBearerAuth(accessToken);
+            
+            var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+            var response = await _spotifyClient.PutAsync("me/player", content);
+
+            return response.StatusCode;
+
+        }
+
+        public async Task<MyDevices> GetDevices(string accessToken)
+        {
+            ApplyBearerAuth(accessToken);
+
+            return await (await _spotifyClient.GetAsync("me/player/devices")).DeserializeHttp<MyDevices>();
+        }
+
+        public async Task<HttpStatusCode> Play(string accessToken, string spotifyId, string deviceId, string entityType = "track")
+        {
+            ApplyBearerAuth(accessToken);
+
+            var content = new StringContent(JsonSerializer.Serialize(new 
+                    { 
+                        uris = new List<string> { $"spotify:{entityType}:{spotifyId}" }, 
+                        position_ms = 0
+                    }), Encoding.UTF8, "application/json");
+    
+
+            var response = await _spotifyClient.PutAsync($"me/player/play?device_id={deviceId}", content);
+
+            return response.StatusCode;
+        }
+        public async Task<HttpStatusCode> AddTrackToQueue(string accessToken, string spotifyId, string deviceId)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var response = await _spotifyClient.PostAsync($"me/player/queue?uri=spotify:track:{spotifyId}&device_id={deviceId}", null);
+
+            return response.StatusCode;
+        }
         public string GenerateToken(SpotifyClientAuth auth, string refreshToken = null)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -264,3 +323,4 @@ namespace BassLines.Api.Services
         }
     }
 }
+

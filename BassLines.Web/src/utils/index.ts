@@ -32,13 +32,13 @@ export const buildQueryString = (params?: KeyValuePairs) => {
  * @param url
  * @returns [id: string, isValid: boolean]
  */
-export const parseSpotifyId = (url: string): [string, boolean] => {
+export const parseSpotifyId = (url: string): [string, boolean, string?] => {
   try {
     const tuple = url
       .split("https://open.spotify.com/")[1]
       .split("?")[0]
       .split("/" || "");
-    return [tuple[1], tuple[0] === "track" ?? false];
+    return [tuple[1], tuple[0] === "track" ?? false, tuple[0]];
   } catch (e) {
     return [undefined, false];
   }

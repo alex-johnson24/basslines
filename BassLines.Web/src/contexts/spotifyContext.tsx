@@ -2,6 +2,8 @@ import * as React from "react";
 import { ApiConstructor, call } from "../data/callWrapper";
 import { BaseAPI, SpotifyApi } from "../data/src";
 import jwt_decode from "jwt-decode";
+import { SpotifyPlayerState } from "../routes/spotify/WebPlayer/types";
+import { SpotifyPlayer } from "../routes/spotify/WebPlayer";
 
 export type SpotifyClientAuth = {
   accessToken?: string;
@@ -9,12 +11,24 @@ export type SpotifyClientAuth = {
   refreshToken?: string;
 };
 
-export type WebPlayerState = {
-  device_id?: string;
-};
+export enum SpotifyEntityType {
+  Track = "Track",
+  Album = "Album",
+  Artist = "Artist",
+}
+
+export interface ITarget {
+  id?: string;
+  entityType: SpotifyEntityType;
+}
 
 type Action = {
-  type: "authorize" | "clearAuthorization" | "setWebPlayerState";
+  type:
+    | "authorize"
+    | "clearAuthorization"
+    | "setNavigatorTarget"
+    | "setWebPlayer"
+    | "setDeviceId";
   payload?: any;
 };
 
@@ -24,7 +38,9 @@ type State = {
   spotifyAuth?: SpotifyClientAuth;
   authorized?: boolean;
   expireTime?: Date;
-  webPlayerState: WebPlayerState;
+  navigatorTarget?: ITarget;
+  deviceId?: string;
+  player?: SpotifyPlayer;
   handleSpotifyRefresh: (refreshToken: string) => Promise<void>;
   handleSpotifyAuth: (spotifyJwt: string) => Promise<void>;
 };
@@ -48,10 +64,20 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
           : undefined,
       };
     }
-    case "setWebPlayerState":
+    case "setNavigatorTarget":
       return {
         ...state,
-        webPlayerState: payload,
+        navigatorTarget: payload,
+      };
+    case "setWebPlayer":
+      return {
+        ...state,
+        player: payload,
+      };
+    case "setDeviceId":
+      return {
+        ...state,
+        deviceId: payload,
       };
 
     default: {
@@ -64,11 +90,12 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
 
 type SpotifyProviderProps = { children: React.ReactNode };
 
-function SpotifyProvider({ children }: SpotifyProviderProps) {
+const SpotifyProvider = React.memo(function ({
+  children,
+}: SpotifyProviderProps) {
   const initalState: State = {
     spotifyAuth: {},
     authorized: false,
-    webPlayerState: {},
     handleSpotifyAuth,
     handleSpotifyRefresh,
   };
@@ -130,7 +157,7 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
       </SpotifyDispatchContext.Provider>
     </SpotifyStateContext.Provider>
   );
-}
+});
 
 function useSpotify() {
   const dispatch = React.useContext(SpotifyDispatchContext);
@@ -145,7 +172,6 @@ function useSpotify() {
 
   const {
     spotifyAuth: { accessToken },
-    handleSpotifyRefresh,
     authorized,
   } = state;
 
@@ -155,6 +181,9 @@ function useSpotify() {
   function callSpotify<T extends BaseAPI>(api: ApiConstructor<T>) {
     return call(api).withMiddleware({
       pre(context) {
+        if (!authorized) {
+          return Promise.reject({ error: "Not authorized for Spotify use." });
+        }
         context.init.headers["spotify_token"] = window.btoa(accessToken);
         return Promise.resolve(context);
       },
