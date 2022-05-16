@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UserModel } from "../data/src";
+import { UserModel, UserRole } from "../data/src";
 
 type Action = { type: "signIn"; payload: UserModel } | { type: "logOut" };
 
@@ -7,6 +7,7 @@ type Dispatch = (action: Action) => void;
 
 type State = {
   userInfo?: UserModel;
+  userCanReview?: boolean;
 };
 
 type UserProviderProps = { children: React.ReactNode };
@@ -24,12 +25,14 @@ function userReducer(state: State, action: Action): State {
         userInfo: {
           ...action.payload,
         },
+        userCanReview: action.payload.role === UserRole.Administrator || action.payload.role === UserRole.Reviewer
       };
     }
     case "logOut": {
       return {
         ...state,
         userInfo: undefined,
+        userCanReview: false
       };
     }
     default: {

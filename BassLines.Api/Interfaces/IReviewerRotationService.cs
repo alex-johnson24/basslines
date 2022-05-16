@@ -12,5 +12,9 @@ namespace BassLines.Api.Interfaces
         string GetCurrentReviewer();
 
         IEnumerable<UserModel> GetReviewerQueue();
+
+        string GetReviewerNotes();
+
+        void SetReviewerNotes(string notes);
     }
 }

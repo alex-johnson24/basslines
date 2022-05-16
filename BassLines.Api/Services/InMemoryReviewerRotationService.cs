@@ -59,5 +59,16 @@ namespace BassLines.Api.Services
             if (userQueue == null) return new List<UserModel>();
             return _mapper.Map<List<UserModel>>(userQueue);
         }
+
+        public override string GetReviewerNotes()
+        {
+            var userNotes = _cache.Get<string>(REVIEWER_NOTES_KEY);
+            return userNotes ?? "";
+        }
+
+        public override void SetReviewerNotes(string notes)
+        {
+            _cache.Set(REVIEWER_NOTES_KEY, notes);
+        }
     }
 }

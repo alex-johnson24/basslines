@@ -13,6 +13,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { CssBaseline } from "@mui/material";
 import ColorModeWithProvider from "./helpers/useTheme";
 import { SpotifyProvider } from "./contexts/spotifyContext";
+import { SongProvider } from "./contexts/songContext";
 
 declare global {
   interface Window {
@@ -36,14 +37,16 @@ const App = (props: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <ColorModeWithProvider>
-            <SpotifyProvider>
-              <CssBaseline />
-              <Root basepath={props.basename} />
-            </SpotifyProvider>
-          </ColorModeWithProvider>
-        </LocalizationProvider>
+        <SongProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <ColorModeWithProvider>
+              <SpotifyProvider>
+                <CssBaseline />
+                <Root basepath={props.basename} />
+              </SpotifyProvider>
+            </ColorModeWithProvider>
+          </LocalizationProvider>
+        </SongProvider>
       </UserProvider>
     </QueryClientProvider>
   );

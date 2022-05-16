@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.SignalR;
+using BassLines.Api.Hubs;
 
 namespace BassLines.Api.Controllers
 {
@@ -18,16 +20,55 @@ namespace BassLines.Api.Controllers
         private readonly IReviewerRotationService _reviewerRotationService;
         private readonly IUserRepository _userRepo;
         private readonly IMapper _mapper;
+        private readonly IHubContext<SongHub, ISongHub> _songHub;
 
-        public ReviewersController(ILogger<ReviewersController> logger, IReviewerRotationService reviewerRotationService, IUserRepository userRepo, IMapper mapper)
+        public ReviewersController(ILogger<ReviewersController> logger, IReviewerRotationService reviewerRotationService, IUserRepository userRepo, IMapper mapper, IHubContext<SongHub, ISongHub> songHub)
         {
             _logger = logger;
             _reviewerRotationService = reviewerRotationService;
             _userRepo = userRepo;
             _mapper = mapper;
+            _songHub = songHub;
         }
 
-        [AllowAnonymous]
+        [HttpGet]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 500)]
+        [Route("Notes")]
+        public IActionResult GetReviewerNotes()
+        {
+            try
+            {
+                var reviewerNotes = _reviewerRotationService.GetReviewerNotes();
+                return Ok(reviewerNotes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [Authorize(Policy = "Reviewer")]
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string), 500)]
+        [Route("Notes")]
+        public IActionResult SetReviewerNotes([FromBody] ReviewerNotesModel model)
+        {
+            try
+            {
+                _reviewerRotationService.SetReviewerNotes(model.Notes ?? "");
+                _songHub.Clients.All.ReceiveNoteEvent(model.Notes);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(UserModel), 200)]
         [ProducesResponseType(typeof(string), 500)]

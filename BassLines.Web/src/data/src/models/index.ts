@@ -11,6 +11,7 @@ export * from './ModelValidationState';
 export * from './RegistrationModel';
 export * from './ResetPasswordModel';
 export * from './SongBase';
+export * from './ReviewerNotesModel';
 export * from './SongModel';
 export * from './SpotifyAlbum';
 export * from './SpotifyArtistDetails';

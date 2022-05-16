@@ -77,6 +77,13 @@ namespace BassLines
                 {
                     policy.RequireClaim(ClaimTypes.Role, "Administrator");
                 });
+                opt.AddPolicy("Reviewer", policy =>
+                    policy.RequireAssertion(
+                        context =>
+                            context.User.HasClaim(claim => claim.Type == ClaimTypes.Role && claim.Value == "Administrator")
+                            || context.User.HasClaim(claim => claim.Type == ClaimTypes.Role && claim.Value == "Reviewer")
+                    )
+                );
             });
 
             if (_env.IsDevelopment())
