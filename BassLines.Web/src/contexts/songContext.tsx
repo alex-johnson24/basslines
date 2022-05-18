@@ -19,6 +19,7 @@ type State = {
   draftSong?: SongModel;
   songDialogOpen: boolean;
   reviewerNotes: string;
+  allSongsRated: boolean;
 };
 
 type SongProviderProps = { children: React.ReactNode };
@@ -34,6 +35,9 @@ function songReducer(state: State, action: Action): State {
       return {
         ...state,
         dailySongs: [...action.payload],
+        allSongsRated:
+          [...action.payload.filter((f) => typeof f.rating !== "number")]
+            .length === 0,
       };
     }
     case "setSelectedDate": {
@@ -67,6 +71,13 @@ function songReducer(state: State, action: Action): State {
           ...state.dailySongs.filter((f) => f.id !== action.payload.id),
           SongModelFromJSON(action.payload),
         ],
+        allSongsRated:
+          [
+            ...[
+              ...state.dailySongs.filter((f) => f.id !== action.payload.id),
+              SongModelFromJSON(action.payload),
+            ].filter((f) => typeof f.rating !== "number"),
+          ].length === 0,
       };
     }
     default: {
@@ -84,6 +95,7 @@ function SongProvider({ children }: SongProviderProps) {
     draftSong: null,
     songDialogOpen: false,
     reviewerNotes: "",
+    allSongsRated: false,
   });
   return (
     <SongStateContext.Provider value={state}>

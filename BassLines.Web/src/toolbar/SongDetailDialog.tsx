@@ -33,6 +33,7 @@ const SongDetailDialog = (props: IProps) => {
     <Dialog
       onClose={props.handleClose}
       maxWidth="lg"
+      fullWidth
       open={props.open}
       sx={{ minHeight: "300px" }}
     >
@@ -61,7 +62,11 @@ const SongDetailDialog = (props: IProps) => {
               <Typography variant="overline" color="inherit">
                 Artist
               </Typography>
-              <Typography variant="h4" color="text.primary">
+              <Typography
+                variant="h4"
+                color="text.primary"
+                sx={{ wordBreak: "break-all" }}
+              >
                 {props.song?.artist}
               </Typography>
             </div>
