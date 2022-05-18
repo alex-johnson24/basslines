@@ -73,7 +73,7 @@ function songReducer(state: State, action: Action): State {
         ],
         allSongsRated:
           [
-            [
+            ...[
               ...state.dailySongs.filter((f) => f.id !== action.payload.id),
               SongModelFromJSON(action.payload),
             ].filter((f) => typeof f.rating !== "number"),
