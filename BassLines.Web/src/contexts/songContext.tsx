@@ -72,8 +72,12 @@ function songReducer(state: State, action: Action): State {
           SongModelFromJSON(action.payload),
         ],
         allSongsRated:
-          [...state.dailySongs.filter((f) => typeof f.rating !== "number")]
-            .length === 0,
+          [
+            [
+              ...state.dailySongs.filter((f) => f.id !== action.payload.id),
+              SongModelFromJSON(action.payload),
+            ].filter((f) => typeof f.rating !== "number"),
+          ].length === 0,
       };
     }
     default: {

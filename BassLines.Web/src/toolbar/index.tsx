@@ -15,7 +15,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button, CircularProgress, Grid, Link, TextField } from "@mui/material";
+import { Button, Grid, Link, TextField } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
@@ -24,20 +24,8 @@ import { ColorModeContext } from "../contexts/colorModeContext";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useSpotify } from "../contexts/spotifyContext";
 import { useSongState } from "../contexts/songContext";
-import { makeStyles } from "@material-ui/styles";
 
 const drawerWidth = 240;
-
-const useStyles = makeStyles(() => {
-  return {
-    statsBox: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  };
-});
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -102,6 +90,13 @@ const DateBox = styled(Box)(({ theme }) => ({
   },
 }));
 
+const StatBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+}));
+
 const WhiteBorderTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root .MuiSvgIcon-root": {
     color: theme.palette.secondary.main,
@@ -162,7 +157,6 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const history = useHistory();
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
   const { dailySongs, allSongsRated } = useSongState();
-  const classes = useStyles();
 
   const logout = async () => {
     try {
@@ -322,15 +316,15 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               flexDirection: "column",
             }}
           >
-            <Box className={classes.statsBox}>
+            <StatBox>
               <Typography variant="caption" color={theme.palette.primary.light}>
                 Daily Songs
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: "bold" }}>
                 {dailySongs.length}
               </Typography>
-            </Box>
-            <Box className={classes.statsBox}>
+            </StatBox>
+            <StatBox>
               <Typography variant="caption" color={theme.palette.primary.light}>
                 Daily Avg
               </Typography>
@@ -342,8 +336,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
                     ).toFixed(2)
                   : "--"}
               </Typography>
-            </Box>
-            <Box className={classes.statsBox}>
+            </StatBox>
+            <StatBox>
               <Typography variant="caption" color={theme.palette.primary.light}>
                 Rating Progress
               </Typography>
@@ -354,18 +348,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
                   alignItems: "center",
                 }}
               >
-                {/* <CircularProgress
-                  variant="determinate"
-                  value={percentRated}
-                  size="76"
-                  thickness={3.4}
-                /> */}
                 <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                  {Math.round(percentRated)}%
+                  {percentRated ? Math.round(percentRated) : "--"}%
                 </Typography>
               </Box>
-            </Box>
-            <Box className={classes.statsBox}>
+            </StatBox>
+            <StatBox>
               <Typography variant="caption" color={theme.palette.primary.light}>
                 Today's Winner
               </Typography>
@@ -412,7 +400,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               >
                 {allSongsRated ? winner.rating : "--"}
               </Typography>
-            </Box>
+            </StatBox>
           </Box>
         </Box>
         <Button
