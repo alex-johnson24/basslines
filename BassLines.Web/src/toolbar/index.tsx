@@ -15,7 +15,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button, Grid, Switch, TextField } from "@mui/material";
+import { Button, CircularProgress, Grid, Link, TextField } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
@@ -23,8 +23,21 @@ import GlobalSearch from "./GlobalSearch";
 import { ColorModeContext } from "../contexts/colorModeContext";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useSpotify } from "../contexts/spotifyContext";
+import { useSongState } from "../contexts/songContext";
+import { makeStyles } from "@material-ui/styles";
 
 const drawerWidth = 240;
+
+const useStyles = makeStyles(() => {
+  return {
+    statsBox: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  };
+});
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -148,6 +161,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
+  const { dailySongs, allSongsRated } = useSongState();
+  const classes = useStyles();
 
   const logout = async () => {
     try {
@@ -157,6 +172,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       console.log("logout failed");
     }
   };
+
+  const percentRated =
+    (dailySongs.filter((s) => s.rating != null).length / dailySongs.length) *
+    100;
+
+  const winner = dailySongs.sort((a, b) => b.rating - a.rating)[0];
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -199,7 +220,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent">
+      <Drawer
+        variant="permanent"
+        PaperProps={{
+          sx: { boxShadow: "-2px 0 6px -1px rgb(0, 0, 0, .20) inset" },
+        }}
+      >
         <DrawerHeader
           sx={{
             display: "flex",
@@ -273,6 +299,122 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             </ListItem>
           ))}
         </List>
+        <Divider />
+        <Box
+          sx={{
+            padding: "8px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50%",
+          }}
+        >
+          <Typography sx={{ fontSize: "20px", marginBottom: "8px" }}>
+            Today's Stats
+          </Typography>
+          <Box
+            sx={{
+              height: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Box className={classes.statsBox}>
+              <Typography variant="caption" color={theme.palette.primary.light}>
+                Daily Songs
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                {dailySongs.length}
+              </Typography>
+            </Box>
+            <Box className={classes.statsBox}>
+              <Typography variant="caption" color={theme.palette.primary.light}>
+                Daily Avg
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                {allSongsRated
+                  ? (
+                      dailySongs.reduce((a, b) => a + b.rating, 0) /
+                      (1.0 * dailySongs.length)
+                    ).toFixed(2)
+                  : "--"}
+              </Typography>
+            </Box>
+            <Box className={classes.statsBox}>
+              <Typography variant="caption" color={theme.palette.primary.light}>
+                Rating Progress
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {/* <CircularProgress
+                  variant="determinate"
+                  value={percentRated}
+                  size="76"
+                  thickness={3.4}
+                /> */}
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                  {Math.round(percentRated)}%
+                </Typography>
+              </Box>
+            </Box>
+            <Box className={classes.statsBox}>
+              <Typography variant="caption" color={theme.palette.primary.light}>
+                Today's Winner
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                {allSongsRated
+                  ? winner.user.firstName + " " + winner.user.lastName
+                  : "--"}
+              </Typography>
+              {winner?.link && allSongsRated ? (
+                <>
+                  <Link
+                    noWrap
+                    sx={{ fontWeight: "bold" }}
+                    variant="subtitle1"
+                    href={winner.link}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {allSongsRated ? winner.title : "--"}
+                  </Link>
+                  <Typography
+                    variant="subtitle1"
+                    color={theme.palette.text.secondary}
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    {allSongsRated ? winner.artist : "--"}
+                  </Typography>
+                </>
+              ) : (
+                <Typography
+                  variant="subtitle1"
+                  color={theme.palette.text.secondary}
+                  sx={{ fontWeight: "bold" }}
+                >
+                  {`${allSongsRated ? winner.title : "--"} -
+                     ${allSongsRated ? winner.artist : "--"}
+                   `}
+                </Typography>
+              )}
+              <Typography
+                variant="h5"
+                color={theme.palette.secondary.main}
+                sx={{ fontWeight: "bold" }}
+              >
+                {allSongsRated ? winner.rating : "--"}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
         <Button
           variant="contained"
           color="secondary"
@@ -293,7 +435,13 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
 const SpotifyPlayer = () => {
   const spotify = useSpotify();
 
-  return <Grid width="100%" position="fixed" bottom={0} bgcolor={(theme)=>theme.palette.primary.main} height="80px">
-
-  </Grid>
-}
+  return (
+    <Grid
+      width="100%"
+      position="fixed"
+      bottom={0}
+      bgcolor={(theme) => theme.palette.primary.main}
+      height="80px"
+    ></Grid>
+  );
+};

@@ -108,8 +108,7 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   const formattedDate = format(props.selectedDate, "yyyy-MM-dd");
 
-  const allSongsRated =
-    dailySongs.filter((f) => typeof f.rating !== "number").length === 0;
+  const { allSongsRated } = useSongState();
 
   const getSongRanking = (song: SongModel) => {
     if (uniqueDailyRatings.filter((f) => f == null).length > 0) return null;
