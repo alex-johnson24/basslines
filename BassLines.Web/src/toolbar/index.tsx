@@ -294,115 +294,132 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           ))}
         </List>
         <Divider />
-        <Box
-          sx={{
-            padding: "8px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "50%",
-          }}
-        >
-          <Typography sx={{ fontSize: "20px", marginBottom: "8px" }}>
-            Today's Stats
-          </Typography>
+        {!!dailySongs.length && (
           <Box
             sx={{
-              height: "100%",
+              padding: "8px",
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
               flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50%",
             }}
           >
-            <StatBox>
-              <Typography variant="caption" color={theme.palette.primary.light}>
-                Daily Songs
-              </Typography>
-              <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                {dailySongs.length}
-              </Typography>
-            </StatBox>
-            <StatBox>
-              <Typography variant="caption" color={theme.palette.primary.light}>
-                Daily Avg
-              </Typography>
-              <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                {allSongsRated
-                  ? (
-                      dailySongs.reduce((a, b) => a + b.rating, 0) /
-                      (1.0 * dailySongs.length)
-                    ).toFixed(2)
-                  : "--"}
-              </Typography>
-            </StatBox>
-            <StatBox>
-              <Typography variant="caption" color={theme.palette.primary.light}>
-                Rating Progress
-              </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                  {percentRated ? Math.round(percentRated) : "--"}%
-                </Typography>
-              </Box>
-            </StatBox>
-            <StatBox>
-              <Typography variant="caption" color={theme.palette.primary.light}>
-                Today's Winner
-              </Typography>
-              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                {allSongsRated
-                  ? winner.user.firstName + " " + winner.user.lastName
-                  : "--"}
-              </Typography>
-              {winner?.link && allSongsRated ? (
-                <>
-                  <Link
-                    noWrap
-                    sx={{ fontWeight: "bold" }}
-                    variant="subtitle1"
-                    href={winner.link}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {allSongsRated ? winner.title : "--"}
-                  </Link>
-                  <Typography
-                    variant="subtitle1"
-                    color={theme.palette.text.secondary}
-                    sx={{ fontWeight: "bold" }}
-                  >
-                    {allSongsRated ? winner.artist : "--"}
-                  </Typography>
-                </>
-              ) : (
+            <Typography sx={{ fontSize: "20px", marginBottom: "8px" }}>
+              Today's Stats
+            </Typography>
+            <Box
+              sx={{
+                height: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <StatBox>
                 <Typography
-                  variant="subtitle1"
-                  color={theme.palette.text.secondary}
-                  sx={{ fontWeight: "bold" }}
+                  variant="caption"
+                  color={theme.palette.primary.light}
                 >
-                  {`${allSongsRated ? winner.title : "--"} -
-                     ${allSongsRated ? winner.artist : "--"}
-                   `}
+                  Daily Songs
                 </Typography>
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                  {dailySongs.length}
+                </Typography>
+              </StatBox>
+              <StatBox>
+                <Typography
+                  variant="caption"
+                  color={theme.palette.primary.light}
+                >
+                  Daily Avg
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                  {allSongsRated
+                    ? (
+                        dailySongs.reduce((a, b) => a + b.rating, 0) /
+                        (1.0 * dailySongs.length)
+                      ).toFixed(2)
+                    : "--"}
+                </Typography>
+              </StatBox>
+              <StatBox>
+                <Typography
+                  variant="caption"
+                  color={theme.palette.primary.light}
+                >
+                  Rating Progress
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    {percentRated ? Math.round(percentRated) : "--"}%
+                  </Typography>
+                </Box>
+              </StatBox>
+
+              {!!winner && (
+                <StatBox>
+                  <Typography
+                    variant="caption"
+                    color={theme.palette.primary.light}
+                  >
+                    Today's Winner
+                  </Typography>
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    {allSongsRated
+                      ? winner?.user?.firstName + " " + winner?.user?.lastName
+                      : "--"}
+                  </Typography>
+                  {winner?.link && allSongsRated ? (
+                    <>
+                      <Link
+                        noWrap
+                        sx={{ fontWeight: "bold" }}
+                        variant="subtitle1"
+                        href={winner?.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {allSongsRated ? winner?.title : "--"}
+                      </Link>
+                      <Typography
+                        variant="subtitle1"
+                        color={theme.palette.text.secondary}
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        {allSongsRated ? winner?.artist : "--"}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography
+                      variant="subtitle1"
+                      color={theme.palette.text.secondary}
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {`${allSongsRated ? winner?.title : "--"} -
+                     ${allSongsRated ? winner?.artist : "--"}
+                   `}
+                    </Typography>
+                  )}
+                  <Typography
+                    variant="h5"
+                    color={theme.palette.secondary.main}
+                    sx={{ fontWeight: "bold" }}
+                  >
+                    {allSongsRated ? winner?.rating : "--"}
+                  </Typography>
+                </StatBox>
               )}
-              <Typography
-                variant="h5"
-                color={theme.palette.secondary.main}
-                sx={{ fontWeight: "bold" }}
-              >
-                {allSongsRated ? winner.rating : "--"}
-              </Typography>
-            </StatBox>
+            </Box>
           </Box>
-        </Box>
+        )}
         <Button
           variant="contained"
           color="secondary"
