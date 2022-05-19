@@ -21,16 +21,9 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
 import { parseSpotifyId } from "../../utils";
-import { SpotifyEntityType, useSpotify } from "../../contexts/spotifyContext";
+import { useSpotify } from "../../contexts/spotifyContext";
 import { useUserState } from "../../contexts";
 import { useHistory } from "react-router-dom";
-import {
-  AddRounded,
-  BookmarkAddedRounded,
-  BookmarkAddRounded,
-  FavoriteRounded,
-  PlayArrowRounded,
-} from "@mui/icons-material";
 
 interface ISongCardProps {
   song: SongModel;
@@ -84,38 +77,6 @@ const SongCard = (props: ISongCardProps) => {
     }
   };
 
-  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
-
-  const spotifyActions = [
-    {
-      component: (
-        <PlayArrowRounded
-          htmlColor={props.playing ? theme.palette.secondary.light : ""}
-          fontSize="small"
-        />
-      ),
-      onClick: () => console.log("play"),
-    },
-    {
-      component: (
-        <BookmarkAddRounded
-          fontSize="small"
-          htmlColor={props.playing ? theme.palette.secondary.light : ""}
-        />
-      ),
-      onClick: () => console.log("save"),
-    },
-    {
-      component: (
-        <AddRounded
-          fontSize="small"
-          htmlColor={props.playing ? theme.palette.secondary.light : ""}
-        />
-      ),
-      onClick: () => console.log("add to queue"),
-    },
-  ];
-
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
       <Grid container>
@@ -163,16 +124,6 @@ const SongCard = (props: ISongCardProps) => {
                 {props.song.title}
               </Typography>
             )}
-            {isValid &&
-              authorized &&
-              spotifyActions.map(({ onClick, component }, i) => (
-                <IconButton
-                  key={i}
-                  sx={{ p: "3px" }}
-                  children={component}
-                  onClick={onClick}
-                />
-              ))}
           </Grid>
           <Grid container alignItems="center" item xs={12}>
             <Typography

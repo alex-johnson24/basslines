@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SpotifyApi, SpotifyTrackDetails, UserModel } from "../../../data/src";
 import { useSpotify } from "../../../contexts/spotifyContext";
-import { Box, Container, Grid } from "@mui/material";
+import { Box, Container } from "@mui/material";
 
 interface ITrackDetailsProps {
   trackId: string;
@@ -24,7 +24,6 @@ export default function TrackDetails({ trackId }: ITrackDetailsProps) {
           id: trackId,
         });
         setTrackDetails(track);
-        console.log(track);
       } catch (e) {
         console.error(e);
       } finally {

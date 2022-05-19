@@ -22,6 +22,7 @@ type State = {
   songDialogOpen: boolean;
   reviewerNotes: string;
   connection?: HubConnection;
+  allSongsRated: boolean;
 };
 
 type SongProviderProps = { children: React.ReactNode };
@@ -37,6 +38,9 @@ function songReducer(state: State, action: Action): State {
       return {
         ...state,
         dailySongs: [...action.payload],
+        allSongsRated:
+          [...action.payload.filter((f) => typeof f.rating !== "number")]
+            .length === 0,
       };
     }
     case "setSelectedDate": {
@@ -70,6 +74,13 @@ function songReducer(state: State, action: Action): State {
           ...state.dailySongs.filter((f) => f.id !== action.payload.id),
           SongModelFromJSON(action.payload),
         ],
+        allSongsRated:
+          [
+            ...[
+              ...state.dailySongs.filter((f) => f.id !== action.payload.id),
+              SongModelFromJSON(action.payload),
+            ].filter((f) => typeof f.rating !== "number"),
+          ].length === 0,
       };
     }
     case "setConnection": {
@@ -94,6 +105,7 @@ const SongProvider = React.memo(function ({ children }: SongProviderProps) {
     songDialogOpen: false,
     reviewerNotes: "",
     connection: undefined,
+    allSongsRated: false,
   });
 
   React.useEffect(() => {

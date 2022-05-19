@@ -32,6 +32,7 @@ export default React.memo(function ControlPanel() {
     dispatch,
     state: { player, deviceId },
   } = useSpotify();
+  const theme = useTheme();
 
   const { playerState, setPlayerState } = useSpotifyWebPlayer();
 
@@ -83,7 +84,6 @@ export default React.memo(function ControlPanel() {
         );
 
         if (!anotherDeviceActive) {
-          console.log("setting player state here");
           await transferPlayerState();
         } else {
           //ask user if they want to play here
@@ -102,7 +102,6 @@ export default React.memo(function ControlPanel() {
       <Box
         component="aside"
         style={{
-          // background: (theme) => theme.palette.success.main + 70,
           minHeight: true ? "75px" : "150px",
           position: "fixed",
           bottom: false ? "-100px" : "-4px",
@@ -113,7 +112,7 @@ export default React.memo(function ControlPanel() {
           display: "flex",
           alignItems: "center",
           opacity: disabled ? 0 : 1,
-          backgroundColor: "rgba(0,0,0,.9)",
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(0,0,0,.9)" : "rgba(248,248,248,.9)",
         }}
       >
         {track_window ? (

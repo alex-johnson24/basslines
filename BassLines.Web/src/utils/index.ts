@@ -58,8 +58,10 @@ export const convertSecondsToLengthString = (seconds?: number) => {
 };
 
 export const getListOfSpotifyUris = (a: string[]): string[] =>
-  a.reduce((a, link) => {
-    const [id, isValid, type] = parseSpotifyId(link);
-    if (isValid && type === "track") a.push(`spotify:${type}:${id}`);
-    return a;
-  }, []);
+  !a
+    ? []
+    : a.reduce((a, link) => {
+        const [id, isValid, type] = parseSpotifyId(link);
+        if (isValid && type === "track") a.push(`spotify:${type}:${id}`);
+        return a;
+      }, []);

@@ -41,6 +41,7 @@ import { format } from "date-fns";
 import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
 import { SpotifyPlayer } from "../spotify/WebPlayer";
 import SpotifyLogo from "../spotify/spotifyLogo";
+import { PlayArrowRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => {
   return {
@@ -95,7 +96,7 @@ const MyCharts = () => {
 
   const { userInfo } = useUserState();
   const {
-    state: { deviceId, player },
+    state: { deviceId, profile },
     callSpotify,
   } = useSpotify();
 
@@ -111,9 +112,6 @@ const MyCharts = () => {
       } catch (e) {}
     };
     getUsers();
-    player.addListener("player_state_changed", (s) =>
-      console.log("my charts", s)
-    );
   }, []);
 
   React.useEffect(() => {
@@ -136,9 +134,13 @@ const MyCharts = () => {
     }
   }, [userInfo]);
 
+  const uris = getListOfSpotifyUris(
+    userMetrics?.spotifySongs.map(({ link }) => link)
+  );
+
   return (
     <>
-      <FormControl style={{ display: "inline" }}>
+      <FormControl>
         <InputLabel id="userSelect">User</InputLabel>
         <Select
           labelId="userSelect"
@@ -154,29 +156,29 @@ const MyCharts = () => {
             >{`${m.firstName} ${m.lastName}`}</MenuItem>
           ))}
         </Select>
-        {!!userMetrics?.spotifySongs?.length && (
+        {profile?.premium && (
           <Button
-            variant={"contained"}
-            color="success"
+            variant="contained"
+            disabled={!uris.length}
+            sx={{ color: theme.palette.secondary.dark }}
             onClick={async () => {
               callSpotify(SpotifyApi)
                 .playPut({
                   playContextRequest: {
                     deviceId,
-                    uris: getListOfSpotifyUris(
-                      userMetrics.spotifySongs.map(({ link }) => link)
-                    ),
+                    uris,
                     positionMs: 0,
                   },
                 })
                 .catch((ex) => {});
             }}
           >
-            <Typography component={"span"} variant="subtitle1" mr={2}>
-              Play {users?.find((u) => u.id === selectedUser)?.firstName}'s
-              BassLines
-            </Typography>
-            <SpotifyLogo height={14} />
+            <PlayArrowRounded fontSize="small" /> Play{" "}
+            {users?.find((u) => u.id === selectedUser)?.firstName}'s BassLines
+            <SpotifyLogo
+              fill={theme.palette.secondary.dark}
+              style={{ height: 18, marginLeft: 8 }}
+            />
           </Button>
         )}
       </FormControl>

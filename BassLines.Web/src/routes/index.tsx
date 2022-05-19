@@ -12,7 +12,6 @@ import { getCookieByName } from "../utils/textUtils";
 import { SpotifyApi, UserModel } from "../data/src";
 import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
-import SpotifyNavigator from "./spotify/Navigator";
 import { useSpotify } from "../contexts/spotifyContext";
 import ControlPanel from "./spotify/ControlPanel";
 
@@ -76,7 +75,6 @@ export default React.memo(function Root(props: IRootProps) {
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />
               <Route path="/leaderboard" component={Leaderboard} />
-              <Route path="/navigator" component={SpotifyNavigator} />
               <SpotifyHandler />
               {profile?.premium && <ControlPanel />}
             </>
