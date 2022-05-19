@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ApiConstructor, call } from "../data/callWrapper";
-import { BaseAPI, SpotifyApi } from "../data/src";
+import { BaseAPI, SpotifyApi, SpotifyProfile } from "../data/src";
 import jwt_decode from "jwt-decode";
 import { SpotifyPlayerState } from "../routes/spotify/WebPlayer/types";
 import { SpotifyPlayer } from "../routes/spotify/WebPlayer";
@@ -22,15 +22,12 @@ export interface ITarget {
   entityType: SpotifyEntityType;
 }
 
-type Action = {
-  type:
-    | "authorize"
-    | "clearAuthorization"
-    | "setNavigatorTarget"
-    | "setWebPlayer"
-    | "setDeviceId";
-  payload?: any;
-};
+type Action =
+  | { type: "authorize"; payload?: SpotifyClientAuth }
+  | { type: "clearAuthorization"; payload?: undefined }
+  | { type: "setPlayer"; payload?: SpotifyPlayer }
+  | { type: "setDeviceId"; payload?: string }
+  | { type: "setProfile"; payload?: SpotifyProfile };
 
 type Dispatch = (action: Action) => void;
 
@@ -38,9 +35,9 @@ type State = {
   spotifyAuth?: SpotifyClientAuth;
   authorized?: boolean;
   expireTime?: Date;
-  navigatorTarget?: ITarget;
   deviceId?: string;
   player?: SpotifyPlayer;
+  profile?: SpotifyProfile;
   handleSpotifyRefresh: (refreshToken: string) => Promise<void>;
   handleSpotifyAuth: (spotifyJwt: string) => Promise<void>;
 };
@@ -64,12 +61,7 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
           : undefined,
       };
     }
-    case "setNavigatorTarget":
-      return {
-        ...state,
-        navigatorTarget: payload,
-      };
-    case "setWebPlayer":
+    case "setPlayer":
       return {
         ...state,
         player: payload,
@@ -78,6 +70,11 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
       return {
         ...state,
         deviceId: payload,
+      };
+    case "setProfile":
+      return {
+        ...state,
+        profile: payload,
       };
 
     default: {

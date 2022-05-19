@@ -35,13 +35,6 @@ export default function SpotifyHandler() {
     );
   }, [authorized]);
 
-  React.useEffect(() => {
-    // const spotifyCookie = getCookieByName("spotify_auth");
-    // if (spotifyCookie) {
-    //   handleSpotifyAuth(spotifyCookie);
-    // } else dispatch({ type: "clearAuthorization" });
-  }, []);
-
   // using refs to prevent stale closure in interval
   const expiryRef = React.useRef(expiryTime);
   const tokenRef = React.useRef(refreshToken);

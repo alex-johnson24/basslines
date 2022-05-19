@@ -20,6 +20,6 @@ namespace BassLines.Api.Interfaces
         Task<HttpStatusCode> TransferPlayerState(string accessToken, TransferStateRequest request);
         Task<MyDevices> GetDevices(string accessToken);
         Task<HttpStatusCode> AddTrackToQueue(string accessToken, string spotifyId, string deviceId);
-        Task<HttpStatusCode> Play(string accessToken, string spotifyId, string deviceId, string entityType = "track");
+        Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request, string device_id = null);
     }
 }

@@ -46,13 +46,20 @@ export const parseSpotifyId = (url: string): [string, boolean, string?] => {
 
 /**
  * converts seconds to a user-friendly string
- * @param seconds 
+ * @param seconds
  * @returns string 'm:ss'
  */
 export const convertSecondsToLengthString = (seconds?: number) => {
-  if (!seconds) return undefined;
+  if (seconds == undefined) return seconds;
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
 
-  return `${m}:${s < 10 ? "0" : ""}${s}`
-}
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+};
+
+export const getListOfSpotifyUris = (a: string[]): string[] =>
+  a.reduce((a, link) => {
+    const [id, isValid, type] = parseSpotifyId(link);
+    if (isValid && type === "track") a.push(`spotify:${type}:${id}`);
+    return a;
+  }, []);

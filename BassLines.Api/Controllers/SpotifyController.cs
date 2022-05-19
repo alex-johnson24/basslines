@@ -215,13 +215,13 @@ namespace BassLines.Api.Controllers
             }
         }
         [HttpPut]
-        [Route("/play/{spotifyId}/device/{deviceId}")]
-        public async Task<IActionResult> PlayTrack([FromRoute]string spotifyId, string deviceId)
+        [Route("/play")]
+        public async Task<IActionResult> PlayTrack([FromBody] PlayContextRequest request)
         {
             try
             {
                 var accessToken = HttpContext.Request.Headers["spotify_token"];
-                var status = await _spotifyService.Play(accessToken, spotifyId, deviceId);
+                var status = await _spotifyService.Play(accessToken, request, request.device_id);
                 return this.StatusCode((int)status);
             }
             catch (Exception ex)

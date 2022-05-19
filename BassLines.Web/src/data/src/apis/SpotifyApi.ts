@@ -18,6 +18,9 @@ import {
     MyDevices,
     MyDevicesFromJSON,
     MyDevicesToJSON,
+    PlayContextRequest,
+    PlayContextRequestFromJSON,
+    PlayContextRequestToJSON,
     SongBaseWithImages,
     SongBaseWithImagesFromJSON,
     SongBaseWithImagesToJSON,
@@ -35,7 +38,7 @@ import {
     TransferStateRequestToJSON,
 } from '../models';
 
-export interface AddToQueueSpotifyIdDeviceDeviceIdPutRequest {
+export interface AddToQueueSpotifyIdDeviceDeviceIdPostRequest {
     spotifyId: string;
     deviceId: string;
 }
@@ -44,9 +47,8 @@ export interface ModelGetRequest {
     code?: string;
 }
 
-export interface PlaySpotifyIdDeviceDeviceIdPutRequest {
-    spotifyId: string;
-    deviceId: string;
+export interface PlayPutRequest {
+    playContextRequest?: PlayContextRequest;
 }
 
 export interface PlayerPutRequest {
@@ -72,13 +74,13 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async addToQueueSpotifyIdDeviceDeviceIdPutRaw(requestParameters: AddToQueueSpotifyIdDeviceDeviceIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async addToQueueSpotifyIdDeviceDeviceIdPostRaw(requestParameters: AddToQueueSpotifyIdDeviceDeviceIdPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.spotifyId === null || requestParameters.spotifyId === undefined) {
-            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling addToQueueSpotifyIdDeviceDeviceIdPut.');
+            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling addToQueueSpotifyIdDeviceDeviceIdPost.');
         }
 
         if (requestParameters.deviceId === null || requestParameters.deviceId === undefined) {
-            throw new runtime.RequiredError('deviceId','Required parameter requestParameters.deviceId was null or undefined when calling addToQueueSpotifyIdDeviceDeviceIdPut.');
+            throw new runtime.RequiredError('deviceId','Required parameter requestParameters.deviceId was null or undefined when calling addToQueueSpotifyIdDeviceDeviceIdPost.');
         }
 
         const queryParameters: any = {};
@@ -87,7 +89,7 @@ export class SpotifyApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/add-to-queue/{spotifyId}/device/{deviceId}`.replace(`{${"spotifyId"}}`, encodeURIComponent(String(requestParameters.spotifyId))).replace(`{${"deviceId"}}`, encodeURIComponent(String(requestParameters.deviceId))),
-            method: 'PUT',
+            method: 'POST',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
@@ -97,8 +99,8 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async addToQueueSpotifyIdDeviceDeviceIdPut(requestParameters: AddToQueueSpotifyIdDeviceDeviceIdPutRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.addToQueueSpotifyIdDeviceDeviceIdPutRaw(requestParameters, initOverrides);
+    async addToQueueSpotifyIdDeviceDeviceIdPost(requestParameters: AddToQueueSpotifyIdDeviceDeviceIdPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.addToQueueSpotifyIdDeviceDeviceIdPostRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -202,24 +204,19 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async playSpotifyIdDeviceDeviceIdPutRaw(requestParameters: PlaySpotifyIdDeviceDeviceIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.spotifyId === null || requestParameters.spotifyId === undefined) {
-            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling playSpotifyIdDeviceDeviceIdPut.');
-        }
-
-        if (requestParameters.deviceId === null || requestParameters.deviceId === undefined) {
-            throw new runtime.RequiredError('deviceId','Required parameter requestParameters.deviceId was null or undefined when calling playSpotifyIdDeviceDeviceIdPut.');
-        }
-
+    async playPutRaw(requestParameters: PlayPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
+        headerParameters['Content-Type'] = 'application/json';
+
         const response = await this.request({
-            path: `/play/{spotifyId}/device/{deviceId}`.replace(`{${"spotifyId"}}`, encodeURIComponent(String(requestParameters.spotifyId))).replace(`{${"deviceId"}}`, encodeURIComponent(String(requestParameters.deviceId))),
+            path: `/play`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
+            body: PlayContextRequestToJSON(requestParameters.playContextRequest),
         }, initOverrides);
 
         return new runtime.VoidApiResponse(response);
@@ -227,8 +224,8 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async playSpotifyIdDeviceDeviceIdPut(requestParameters: PlaySpotifyIdDeviceDeviceIdPutRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.playSpotifyIdDeviceDeviceIdPutRaw(requestParameters, initOverrides);
+    async playPut(requestParameters: PlayPutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.playPutRaw(requestParameters, initOverrides);
     }
 
     /**

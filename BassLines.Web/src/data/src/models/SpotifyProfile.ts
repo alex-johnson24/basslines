@@ -49,6 +49,12 @@ export interface SpotifyProfile {
      * @memberof SpotifyProfile
      */
     photoUrl?: string | null;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof SpotifyProfile
+     */
+    premium?: boolean;
 }
 
 export function SpotifyProfileFromJSON(json: any): SpotifyProfile {
@@ -66,6 +72,7 @@ export function SpotifyProfileFromJSONTyped(json: any, ignoreDiscriminator: bool
         'link': !exists(json, 'link') ? undefined : json['link'],
         'followers': !exists(json, 'followers') ? undefined : json['followers'],
         'photoUrl': !exists(json, 'photoUrl') ? undefined : json['photoUrl'],
+        'premium': !exists(json, 'premium') ? undefined : json['premium'],
     };
 }
 
@@ -83,6 +90,7 @@ export function SpotifyProfileToJSON(value?: SpotifyProfile | null): any {
         'link': value.link,
         'followers': value.followers,
         'photoUrl': value.photoUrl,
+        'premium': value.premium,
     };
 }
 

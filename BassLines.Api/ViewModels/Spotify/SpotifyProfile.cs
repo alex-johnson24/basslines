@@ -4,8 +4,9 @@ namespace BassLines.Api.ViewModels
 {
   public class SpotifyProfile : SpotifyBase
   {
-    public int Followers { get; set; }
+    public int? Followers { get; set; }
     public string PhotoUrl { get; set; }
+    public bool Premium { get; set; }
   }
 
   public class Device
@@ -16,7 +17,7 @@ namespace BassLines.Api.ViewModels
     public bool is_restricted { get; set; }
     public string name { get; set; }
     public string type { get; set; }
-    public int volume_percent { get; set; }
+    public int? volume_percent { get; set; }
   }
 
   public class MyDevices

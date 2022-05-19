@@ -43,10 +43,11 @@ function userReducer(state: State, action: Action): State {
   }
 }
 
-function UserProvider({ children }: UserProviderProps) {
+const UserProvider = React.memo(function ({ children }: UserProviderProps) {
   const [state, dispatch] = React.useReducer(userReducer, {
     userInfo: undefined,
   });
+
   return (
     <UserStateContext.Provider value={state}>
       <UserDispatchContext.Provider value={dispatch}>
@@ -54,7 +55,7 @@ function UserProvider({ children }: UserProviderProps) {
       </UserDispatchContext.Provider>
     </UserStateContext.Provider>
   );
-}
+})
 
 function useUserState() {
   const context = React.useContext(UserStateContext);

@@ -127,6 +127,7 @@ namespace BassLines.Api.Services
                 Link = json.external_urls.spotify,
                 PhotoUrl = json.images.FirstOrDefault().url,
                 SpotifyId = json.id,
+                Premium = json.product == "premium"
             };
         }
 
@@ -264,18 +265,14 @@ namespace BassLines.Api.Services
             return await (await _spotifyClient.GetAsync("me/player/devices")).DeserializeHttp<MyDevices>();
         }
 
-        public async Task<HttpStatusCode> Play(string accessToken, string spotifyId, string deviceId, string entityType = "track")
+        public async Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request, string device_id = null)
         {
             ApplyBearerAuth(accessToken);
 
-            var content = new StringContent(JsonSerializer.Serialize(new 
-                    { 
-                        uris = new List<string> { $"spotify:{entityType}:{spotifyId}" }, 
-                        position_ms = 0
-                    }), Encoding.UTF8, "application/json");
-    
+            var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+            
 
-            var response = await _spotifyClient.PutAsync($"me/player/play?device_id={deviceId}", content);
+            var response = await _spotifyClient.PutAsync($"me/player/play?device_id={device_id}", content);
 
             return response.StatusCode;
         }

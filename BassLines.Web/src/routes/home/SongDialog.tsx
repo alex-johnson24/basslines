@@ -39,7 +39,7 @@ interface ISongDialogProps {
   userSong: SongModel;
 }
 
-const SongDialog = (props: ISongDialogProps) => {
+const SongDialog = React.memo((props: ISongDialogProps) => {
   const {
     state: { authorized },
   } = useSpotify();
@@ -205,6 +205,6 @@ const SongDialog = (props: ISongDialogProps) => {
       </DialogActions>
     </Dialog>
   );
-};
+});
 
 export default SongDialog;

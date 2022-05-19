@@ -1,6 +1,7 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import {
+  Button,
   Container,
   FormControl,
   Grid,
@@ -29,6 +30,7 @@ import {
 import { call } from "../../data/callWrapper";
 import {
   SpotifyApi,
+  SpotifyLinkReference,
   UserMetricsModel,
   UserModel,
   UsersApi,
@@ -36,7 +38,9 @@ import {
 import { useUserState } from "../../contexts";
 import { useSpotify } from "../../contexts/spotifyContext";
 import { format } from "date-fns";
-import { parseSpotifyId } from "../../utils";
+import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
+import { SpotifyPlayer } from "../spotify/WebPlayer";
+import SpotifyLogo from "../spotify/spotifyLogo";
 
 const useStyles = makeStyles(() => {
   return {
@@ -91,7 +95,7 @@ const MyCharts = () => {
 
   const { userInfo } = useUserState();
   const {
-    state: { player, deviceId },
+    state: { deviceId, player },
     callSpotify,
   } = useSpotify();
 
@@ -107,6 +111,9 @@ const MyCharts = () => {
       } catch (e) {}
     };
     getUsers();
+    player.addListener("player_state_changed", (s) =>
+      console.log("my charts", s)
+    );
   }, []);
 
   React.useEffect(() => {
@@ -131,7 +138,7 @@ const MyCharts = () => {
 
   return (
     <>
-      <FormControl>
+      <FormControl style={{ display: "inline" }}>
         <InputLabel id="userSelect">User</InputLabel>
         <Select
           labelId="userSelect"
@@ -147,6 +154,31 @@ const MyCharts = () => {
             >{`${m.firstName} ${m.lastName}`}</MenuItem>
           ))}
         </Select>
+        {!!userMetrics?.spotifySongs?.length && (
+          <Button
+            variant={"contained"}
+            color="success"
+            onClick={async () => {
+              callSpotify(SpotifyApi)
+                .playPut({
+                  playContextRequest: {
+                    deviceId,
+                    uris: getListOfSpotifyUris(
+                      userMetrics.spotifySongs.map(({ link }) => link)
+                    ),
+                    positionMs: 0,
+                  },
+                })
+                .catch((ex) => {});
+            }}
+          >
+            <Typography component={"span"} variant="subtitle1" mr={2}>
+              Play {users?.find((u) => u.id === selectedUser)?.firstName}'s
+              BassLines
+            </Typography>
+            <SpotifyLogo height={14} />
+          </Button>
+        )}
       </FormControl>
       <Container maxWidth="xl">
         <Grid container>
@@ -315,31 +347,6 @@ const MyCharts = () => {
             </div>
           </Grid>
         </Grid>
-        {userMetrics?.spotifySongs?.map((s, i) => {
-          const [spotifyId, valid] = parseSpotifyId(s.link);
-          return (
-            <Grid display={"flex"} width={"100%"} key={i}>
-              <div>{s.title}</div>
-              <div style={{ marginLeft: 8 }}>{s.artist}</div>
-              <button
-                style={{ marginLeft: 8 }}
-                onClick={() => {
-                  console.log(spotifyId, valid);
-                  if (valid) {
-                    callSpotify(
-                      SpotifyApi
-                    ).playSpotifyIdDeviceDeviceIdPut({
-                      deviceId,
-                      spotifyId,
-                    })
-                  }
-                }}
-              >
-                Click me
-              </button>
-            </Grid>
-          );
-        })}
       </Container>
     </>
   );

@@ -9,7 +9,7 @@ import MyCharts from "./mycharts";
 import { useUserDispatch, useUserState } from "../contexts";
 import jwt_decode from "jwt-decode";
 import { getCookieByName } from "../utils/textUtils";
-import { UserModel } from "../data/src";
+import { SpotifyApi, UserModel } from "../data/src";
 import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
 import SpotifyNavigator from "./spotify/Navigator";
@@ -32,7 +32,12 @@ export default React.memo(function Root(props: IRootProps) {
     new Date()
   );
   const {
-    state: { authorized },
+    state: {
+      authorized,
+      profile,
+    },
+    callSpotify,
+    dispatch: spotifyDispatch,
   } = useSpotify();
 
   React.useEffect(() => {
@@ -46,6 +51,14 @@ export default React.memo(function Root(props: IRootProps) {
     }
   }, []);
 
+  React.useEffect(() => {
+    if (!authorized) return undefined;
+    callSpotify(SpotifyApi)
+      .meGet()
+      .then((payload) => spotifyDispatch({ type: "setProfile", payload }))
+      .catch(console.warn);
+  }, [authorized]);
+
   return (
     <Switch>
       <Route path="/login" component={Login} />
@@ -58,18 +71,14 @@ export default React.memo(function Root(props: IRootProps) {
             <>
               <Route
                 path="/home"
-                component={() => (
-                  <HomeDashboard
-                    selectedDate={selectedDate}
-                  />
-                )}
+                component={() => <HomeDashboard selectedDate={selectedDate} />}
               />
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />
               <Route path="/leaderboard" component={Leaderboard} />
               <Route path="/navigator" component={SpotifyNavigator} />
               <SpotifyHandler />
-              {authorized && <ControlPanel />}
+              {profile?.premium && <ControlPanel />}
             </>
           }
         />

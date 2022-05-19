@@ -151,6 +151,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
 
   const logout = async () => {
     try {
+      localStorage.removeItem("refreshToken");
       await call(UsersApi).apiUsersLogoutGet();
       history.push("/login");
     } catch (e) {
@@ -282,7 +283,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           Logout
         </Button>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, pb: 11 }}>
         <DrawerHeader />
         {props.content}
       </Box>
