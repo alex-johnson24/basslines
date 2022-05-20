@@ -9,10 +9,11 @@ import MyCharts from "./mycharts";
 import { useUserDispatch, useUserState } from "../contexts";
 import jwt_decode from "jwt-decode";
 import { getCookieByName } from "../utils/textUtils";
-import { UserModel } from "../data/src";
+import { SpotifyApi, UserModel } from "../data/src";
 import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
-
+import { useSpotify } from "../contexts/spotifyContext";
+import ControlPanel from "./spotify/ControlPanel";
 
 interface IRootProps {
   basepath: string;
@@ -22,13 +23,21 @@ interface Jwt extends UserModel {
   exp: number;
 }
 
-export default function Root(props: IRootProps) {
+export default React.memo(function Root(props: IRootProps) {
   const { userInfo } = useUserState();
   const history = useHistory();
   const dispatch = useUserDispatch();
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(
     new Date()
   );
+  const {
+    state: {
+      authorized,
+      profile,
+    },
+    callSpotify,
+    dispatch: spotifyDispatch,
+  } = useSpotify();
 
   React.useEffect(() => {
     const token = getCookieByName("access_token");
@@ -40,6 +49,14 @@ export default function Root(props: IRootProps) {
       }
     }
   }, []);
+
+  React.useEffect(() => {
+    if (!authorized) return undefined;
+    callSpotify(SpotifyApi)
+      .meGet()
+      .then((payload) => spotifyDispatch({ type: "setProfile", payload }))
+      .catch(console.warn);
+  }, [authorized]);
 
   return (
     <Switch>
@@ -53,18 +70,19 @@ export default function Root(props: IRootProps) {
             <>
               <Route
                 path="/home"
-                component={() => <HomeDashboard userInfo={userInfo} selectedDate={selectedDate} />}
+                component={() => <HomeDashboard selectedDate={selectedDate} />}
               />
               <Route path="/allsongs" component={Songs} />
               <Route path="/mycharts" component={MyCharts} />
               <Route path="/leaderboard" component={Leaderboard} />
               <SpotifyHandler />
+              {profile?.premium && <ControlPanel />}
             </>
           }
-          />
-          ) : null}
+        />
+      ) : null}
       <Route path="/redirect" component={SpotifyRedirect} />
       {!userInfo ? <Redirect to="/login" /> : null}
     </Switch>
   );
-}
+});

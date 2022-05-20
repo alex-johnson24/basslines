@@ -119,16 +119,6 @@ const SongCard = (props: ISongCardProps) => {
                 {props.song.title}
               </Typography>
             )}
-            {/* {isValid && authorized && (
-              <IconButton
-                sx={{p: "3px"}}
-                onClick={() =>
-                  console.log(`Go to spotify track details ${spotifyTrackId}.`)
-                }
-              >
-                <MoreVert style={{fontSize: "1.1rem" }} />
-              </IconButton>
-            )} */}
           </Grid>
           <Grid container alignItems="center" item xs={12}>
             <Typography

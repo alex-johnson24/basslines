@@ -72,7 +72,9 @@ namespace BassLines.Api.Services
 
             var uniqueGenreCount = _metricsRepo.GetUniqueGenreCount(userId);
 
-            await Task.WhenAll(recentRatingsTask, topGenresTask, topSongsTask, topArtistsTask, averageRatingTask, songSubmissionCountTask, uniqueArtistCount, uniqueGenreCount);
+            var spotifySongs = _metricsRepo.GetSpotifyTracks(userId);
+
+            await Task.WhenAll(recentRatingsTask, topGenresTask, topSongsTask, topArtistsTask, averageRatingTask, songSubmissionCountTask, uniqueArtistCount, uniqueGenreCount, spotifySongs);
 
             return new UserMetricsModel
             {
@@ -83,7 +85,8 @@ namespace BassLines.Api.Services
                 AverageRating = Math.Round((await averageRatingTask) ?? 0, 2),
                 SongSubmissionCount = await songSubmissionCountTask,
                 UniqueArtistCount = await uniqueArtistCount,
-                UniqueGenreCount = await uniqueGenreCount
+                UniqueGenreCount = await uniqueGenreCount,
+                SpotifySongs = await spotifySongs
             };
         }
 

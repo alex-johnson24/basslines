@@ -1,6 +1,7 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import {
+  Button,
   Container,
   FormControl,
   Grid,
@@ -27,9 +28,20 @@ import {
   LabelList,
 } from "recharts";
 import { call } from "../../data/callWrapper";
-import { UserMetricsModel, UserModel, UsersApi } from "../../data/src";
+import {
+  SpotifyApi,
+  SpotifyLinkReference,
+  UserMetricsModel,
+  UserModel,
+  UsersApi,
+} from "../../data/src";
 import { useUserState } from "../../contexts";
+import { useSpotify } from "../../contexts/spotifyContext";
 import { format } from "date-fns";
+import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
+import { SpotifyPlayer } from "../spotify/WebPlayer";
+import SpotifyLogo from "../spotify/spotifyLogo";
+import { PlayArrowRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => {
   return {
@@ -83,6 +95,10 @@ const MyCharts = () => {
   const theme = useTheme();
 
   const { userInfo } = useUserState();
+  const {
+    state: { deviceId, profile },
+    callSpotify,
+  } = useSpotify();
 
   const [userMetrics, setUserMetrics] = React.useState<UserMetricsModel>();
   const [selectedUser, setSelectedUser] = React.useState<string>("");
@@ -118,6 +134,10 @@ const MyCharts = () => {
     }
   }, [userInfo]);
 
+  const uris = getListOfSpotifyUris(
+    userMetrics?.spotifySongs.map(({ link }) => link)
+  );
+
   return (
     <>
       <FormControl>
@@ -129,10 +149,38 @@ const MyCharts = () => {
           onChange={(e) => setSelectedUser(e.target.value as string)}
           variant="outlined"
         >
-          {users.map((m) => (
-            <MenuItem value={m.id}>{`${m.firstName} ${m.lastName}`}</MenuItem>
+          {users.map((m, i) => (
+            <MenuItem
+              key={i}
+              value={m.id}
+            >{`${m.firstName} ${m.lastName}`}</MenuItem>
           ))}
         </Select>
+        {profile?.premium && (
+          <Button
+            variant="contained"
+            disabled={!uris.length}
+            sx={{ color: theme.palette.secondary.dark }}
+            onClick={async () => {
+              callSpotify(SpotifyApi)
+                .playPut({
+                  playContextRequest: {
+                    deviceId,
+                    uris,
+                    positionMs: 0,
+                  },
+                })
+                .catch((ex) => {});
+            }}
+          >
+            <PlayArrowRounded fontSize="small" /> Play{" "}
+            {users?.find((u) => u.id === selectedUser)?.firstName}'s BassLines
+            <SpotifyLogo
+              fill={theme.palette.secondary.dark}
+              style={{ height: 18, marginLeft: 8 }}
+            />
+          </Button>
+        )}
       </FormControl>
       <Container maxWidth="xl">
         <Grid container>

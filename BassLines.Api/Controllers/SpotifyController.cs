@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
@@ -98,7 +99,7 @@ namespace BassLines.Api.Controllers
 
         [HttpGet]
         [Route("/search")]
-        [ProducesResponseType(typeof (IEnumerable<SongBase>), 200)]
+        [ProducesResponseType(typeof (IEnumerable<SongBaseWithImages>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> Search([FromQuery] string query)
         {
@@ -161,6 +162,71 @@ namespace BassLines.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("/player")]
+        public async Task<IActionResult> TransferPlayerState([FromBody]TransferStateRequest request)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                var status = await _spotifyService.TransferPlayerState(accessToken, request);
+                return this.StatusCode((int)status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("/devices")]
+        [ProducesResponseType(typeof (MyDevices), 200)]
+        [ProducesResponseType(typeof (string), 400)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> GetDevices()
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.GetDevices(accessToken));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("/add-to-queue/{spotifyId}/device/{deviceId}")]
+        public async Task<IActionResult> AddTrackToQueue([FromRoute]string spotifyId, string deviceId)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                var status = await _spotifyService.AddTrackToQueue(accessToken, spotifyId, deviceId);
+                return this.StatusCode((int)status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("/play")]
+        public async Task<IActionResult> PlayTrack([FromBody] PlayContextRequest request)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                var status = await _spotifyService.Play(accessToken, request, request.device_id);
+                return this.StatusCode((int)status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

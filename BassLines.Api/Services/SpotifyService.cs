@@ -1,3 +1,4 @@
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using BassLines.Api.Interfaces;
@@ -14,6 +15,7 @@ using System.Security.Claims;
 using AutoMapper;
 using BassLines.Api.Utils;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace BassLines.Api.Services
 {
@@ -86,17 +88,17 @@ namespace BassLines.Api.Services
         }
 
 
-        public async Task<IEnumerable<SongBase>> SearchTracks(string accessCode, string query)
+        public async Task<IEnumerable<SongBaseWithImages>> SearchTracks(string accessToken, string query)
         {
-            ApplyBearerAuth(accessCode);
+            ApplyBearerAuth(accessToken);
 
             var result = await _spotifyClient.GetAsync($"search?q={query}&type=track&limit=10");
 
             var searchResponse = await result.DeserializeHttp<SearchResponse>();
 
-            if (searchResponse == default) return Enumerable.Empty<SongBase>();
+            if (searchResponse == default) return Enumerable.Empty<SongBaseWithImages>();
 
-            var songs = searchResponse.tracks.items.Select(s => new SongBase
+            var songs = searchResponse.tracks.items.Select(s => new SongBaseWithImages
             {
                 Title = s.name,
                 Artist = s.artists.FirstOrDefault().name,
@@ -107,14 +109,14 @@ namespace BassLines.Api.Services
             return songs;
         }
 
-        public async Task<SpotifyProfile> GetProfile(string accessCode)
+        public async Task<SpotifyProfile> GetProfile(string accessToken)
         {
 
-            ApplyBearerAuth(accessCode);
+            ApplyBearerAuth(accessToken);
 
             var result = await _spotifyClient.GetAsync("me");
 
-            var json = await result.DeserializeHttp<RawSpotifyProfile>();
+            var json = await result.DeserializeHttp<SpotifyUserProfile>();
 
             if (json == default) return null;
 
@@ -125,13 +127,14 @@ namespace BassLines.Api.Services
                 Link = json.external_urls.spotify,
                 PhotoUrl = json.images.FirstOrDefault().url,
                 SpotifyId = json.id,
+                Premium = json.product == "premium"
             };
         }
 
-        public async Task<SpotifyTrack> GetTrack(string accessCode, string trackId)
+        public async Task<SpotifyTrack> GetTrack(string accessToken, string trackId)
         {
 
-            var json = await GetBaseTrack(accessCode, trackId);
+            var json = await GetBaseTrack(accessToken, trackId);
 
             if (json == default) return null;
 
@@ -162,14 +165,13 @@ namespace BassLines.Api.Services
                 Explicit = json.@explicit,
                 DurationSeconds = json.duration_ms.HasValue ? json.duration_ms / 1000 : null,
                 Link = json.external_urls?.spotify,
-                Images = json.album?.images
             };
 
             return track;
         }
-        public async Task<SpotifyTrackDetails> GetTrackDetails(string accessCode, string trackId)
+        public async Task<SpotifyTrackDetails> GetTrackDetails(string accessToken, string trackId)
         {
-            var trackJson = await GetBaseTrack(accessCode, trackId);
+            var trackJson = await GetBaseTrack(accessToken, trackId);
 
             if (trackJson == default) return null;
 
@@ -183,7 +185,7 @@ namespace BassLines.Api.Services
                     Link = trackJson.artists.FirstOrDefault()?.external_urls.spotify,
                     SpotifyId = trackJson.artists.FirstOrDefault()?.id
                 },
-                Album = new SpotifyAlbum
+                Album = new SpotifyAlbumDetails
                 {
                     Name = trackJson.album.name,
                     ReleaseDate = DateTime
@@ -200,7 +202,6 @@ namespace BassLines.Api.Services
                 Explicit = trackJson.@explicit,
                 DurationSeconds = trackJson.duration_ms.HasValue ? trackJson.duration_ms / 1000 : null,
                 Link = trackJson.external_urls?.spotify,
-                Images = trackJson.album?.images
             };
 
             // we already refreshed the httpClient with this access code via the base track call
@@ -214,9 +215,75 @@ namespace BassLines.Api.Services
             track.ArtistDetails.Images = artistDetails.images;
             track.ArtistDetails.Genres = artistDetails.genres;
 
+            var albumDetails = await(await _spotifyClient.GetAsync($"albums/{track.Album.SpotifyId}")).DeserializeHttp<AlbumDetails>();
+            
+            track.Album.Tracks = albumDetails.tracks.items.Select(t => new SpotifyAlbumTrack 
+            {
+                Title = t.name,
+                SpotifyId = t.id,
+                DurationSeconds = t.duration_ms / 1000,
+                Explicit = t.@explicit,
+                Artist = t.artists.FirstOrDefault()?.name,
+                Link = t.external_urls.spotify
+            }
+            ).ToList();
+
+            var genreSeeds = await(await _spotifyClient.GetAsync("recommendations/available-genre-seeds")).DeserializeHttp<GenreSeeds>();
+            var genres = String.Join(",", String.Join("," , track.ArtistDetails.Genres).Split(" ")).Split("-");
+            var g = genres.Where(g => genreSeeds.genres.Contains(g));
+            var recommendedTracks = await(await _spotifyClient.GetAsync($"recommendations?seeds_artists={track.ArtistDetails.SpotifyId}&seed_tracks={trackId}&seed_genres={String.Join(",", g)}")).DeserializeHttp<RecommendationsResponse>();
+            
+            track.RecommendedTracks = recommendedTracks.tracks.Select(t => new SpotifyAlbumTrack
+            {  
+                Title = t?.name,
+                SpotifyId = t?.id,
+                DurationSeconds = t?.duration_ms / 1000,
+                Explicit = t.@explicit,
+                Artist = t.artists?.FirstOrDefault()?.name,
+                Link = t.external_urls?.spotify
+            }).ToList();
+
             return track;
         }
 
+        public async Task<HttpStatusCode> TransferPlayerState(string accessToken, TransferStateRequest request)
+        {
+            ApplyBearerAuth(accessToken);
+            
+            var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+            var response = await _spotifyClient.PutAsync("me/player", content);
+
+            return response.StatusCode;
+
+        }
+
+        public async Task<MyDevices> GetDevices(string accessToken)
+        {
+            ApplyBearerAuth(accessToken);
+
+            return await (await _spotifyClient.GetAsync("me/player/devices")).DeserializeHttp<MyDevices>();
+        }
+
+        public async Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request, string device_id = null)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+            
+
+            var response = await _spotifyClient.PutAsync($"me/player/play?device_id={device_id}", content);
+
+            return response.StatusCode;
+        }
+        public async Task<HttpStatusCode> AddTrackToQueue(string accessToken, string spotifyId, string deviceId)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var response = await _spotifyClient.PostAsync($"me/player/queue?uri=spotify:track:{spotifyId}&device_id={deviceId}", null);
+
+            return response.StatusCode;
+        }
         public string GenerateToken(SpotifyClientAuth auth, string refreshToken = null)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -236,14 +303,14 @@ namespace BassLines.Api.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private void ApplyBearerAuth(string accessCode)
+        private void ApplyBearerAuth(string accessToken)
         {
-            _spotifyClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessCode.Base64Decode());
+            _spotifyClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.Base64Decode());
         }
 
-        private async Task<TrackDetails> GetBaseTrack(string accessCode, string trackId)
+        private async Task<TrackDetails> GetBaseTrack(string accessToken, string trackId)
         {
-            ApplyBearerAuth(accessCode);
+            ApplyBearerAuth(accessToken);
 
             var result = await _spotifyClient.GetAsync($"tracks/{trackId}");
 
@@ -253,3 +320,4 @@ namespace BassLines.Api.Services
         }
     }
 }
+

@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 import { useTheme } from "@mui/material/styles";
 import {
   Box,
+  Button,
   Container,
   Fab,
   FilledInput,
@@ -23,6 +24,7 @@ import {
   UserModel,
   SongModelFromJSON,
   ReviewersApi,
+  SpotifyApi,
 } from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
@@ -36,6 +38,10 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { useUserState } from "../../contexts";
 import { useSongDispatch, useSongState } from "../../contexts/songContext";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { getListOfSpotifyUris } from "../../utils";
+import { useSpotify } from "../../contexts/spotifyContext";
+import SpotifyLogo from "../spotify/spotifyLogo";
+import { PlayArrowRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => {
   return {
@@ -67,6 +73,12 @@ const useStyles = makeStyles(() => {
   };
 });
 
+export interface ActionMenuItem {
+  label: string;
+  id: string | any;
+  onClick?: (id: string | any) => void;
+}
+
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
@@ -78,9 +90,8 @@ interface IHomeDashboardProps {
   selectedDate: Date;
 }
 
-const HomeDashboard = (props: IHomeDashboardProps) => {
+const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const theme = useTheme();
-
   const classes = useStyles(theme);
 
   const { userInfo, userCanReview } = useUserState();
@@ -91,16 +102,20 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   const [currentUserSong, setCurrentUserSong] = React.useState<SongModel>(null);
   const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
-  const [connection, setConnection] = React.useState<HubConnection>(null);
   const [localReviewerNotes, setLocalReviewerNotes] =
     React.useState<string>("");
 
   const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
 
+  const {
+    state: { deviceId, profile },
+    callSpotify,
+  } = useSpotify();
+
   const dispatch = useSongDispatch();
 
-  const { dailySongs, reviewerNotes } = useSongState();
+  const { dailySongs, reviewerNotes, connection } = useSongState();
 
   const uniqueDailyRatings = [...new Set(dailySongs.map((m) => m.rating))].sort(
     (a, b) => b - a
@@ -193,7 +208,6 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
 
   const registerSongEvents = async () => {
     if (connection) {
-      await connection.start();
       connection.on("ReceiveSongEvent", (song: SongModel) => {
         dispatch({
           type: "receiveSongEvent",
@@ -211,13 +225,8 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
   };
 
   React.useEffect(() => {
-    const newConnection = new HubConnectionBuilder()
-      .withUrl("songHub")
-      .withAutomaticReconnect()
-      .build();
-
-    setConnection(newConnection);
-  }, []);
+    registerSongEvents();
+  }, [connection]);
 
   React.useEffect(() => {
     if (dailySongs.length > 0) {
@@ -229,9 +238,13 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
     }
   }, [dailySongs]);
 
-  React.useEffect(() => {
-    registerSongEvents();
-  }, [connection]);
+  const sortedSongs = dailySongs.sort((a, b) =>
+    allSongsRated
+      ? b.rating - a.rating
+      : b.createdatetime.getTime() - a.createdatetime.getTime()
+  );
+
+  const uris = getListOfSpotifyUris(sortedSongs.map(({ link }) => link));
 
   return (
     <>
@@ -330,28 +343,46 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
             />
           </FormControl>
         </Box>
+        {profile?.premium && (
+          <Button
+            variant="contained"
+            disabled={!uris.length}
+            sx={{ color: theme.palette.secondary.dark }}
+            onClick={async () => {
+              callSpotify(SpotifyApi)
+                .playPut({
+                  playContextRequest: {
+                    deviceId,
+                    uris,
+                    positionMs: 0,
+                  },
+                })
+                .catch((ex) => {});
+            }}
+          >
+            <PlayArrowRounded fontSize="small" /> Play todays BassLines{" "}
+            <SpotifyLogo
+              fill={theme.palette.secondary.dark}
+              style={{ height: 18, marginLeft: 8 }}
+            />
+          </Button>
+        )}
         <Box
           sx={{ height: "calc(100vh - 312px)", overflowY: "auto" }}
           className={classes.scrollbar}
         >
-          {dailySongs
-            .sort((a, b) =>
-              allSongsRated
-                ? b.rating - a.rating
-                : b.createdatetime.getTime() - a.createdatetime.getTime()
-            )
-            .map((m: SongModel, i: number) => (
-              <SongCard
-                key={i}
-                song={m}
-                allSongsRated={allSongsRated}
-                setSelectedSong={setSongToRate}
-                setRatingAnchor={setRatingPopoverAnchor}
-                refreshSongs={getSongs}
-                setEditSongDialogOpen={setSongDialogOpen}
-                ranking={getSongRanking(m)}
-              />
-            ))}
+          {sortedSongs.map((m: SongModel, i: number) => (
+            <SongCard
+              key={i}
+              song={m}
+              allSongsRated={allSongsRated}
+              setSelectedSong={setSongToRate}
+              setRatingAnchor={setRatingPopoverAnchor}
+              refreshSongs={getSongs}
+              setEditSongDialogOpen={setSongDialogOpen}
+              ranking={getSongRanking(m)}
+            />
+          ))}
           <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
             <Tooltip
               title={
@@ -381,6 +412,6 @@ const HomeDashboard = (props: IHomeDashboardProps) => {
       </Container>
     </>
   );
-};
+});
 
 export default HomeDashboard;

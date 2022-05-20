@@ -1,3 +1,4 @@
+import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import * as React from "react";
 import { SongModel, SongModelFromJSON } from "../data/src";
 
@@ -9,7 +10,8 @@ type Action =
   | { type: "setDraftSong"; payload: SongModel }
   | { type: "setSongDialogOpen"; payload: boolean }
   | { type: "setReviewerNotes"; payload: string }
-  | { type: "receiveSongEvent"; payload: SongModel };
+  | { type: "receiveSongEvent"; payload: SongModel }
+  | { type: "setConnection"; payload: HubConnection };
 
 type Dispatch = (action: Action) => void;
 
@@ -19,6 +21,7 @@ type State = {
   draftSong?: SongModel;
   songDialogOpen: boolean;
   reviewerNotes: string;
+  connection?: HubConnection;
   allSongsRated: boolean;
 };
 
@@ -80,6 +83,12 @@ function songReducer(state: State, action: Action): State {
           ].length === 0,
       };
     }
+    case "setConnection": {
+      return {
+        ...state,
+        connection: action.payload,
+      };
+    }
     default: {
       // eslint-disable-nextline @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -88,15 +97,27 @@ function songReducer(state: State, action: Action): State {
   }
 }
 
-function SongProvider({ children }: SongProviderProps) {
+const SongProvider = React.memo(function ({ children }: SongProviderProps) {
   const [state, dispatch] = React.useReducer(songReducer, {
     dailySongs: [],
     selectedDate: new Date(),
     draftSong: null,
     songDialogOpen: false,
     reviewerNotes: "",
+    connection: undefined,
     allSongsRated: false,
   });
+
+  React.useEffect(() => {
+    const newConnection = new HubConnectionBuilder()
+      .withUrl("songHub")
+      .withAutomaticReconnect()
+      .build();
+
+    newConnection.start();
+    dispatch({ type: "setConnection", payload: newConnection });
+  }, []);
+
   return (
     <SongStateContext.Provider value={state}>
       <SongDispatchContext.Provider value={dispatch}>
@@ -104,7 +125,7 @@ function SongProvider({ children }: SongProviderProps) {
       </SongDispatchContext.Provider>
     </SongStateContext.Provider>
   );
-}
+});
 
 function useSongState() {
   const context = React.useContext(SongStateContext);

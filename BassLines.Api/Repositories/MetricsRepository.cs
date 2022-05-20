@@ -120,5 +120,25 @@ namespace BassLines.Api.Repositories
                                 .CountAsync();
             }
         }
+
+        public async Task<List<SpotifyLinkReference>> GetSpotifyTracks(Guid userId)
+        {
+            using (var asyncCtx = _ctxFactory.CreateDbContext()) 
+            {
+                return await asyncCtx.Songs
+                                .Where(s => s.Userid == userId 
+                                    && s.Link.Contains("spotify.com/track/"))
+                                .Select(s => new SpotifyLinkReference 
+                                {
+                                    Title = s.Title,
+                                    Artist = s.Artist,
+                                    Rating = s.Rating,
+                                    Link = s.Link,
+                                    Submitteddate = s.Submitteddate
+                                })
+                                .OrderByDescending(s => s.Rating)
+                                .ToListAsync();
+            }
+        }
     }
 }

@@ -32,13 +32,13 @@ export const buildQueryString = (params?: KeyValuePairs) => {
  * @param url
  * @returns [id: string, isValid: boolean]
  */
-export const parseSpotifyId = (url: string): [string, boolean] => {
+export const parseSpotifyId = (url: string): [string, boolean, string?] => {
   try {
     const tuple = url
       .split("https://open.spotify.com/")[1]
       .split("?")[0]
       .split("/" || "");
-    return [tuple[1], tuple[0] === "track" ?? false];
+    return [tuple[1], tuple[0] === "track" ?? false, tuple[0]];
   } catch (e) {
     return [undefined, false];
   }
@@ -46,13 +46,22 @@ export const parseSpotifyId = (url: string): [string, boolean] => {
 
 /**
  * converts seconds to a user-friendly string
- * @param seconds 
+ * @param seconds
  * @returns string 'm:ss'
  */
 export const convertSecondsToLengthString = (seconds?: number) => {
-  if (!seconds) return undefined;
+  if (seconds == undefined) return seconds;
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
 
-  return `${m}:${s < 10 ? "0" : ""}${s}`
-}
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+};
+
+export const getListOfSpotifyUris = (a: string[]): string[] =>
+  !a
+    ? []
+    : a.reduce((a, link) => {
+        const [id, isValid, type] = parseSpotifyId(link);
+        if (isValid && type === "track") a.push(`spotify:${type}:${id}`);
+        return a;
+      }, []);

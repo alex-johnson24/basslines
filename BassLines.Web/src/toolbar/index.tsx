@@ -155,11 +155,15 @@ const drawerItems = [
 export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
+  const {
+    state: { profile },
+  } = useSpotify();
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
   const { dailySongs, allSongsRated } = useSongState();
 
   const logout = async () => {
     try {
+      localStorage.removeItem("refreshToken");
       await call(UsersApi).apiUsersLogoutGet();
       history.push("/login");
     } catch (e) {
@@ -429,24 +433,13 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           Logout
         </Button>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, p: 3, pb: profile?.premium ? 13 : "" }}
+      >
         <DrawerHeader />
         {props.content}
       </Box>
     </Box>
   );
 }
-
-const SpotifyPlayer = () => {
-  const spotify = useSpotify();
-
-  return (
-    <Grid
-      width="100%"
-      position="fixed"
-      bottom={0}
-      bgcolor={(theme) => theme.palette.primary.main}
-      height="80px"
-    ></Grid>
-  );
-};

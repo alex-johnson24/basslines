@@ -35,7 +35,7 @@ const useTheme = () => {
     return({colorMode, curTheme});
 }
 
-const ColorModeWithProvider = ({children}: {children: JSX.Element}) => {
+const ColorModeWithProvider = React.memo(({children}: {children: JSX.Element}) => {
   const {colorMode, curTheme} = useTheme();
 
   return(
@@ -45,6 +45,6 @@ const ColorModeWithProvider = ({children}: {children: JSX.Element}) => {
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
-}
+})
 
 export default ColorModeWithProvider;

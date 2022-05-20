@@ -29,21 +29,11 @@ export default function SpotifyHandler() {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
 
-  React.useEffect(
-    () =>
-      setOpen(
-        authorized === undefined &&
-          localStorage.getItem("useSpotify") !== "false"
-      ),
-    [authorized]
-  );
-
   React.useEffect(() => {
-    // const spotifyCookie = getCookieByName("spotify_auth");
-    // if (spotifyCookie) {
-    //   handleSpotifyAuth(spotifyCookie);
-    // } else dispatch({ type: "clearAuthorization" });
-  }, []);
+    setOpen(
+      authorized === undefined && localStorage.getItem("useSpotify") !== "false"
+    );
+  }, [authorized]);
 
   // using refs to prevent stale closure in interval
   const expiryRef = React.useRef(expiryTime);
@@ -60,7 +50,7 @@ export default function SpotifyHandler() {
     if (refreshToken) {
       handleSpotifyRefresh(refreshToken);
     } else dispatch({ type: "clearAuthorization" });
-    
+
     /**
      * checks spotify authorization every 30 seconds, refreshes token if set to expire
      */

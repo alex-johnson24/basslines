@@ -1,18 +1,33 @@
 import * as React from "react";
 import { ApiConstructor, call } from "../data/callWrapper";
-import { BaseAPI, SpotifyApi } from "../data/src";
+import { BaseAPI, SpotifyApi, SpotifyProfile } from "../data/src";
 import jwt_decode from "jwt-decode";
+import { SpotifyPlayerState } from "../routes/spotify/WebPlayer/types";
+import { SpotifyPlayer } from "../routes/spotify/WebPlayer";
 
-type SpotifyClientAuth = {
+export type SpotifyClientAuth = {
   accessToken?: string;
   expiryTime?: number;
   refreshToken?: string;
 };
 
-type Action = {
-  type: "authorize" | "clearAuthorization";
-  payload?: SpotifyClientAuth;
-};
+export enum SpotifyEntityType {
+  Track = "Track",
+  Album = "Album",
+  Artist = "Artist",
+}
+
+export interface ITarget {
+  id?: string;
+  entityType: SpotifyEntityType;
+}
+
+type Action =
+  | { type: "authorize"; payload?: SpotifyClientAuth }
+  | { type: "clearAuthorization"; payload?: undefined }
+  | { type: "setPlayer"; payload?: SpotifyPlayer }
+  | { type: "setDeviceId"; payload?: string }
+  | { type: "setProfile"; payload?: SpotifyProfile };
 
 type Dispatch = (action: Action) => void;
 
@@ -20,6 +35,9 @@ type State = {
   spotifyAuth?: SpotifyClientAuth;
   authorized?: boolean;
   expireTime?: Date;
+  deviceId?: string;
+  player?: SpotifyPlayer;
+  profile?: SpotifyProfile;
   handleSpotifyRefresh: (refreshToken: string) => Promise<void>;
   handleSpotifyAuth: (spotifyJwt: string) => Promise<void>;
 };
@@ -43,6 +61,21 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
           : undefined,
       };
     }
+    case "setPlayer":
+      return {
+        ...state,
+        player: payload,
+      };
+    case "setDeviceId":
+      return {
+        ...state,
+        deviceId: payload,
+      };
+    case "setProfile":
+      return {
+        ...state,
+        profile: payload,
+      };
 
     default: {
       // eslint-disable-nextline @typescript-eslint/ban-ts-ignore
@@ -54,7 +87,9 @@ function spotifyReducer(state: State, { type, payload }: Action): State {
 
 type SpotifyProviderProps = { children: React.ReactNode };
 
-function SpotifyProvider({ children }: SpotifyProviderProps) {
+const SpotifyProvider = React.memo(function ({
+  children,
+}: SpotifyProviderProps) {
   const initalState: State = {
     spotifyAuth: {},
     authorized: false,
@@ -100,16 +135,16 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
    */
   async function handleSpotifyAuth(spotifyJwt: string) {
     const auth = jwt_decode(spotifyJwt) as any;
-    localStorage.setItem("refreshToken", auth.refreshToken)
+    localStorage.setItem("refreshToken", auth.refreshToken);
     const expiryTime = parseInt(auth.expiryTime);
-      dispatch({
-        type: "authorize",
-        payload: {
-          accessToken: auth.accessToken,
-          refreshToken: auth.refreshToken,
-          expiryTime,
-        },
-      });
+    dispatch({
+      type: "authorize",
+      payload: {
+        accessToken: auth.accessToken,
+        refreshToken: auth.refreshToken,
+        expiryTime,
+      },
+    });
   }
 
   return (
@@ -119,7 +154,7 @@ function SpotifyProvider({ children }: SpotifyProviderProps) {
       </SpotifyDispatchContext.Provider>
     </SpotifyStateContext.Provider>
   );
-}
+});
 
 function useSpotify() {
   const dispatch = React.useContext(SpotifyDispatchContext);
@@ -134,8 +169,7 @@ function useSpotify() {
 
   const {
     spotifyAuth: { accessToken },
-    handleSpotifyRefresh,
-    authorized
+    authorized,
   } = state;
 
   /**
@@ -144,6 +178,9 @@ function useSpotify() {
   function callSpotify<T extends BaseAPI>(api: ApiConstructor<T>) {
     return call(api).withMiddleware({
       pre(context) {
+        if (!authorized) {
+          return Promise.reject({ error: "Not authorized for Spotify use." });
+        }
         context.init.headers["spotify_token"] = window.btoa(accessToken);
         return Promise.resolve(context);
       },
