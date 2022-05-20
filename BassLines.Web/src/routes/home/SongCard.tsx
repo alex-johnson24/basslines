@@ -23,7 +23,6 @@ import { call } from "../../data/callWrapper";
 import { parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import { useUserState } from "../../contexts";
-import { useHistory } from "react-router-dom";
 
 interface ISongCardProps {
   song: SongModel;
@@ -33,7 +32,6 @@ interface ISongCardProps {
   refreshSongs: () => void;
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   ranking?: "first" | "second" | "third";
-  playing: boolean;
 }
 
 const SmallAvatar = styled(Avatar)(({ theme }) => ({
@@ -43,29 +41,24 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const SongCard = (props: ISongCardProps) => {
-  const { userInfo, userCanReview } = useUserState();
-  const {
-    dispatch: spotifyDispatch,
-    state: { authorized, deviceId, player },
-  } = useSpotify();
+  const {userInfo, userCanReview} = useUserState();
 
-  const theme = useTheme();
   const firstName = props.song?.user?.firstName;
   const lastName = props.song?.user?.lastName;
-  const history = useHistory();
 
   const songIsRated = typeof props.song.rating === "number";
   const isUserSong = props.song.user.username === userInfo?.username;
   const isCurrentSubmissionDate =
     format(props.song.submitteddate, "yyyy-MM-dd") ===
     format(new Date(), "yyyy-MM-dd");
+  const { state: authorized } = useSpotify();
 
   const saveLike = async () => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
             likeModel: {
-              ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
+              ...props.song.likes.filter(f => f.userId === userInfo.id)[0]
             },
           })
         : await call(LikesApi).apiLikesPost({
@@ -76,6 +69,8 @@ const SongCard = (props: ISongCardProps) => {
       console.log(err);
     }
   };
+
+  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link)
 
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
@@ -249,8 +244,3 @@ const SongCard = (props: ISongCardProps) => {
 };
 
 export default SongCard;
-
-//TODO: add listener on home route to player, keep track of currently playing track and style card differently thusly
-//TODO: add profile get endpoint with saved tracks and acct type, among other things?
-//TODO: like a track endpoint
-//TODO: add track to playback queue

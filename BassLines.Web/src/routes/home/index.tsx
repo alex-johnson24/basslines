@@ -208,7 +208,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   const registerSongEvents = async () => {
     if (connection) {
-      // await connection.start();
       connection.on("ReceiveSongEvent", (song: SongModel) => {
         dispatch({
           type: "receiveSongEvent",
@@ -344,30 +343,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
             />
           </FormControl>
         </Box>
-        {profile?.premium && (
-          <Button
-            variant="contained"
-            disabled={!uris.length}
-            sx={{ color: theme.palette.secondary.dark }}
-            onClick={async () => {
-              callSpotify(SpotifyApi)
-                .playPut({
-                  playContextRequest: {
-                    deviceId,
-                    uris,
-                    positionMs: 0,
-                  },
-                })
-                .catch((ex) => {});
-            }}
-          >
-            <PlayArrowRounded fontSize="small" /> Play todays BassLines{" "}
-            <SpotifyLogo
-              fill={theme.palette.secondary.dark}
-              style={{ height: 18, marginLeft: 8 }}
-            />
-          </Button>
-        )}
         <Box
           sx={{ height: "calc(100vh - 312px)", overflowY: "auto" }}
           className={classes.scrollbar}
@@ -382,7 +357,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
               refreshSongs={getSongs}
               setEditSongDialogOpen={setSongDialogOpen}
               ranking={getSongRanking(m)}
-              playing
             />
           ))}
           <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
