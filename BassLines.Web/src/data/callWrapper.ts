@@ -20,7 +20,7 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
     new Configuration({
       fetchApi: Fetch.fetch,
       // basePath: 'https://localhost:5001', // for local
-      basePath: "https://basslines.co", // for production
+      basePath: "https://app.basslines.co", // for production
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );
