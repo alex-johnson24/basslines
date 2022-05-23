@@ -14,7 +14,13 @@ module.exports = {
 
       },
       env_staging: {
-
+        name: 'basslines',
+        script: 'dotnet /appl/dev.basslines.co/BassLines.Api.dll',
+        args: '',
+        instances: 1,
+        autorestart: true,
+        watch: false,
+        max_memory_restart: '1G',
       },
     }],
   };
