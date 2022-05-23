@@ -1,6 +1,7 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import {
+  Box,
   Button,
   Container,
   FormControl,
@@ -29,6 +30,7 @@ import {
 } from "recharts";
 import { call } from "../../data/callWrapper";
 import {
+  ArtistDetails,
   SpotifyApi,
   SpotifyLinkReference,
   UserMetricsModel,
@@ -39,7 +41,6 @@ import { useUserState } from "../../contexts";
 import { useSpotify } from "../../contexts/spotifyContext";
 import { format } from "date-fns";
 import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
-import { SpotifyPlayer } from "../spotify/WebPlayer";
 import SpotifyLogo from "../spotify/spotifyLogo";
 import { PlayArrowRounded } from "@material-ui/icons";
 
@@ -71,10 +72,9 @@ const renderTooltip = ({ active, payload, label }) => {
 
 const renderPieTooltip = ({ active, payload, label }) => {
   const theme = useTheme();
-
   return (
     payload?.length > 0 && (
-      <Paper sx={{ padding: "10px" }}>
+      <Paper sx={{ padding: "10px", pointerEvents: "none" }}>
         <Typography
           variant="h6"
           color={theme.palette.text.primary}
@@ -96,10 +96,14 @@ const MyCharts = () => {
 
   const { userInfo } = useUserState();
   const {
-    state: { deviceId, profile },
+    state: { deviceId, profile, authorized },
     callSpotify,
   } = useSpotify();
 
+  const [artistDetailsPool, setArtistDetailsPool] = React.useState<
+    ArtistDetails[]
+  >([]);
+  const [artistImgUrl, setArtistImgUrl] = React.useState("");
   const [userMetrics, setUserMetrics] = React.useState<UserMetricsModel>();
   const [selectedUser, setSelectedUser] = React.useState<string>("");
   const [users, setUsers] = React.useState<UserModel[]>([]);
@@ -134,9 +138,58 @@ const MyCharts = () => {
     }
   }, [userInfo]);
 
+  const handleHover = (artist: string) => {
+    const images = artistDetailsPool
+      ?.find(({ name }) => name?.toLowerCase() == artist?.toLowerCase())
+      ?.images?.sort((a, b) => a?.height - b?.height);
+
+    if (!images) return undefined;
+
+    setArtistImgUrl((images[1] ?? images[0])?.url);
+  };
+
   const uris = getListOfSpotifyUris(
     userMetrics?.spotifySongs.map(({ link }) => link)
   );
+
+  const handleSongChartClickPlay = (e) => {
+    const link = e?.activePayload?.[0]?.payload?.link;
+
+    if (!link) return undefined;
+    const [id, isValid] = parseSpotifyId(link);
+
+    if (isValid && profile?.premium) {
+      callSpotify(SpotifyApi)
+        .playPut({
+          playContextRequest: {
+            uris: [`spotify:track:${id}`],
+            positionMs: 0,
+            deviceId,
+          },
+        })
+        .catch(console.warn);
+    }
+  };
+
+  const handleGenreChartClickPlay = (e) => {
+    try {
+      const links = e?.activePayload?.[0]?.payload?.spotifyLinks;
+      if (!links?.length) throw new Error();
+
+      const uris = getListOfSpotifyUris(links);
+      if (!uris?.length) throw new Error();
+
+      callSpotify(SpotifyApi).playPut({
+        playContextRequest: {
+          uris,
+          positionMs: 0,
+          deviceId,
+        },
+      });
+    } catch (e) {
+      return undefined;
+    }
+  };
 
   return (
     <>
@@ -160,7 +213,7 @@ const MyCharts = () => {
           <Button
             variant="contained"
             disabled={!uris.length}
-            sx={{ color: theme.palette.secondary.dark }}
+            sx={{ color: "#50d292" }}
             onClick={async () => {
               callSpotify(SpotifyApi)
                 .playPut({
@@ -176,7 +229,7 @@ const MyCharts = () => {
             <PlayArrowRounded fontSize="small" /> Play{" "}
             {users?.find((u) => u.id === selectedUser)?.firstName}'s BassLines
             <SpotifyLogo
-              fill={theme.palette.secondary.dark}
+              fill={"#50d292"}
               style={{ height: 18, marginLeft: 8 }}
             />
           </Button>
@@ -225,6 +278,7 @@ const MyCharts = () => {
                 <LineChart
                   width={500}
                   height={300}
+                  onClick={handleSongChartClickPlay}
                   data={userMetrics?.dailyRatings.map((m) => ({
                     ...m,
                     submittedDate: format(m.submittedDate, "yyyy-MM-dd"),
@@ -257,6 +311,7 @@ const MyCharts = () => {
                   width={500}
                   height={300}
                   data={userMetrics?.topGenres}
+                  onClick={handleGenreChartClickPlay}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="genre" />
@@ -271,15 +326,68 @@ const MyCharts = () => {
               </ResponsiveContainer>
             </div>
           </Grid>
-          <Grid className={classes.chartBox} item xs={12} md={6}>
+          <Grid
+            className={classes.chartBox}
+            item
+            xs={12}
+            md={6}
+            style={{
+              height: "360px",
+              position: "relative",
+              width: "100%",
+            }}
+          >
+            <Box
+              src={
+                artistImgUrl ||
+                // prevents broken img box when src is undefined
+                "https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif"
+              }
+              component="img"
+              style={{
+                height: "231px",
+                width: "231.5px",
+                opacity: !artistImgUrl ? 0 : 1,
+                transition: "all .3s ease-in-out",
+                position: "absolute",
+                left: "calc(50% - 115.75px)",
+                top: "calc(50% - 114px)",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
             <div style={{ height: "300px" }}>
               <Typography variant="h5">Top Artists</Typography>
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
+                    onAnimationEnd={() => {
+                      if (!authorized || !userMetrics?.topArtists)
+                        return undefined;
+
+                      (async () => {
+                        const artists = await callSpotify(
+                          SpotifyApi
+                        ).artistsFromTrackIdsPost({
+                          requestBody: userMetrics.topArtists
+                            .map(
+                              ({ trackRefLink }) =>
+                                parseSpotifyId(trackRefLink)[0]
+                            )
+                            .filter(Boolean),
+                        });
+
+                        setArtistDetailsPool((c) => [
+                          ...c,
+                          ...artists.filter(
+                            (a) => -1 === c.findIndex(({ id }) => id === a.id)
+                          ),
+                        ]);
+                      })();
+                    }}
                     dataKey="count"
                     data={userMetrics?.topArtists}
-                    fill={theme.palette.primary.main}
+                    fill={`${theme.palette.primary.main}75`}
                     label={({
                       cx,
                       cy,
@@ -297,16 +405,36 @@ const MyCharts = () => {
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       // eslint-disable-next-line
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
+                      const artistName = userMetrics?.topArtists[index]?.artist;
+                      const artistUri = artistDetailsPool?.find(
+                        ({ name }) =>
+                          name?.toLowerCase() == artistName.toLowerCase()
+                      )?.uri;
                       return (
                         <text
                           x={x}
                           y={y}
+                          style={{ cursor: artistUri ? "pointer" : "" }}
                           textAnchor={x > cx ? "start" : "end"}
                           dominantBaseline="central"
                           fill={theme.palette.text.primary}
+                          onMouseEnter={() => handleHover(artistName)}
+                          onMouseLeave={() => setArtistImgUrl("")}
+                          onClick={() => {
+                            if (!artistUri) return void 0;
+
+                            callSpotify(SpotifyApi)
+                              .playPut({
+                                playContextRequest: {
+                                  contextUri: artistUri,
+                                  positionMs: 0,
+                                  deviceId,
+                                },
+                              })
+                              .catch(console.warn);
+                          }}
                         >
-                          {userMetrics?.topArtists[index]?.artist}
+                          {artistName}
                         </text>
                       );
                     }}
@@ -328,6 +456,7 @@ const MyCharts = () => {
                     ranking: `#${i + 1}`,
                   }))}
                   layout="vertical"
+                  onClick={handleSongChartClickPlay}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" domain={[0, 10]} />

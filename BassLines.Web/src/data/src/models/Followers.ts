@@ -16,46 +16,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Image
+ * @interface Followers
  */
-export interface Image {
+export interface Followers {
+    /**
+     * 
+     * @type {any}
+     * @memberof Followers
+     */
+    href?: any | null;
     /**
      * 
      * @type {number}
-     * @memberof Image
+     * @memberof Followers
      */
-    height?: number | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof Image
-     */
-    url?: string | null;
-    /**
-     * 
-     * @type {number}
-     * @memberof Image
-     */
-    width?: number | null;
+    total?: number | null;
 }
 
-export function ImageFromJSON(json: any): Image {
-    return ImageFromJSONTyped(json, false);
+export function FollowersFromJSON(json: any): Followers {
+    return FollowersFromJSONTyped(json, false);
 }
 
-export function ImageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Image {
+export function FollowersFromJSONTyped(json: any, ignoreDiscriminator: boolean): Followers {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'height': !exists(json, 'height') ? undefined : json['height'],
-        'url': !exists(json, 'url') ? undefined : json['url'],
-        'width': !exists(json, 'width') ? undefined : json['width'],
+        'href': !exists(json, 'href') ? undefined : json['href'],
+        'total': !exists(json, 'total') ? undefined : json['total'],
     };
 }
 
-export function ImageToJSON(value?: Image | null): any {
+export function FollowersToJSON(value?: Followers | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -64,9 +57,8 @@ export function ImageToJSON(value?: Image | null): any {
     }
     return {
         
-        'height': value.height,
-        'url': value.url,
-        'width': value.width,
+        'href': value.href,
+        'total': value.total,
     };
 }
 

@@ -16,7 +16,7 @@ type Action =
 type Dispatch = (action: Action) => void;
 
 type State = {
-  dailySongs: SongModel[];
+  dailySongs: (SongModel & { saved?: boolean })[];
   selectedDate: Date;
   draftSong?: SongModel;
   songDialogOpen: boolean;

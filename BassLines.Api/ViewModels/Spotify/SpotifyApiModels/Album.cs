@@ -24,6 +24,6 @@ namespace BassLines.Api.ViewModels
         public List<object> genres { get; set; }
         public string label { get; set; }
         public int popularity { get; set; }
-        public SearchRoot tracks { get; set; }
+        public SearchRoot<Track> tracks { get; set; }
     }
 }

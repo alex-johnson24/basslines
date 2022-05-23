@@ -25,6 +25,8 @@ import {
   SongModelFromJSON,
   ReviewersApi,
   SpotifyApi,
+  TrackSavedReference,
+  SpotifyTrackDetails,
 } from "../../data/src";
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
@@ -38,7 +40,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import { useUserState } from "../../contexts";
 import { useSongDispatch, useSongState } from "../../contexts/songContext";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import { getListOfSpotifyUris } from "../../utils";
+import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import SpotifyLogo from "../spotify/spotifyLogo";
 import { PlayArrowRounded } from "@material-ui/icons";
@@ -104,12 +106,15 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
   const [localReviewerNotes, setLocalReviewerNotes] =
     React.useState<string>("");
+  const [tracksDetails, setTracksDetails] = React.useState<SpotifyTrackDetails[]>(
+    []
+  );
 
   const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
 
   const {
-    state: { deviceId, profile },
+    state: { deviceId, profile, authorized },
     callSpotify,
   } = useSpotify();
 
@@ -143,9 +148,43 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
       ).apiSongsSubmissionDateSubmitDateStringGet({
         submitDateString: formattedDate,
       });
-      dispatch({ type: "setDailySongs", payload: songsResults });
+      let savedArr: TrackSavedReference[];
+      if (authorized && songsResults.length) {
+        savedArr = await callSpotify(SpotifyApi).checkSavedPost({
+          requestBody: songsResults.reduce((a, { link }) => {
+            const [spotifyId, valid] = parseSpotifyId(link);
+            valid && a.push(spotifyId);
+            return a;
+          }, []),
+        });
+      }
+      dispatch({
+        type: "setDailySongs",
+        payload: songsResults.map((s) => ({
+          ...s,
+          saved: savedArr?.find(({ id }) => s.link.includes(id))?.saved,
+        })),
+      });
     }
   );
+
+  const toggleSaved = async (spotifyId: string, save: boolean) => {
+    try {
+      const { saved, id } = await callSpotify(SpotifyApi).saveOrRemoveIdPut({
+        id: spotifyId,
+        save,
+      });
+      dispatch({
+        type: "setDailySongs",
+        payload: dailySongs.map((s) => ({
+          ...s,
+          saved: s.link?.includes(id) ? saved : s.saved,
+        })),
+      });
+    } catch (ex) {
+      console.warn(ex);
+    }
+  };
 
   const getReviewerNotes = async () => {
     const results = await call(ReviewersApi).apiReviewersNotesGet();
@@ -245,6 +284,21 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   );
 
   const uris = getListOfSpotifyUris(sortedSongs.map(({ link }) => link));
+
+  React.useEffect(() => {
+    !!uris?.length &&
+      callSpotify(SpotifyApi)
+        .tracksPost({
+          requestBody: sortedSongs
+            .map(({ link }) => {
+              const [id, valid] = parseSpotifyId(link);
+              return valid ? id : undefined;
+            })
+            .filter(Boolean),
+        })
+        .then(setTracksDetails)
+        .catch(console.warn);
+  }, [sortedSongs]);
 
   return (
     <>
@@ -347,7 +401,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           <Button
             variant="contained"
             disabled={!uris.length}
-            sx={{ color: theme.palette.secondary.dark }}
+            sx={{ color: "#50d292" }}
             onClick={async () => {
               callSpotify(SpotifyApi)
                 .playPut({
@@ -362,7 +416,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           >
             <PlayArrowRounded fontSize="small" /> Play todays BassLines{" "}
             <SpotifyLogo
-              fill={theme.palette.secondary.dark}
+              fill={"#50d292"}
               style={{ height: 18, marginLeft: 8 }}
             />
           </Button>
@@ -381,6 +435,10 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
               refreshSongs={getSongs}
               setEditSongDialogOpen={setSongDialogOpen}
               ranking={getSongRanking(m)}
+              toggleSaved={toggleSaved}
+              trackDetails={tracksDetails.find(({ spotifyId }) =>
+                m.link?.includes(spotifyId)
+              )}
             />
           ))}
           <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>

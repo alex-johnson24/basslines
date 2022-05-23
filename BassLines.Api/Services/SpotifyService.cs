@@ -108,6 +108,17 @@ namespace BassLines.Api.Services
 
             return songs;
         }
+      
+        public async Task<ArtistDetails> SearchArtist(string accessToken, string query, int? pageSize = 10)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var result = await _spotifyClient.GetAsync($"search?q={query}&type=artist&limit={pageSize}");
+
+            var searchResponse = await result.DeserializeHttp<SearchResponse>();
+
+            return searchResponse.artists.items.FirstOrDefault();
+        }
 
         public async Task<SpotifyProfile> GetProfile(string accessToken)
         {
@@ -169,6 +180,55 @@ namespace BassLines.Api.Services
 
             return track;
         }
+        public async Task<List<SpotifyTrackDetails>> GetTracks(string accessToken, List<string> songIds)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var json = await (await _spotifyClient.GetAsync($"tracks?ids={String.Join(",", songIds)}")).DeserializeHttp<MultipleEntityResponse>();
+
+            if (json == default) return new List<SpotifyTrackDetails>();
+
+            return json.tracks.Select(t => new SpotifyTrackDetails
+            {
+                Title = t.name,
+                Artist = t.artists.FirstOrDefault()?.name,
+                ArtistDetails = new SpotifyArtistDetails
+                {
+                    Name = t.artists.FirstOrDefault()?.name,
+                    Link = t.artists.FirstOrDefault()?.external_urls.spotify,
+                    SpotifyId = t.artists.FirstOrDefault()?.id
+                },
+                Album = new SpotifyAlbumDetails
+                {
+                    Name = t.album.name,
+                    ReleaseDate = DateTime
+                                .TryParse(t.album.release_date, out DateTime date)
+                                  ? date
+                                  : null,
+                    TrackCount = t.album.total_tracks,
+                    SpotifyId = t.album.id,
+                    Link = t.album.external_urls.spotify,
+                    Images = t.album.images
+                },
+                SpotifyId = t.id,
+                Popularity = t.popularity,
+                Explicit = t.@explicit,
+                DurationSeconds = t.duration_ms.HasValue ? t.duration_ms / 1000 : null,
+                Link = t.external_urls?.spotify,
+            }).ToList();
+        }
+
+        public async Task<List<ArtistDetails>> GetArtists(string accessToken, List<String> artistIds)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var json = await (await _spotifyClient.GetAsync($"artists?ids={String.Join(",", artistIds)}")).DeserializeHttp<MultipleEntityResponse>();
+
+            if (json == default) return new List<ArtistDetails>();
+
+            return json.artists;
+        }
+
         public async Task<SpotifyTrackDetails> GetTrackDetails(string accessToken, string trackId)
         {
             var trackJson = await GetBaseTrack(accessToken, trackId);
@@ -229,7 +289,7 @@ namespace BassLines.Api.Services
             ).ToList();
 
             var genreSeeds = await(await _spotifyClient.GetAsync("recommendations/available-genre-seeds")).DeserializeHttp<GenreSeeds>();
-            var genres = String.Join(",", String.Join("," , track.ArtistDetails.Genres).Split(" ")).Split("-");
+            var genres = String.Join(",", String.Join("," , track.ArtistDetails.Genres).Split(" ")).Split("-"); // remove spaces and hyphens from artist genres to compare against valid genre seeds for query string ("Canadian death-metal" -> ["canadian", "death", "metal"] ) 
             var g = genres.Where(g => genreSeeds.genres.Contains(g));
             var recommendedTracks = await(await _spotifyClient.GetAsync($"recommendations?seeds_artists={track.ArtistDetails.SpotifyId}&seed_tracks={trackId}&seed_genres={String.Join(",", g)}")).DeserializeHttp<RecommendationsResponse>();
             
@@ -271,10 +331,16 @@ namespace BassLines.Api.Services
 
             var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
             
-
             var response = await _spotifyClient.PutAsync($"me/player/play?device_id={device_id}", content);
 
             return response.StatusCode;
+        }
+
+        public async Task<HttpStatusCode> Shuffle(string accessToken, bool shuffle)
+        {
+            ApplyBearerAuth(accessToken);
+
+            return (await _spotifyClient.PutAsync($"me/player/shuffle?state={shuffle}", null)).StatusCode;
         }
         public async Task<HttpStatusCode> AddTrackToQueue(string accessToken, string spotifyId, string deviceId)
         {
@@ -283,6 +349,39 @@ namespace BassLines.Api.Services
             var response = await _spotifyClient.PostAsync($"me/player/queue?uri=spotify:track:{spotifyId}&device_id={deviceId}", null);
 
             return response.StatusCode;
+        }
+
+        public async Task<TrackSavedReference> SaveOrRemoveTrack(string accessToken, string id, bool save)
+        {
+            ApplyBearerAuth(accessToken);
+            HttpResponseMessage response;
+
+            if (save) 
+            {
+                response = await _spotifyClient.PutAsync($"me/tracks?ids={id}", null);
+            }
+            else 
+            {
+                response = await _spotifyClient.DeleteAsync($"me/tracks?ids={id}");
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return new TrackSavedReference{ Id = id, Saved = save };
+        } 
+        public async Task<List<TrackSavedReference>> CheckForSavedTracks(string accessToken, List<string> ids)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var response = await (await _spotifyClient.GetAsync($"me/tracks/contains?ids={String.Join(",", ids)}")).DeserializeHttp<List<bool>>();
+
+            return response.Select((b, i) => new TrackSavedReference { Saved = b, Id = ids[i] }).ToList();
+        }
+
+        public class TrackSavedReference
+        {
+            public string Id { get; set; }
+            public bool Saved { get; set; }
         }
         public string GenerateToken(SpotifyClientAuth auth, string refreshToken = null)
         {

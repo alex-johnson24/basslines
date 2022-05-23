@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
+    ArtistDetails,
+    ArtistDetailsFromJSON,
+    ArtistDetailsToJSON,
     MyDevices,
     MyDevicesFromJSON,
     MyDevicesToJSON,
@@ -33,6 +36,9 @@ import {
     SpotifyTrackDetails,
     SpotifyTrackDetailsFromJSON,
     SpotifyTrackDetailsToJSON,
+    TrackSavedReference,
+    TrackSavedReferenceFromJSON,
+    TrackSavedReferenceToJSON,
     TransferStateRequest,
     TransferStateRequestFromJSON,
     TransferStateRequestToJSON,
@@ -41,6 +47,14 @@ import {
 export interface AddToQueueSpotifyIdDeviceDeviceIdPostRequest {
     spotifyId: string;
     deviceId: string;
+}
+
+export interface ArtistsFromTrackIdsPostRequest {
+    requestBody?: Array<string>;
+}
+
+export interface CheckSavedPostRequest {
+    requestBody?: Array<string>;
 }
 
 export interface ModelGetRequest {
@@ -55,8 +69,22 @@ export interface PlayerPutRequest {
     transferStateRequest?: TransferStateRequest;
 }
 
+export interface SaveOrRemoveIdPutRequest {
+    id: string;
+    save?: boolean;
+}
+
+export interface SearchArtistGetRequest {
+    query?: string;
+    pageSize?: number;
+}
+
 export interface SearchGetRequest {
     query?: string;
+}
+
+export interface ShufflePutRequest {
+    shuffle?: boolean;
 }
 
 export interface TrackIdDetailsGetRequest {
@@ -65,6 +93,10 @@ export interface TrackIdDetailsGetRequest {
 
 export interface TrackIdGetRequest {
     id: string;
+}
+
+export interface TracksPostRequest {
+    requestBody?: Array<string>;
 }
 
 /**
@@ -124,6 +156,60 @@ export class SpotifyApi extends runtime.BaseAPI {
      */
     async apiSpotifyGet(initOverrides?: RequestInit): Promise<string> {
         const response = await this.apiSpotifyGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async artistsFromTrackIdsPostRaw(requestParameters: ArtistsFromTrackIdsPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ArtistDetails>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/artists-from-trackIds`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.requestBody,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ArtistDetailsFromJSON));
+    }
+
+    /**
+     */
+    async artistsFromTrackIdsPost(requestParameters: ArtistsFromTrackIdsPostRequest, initOverrides?: RequestInit): Promise<Array<ArtistDetails>> {
+        const response = await this.artistsFromTrackIdsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async checkSavedPostRaw(requestParameters: CheckSavedPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<TrackSavedReference>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/check-saved`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.requestBody,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TrackSavedReferenceFromJSON));
+    }
+
+    /**
+     */
+    async checkSavedPost(requestParameters: CheckSavedPostRequest, initOverrides?: RequestInit): Promise<Array<TrackSavedReference>> {
+        const response = await this.checkSavedPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -279,6 +365,70 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
+    async saveOrRemoveIdPutRaw(requestParameters: SaveOrRemoveIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<TrackSavedReference>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling saveOrRemoveIdPut.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.save !== undefined) {
+            queryParameters['save'] = requestParameters.save;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/save-or-remove/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TrackSavedReferenceFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async saveOrRemoveIdPut(requestParameters: SaveOrRemoveIdPutRequest, initOverrides?: RequestInit): Promise<TrackSavedReference> {
+        const response = await this.saveOrRemoveIdPutRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async searchArtistGetRaw(requestParameters: SearchArtistGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ArtistDetails>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.query !== undefined) {
+            queryParameters['query'] = requestParameters.query;
+        }
+
+        if (requestParameters.pageSize !== undefined) {
+            queryParameters['pageSize'] = requestParameters.pageSize;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/search/artist`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ArtistDetailsFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async searchArtistGet(requestParameters: SearchArtistGetRequest, initOverrides?: RequestInit): Promise<ArtistDetails> {
+        const response = await this.searchArtistGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async searchGetRaw(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongBaseWithImages>>> {
         const queryParameters: any = {};
 
@@ -303,6 +453,33 @@ export class SpotifyApi extends runtime.BaseAPI {
     async searchGet(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongBaseWithImages>> {
         const response = await this.searchGetRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async shufflePutRaw(requestParameters: ShufflePutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.shuffle !== undefined) {
+            queryParameters['shuffle'] = requestParameters.shuffle;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/shuffle`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async shufflePut(requestParameters: ShufflePutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.shufflePutRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -358,6 +535,33 @@ export class SpotifyApi extends runtime.BaseAPI {
      */
     async trackIdGet(requestParameters: TrackIdGetRequest, initOverrides?: RequestInit): Promise<SpotifyTrack> {
         const response = await this.trackIdGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async tracksPostRaw(requestParameters: TracksPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SpotifyTrackDetails>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/tracks`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.requestBody,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SpotifyTrackDetailsFromJSON));
+    }
+
+    /**
+     */
+    async tracksPost(requestParameters: TracksPostRequest, initOverrides?: RequestInit): Promise<Array<SpotifyTrackDetails>> {
+        const response = await this.tracksPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

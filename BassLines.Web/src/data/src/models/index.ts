@@ -1,8 +1,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './ArtistCountModel';
+export * from './ArtistDetails';
 export * from './DailyRatingModel';
 export * from './Device';
+export * from './ExternalUrls';
+export * from './Followers';
 export * from './GenreCountModel';
 export * from './GenreModel';
 export * from './Image';
@@ -26,6 +29,7 @@ export * from './SpotifyProfile';
 export * from './SpotifyTrack';
 export * from './SpotifyTrackDetails';
 export * from './TrackFeatures';
+export * from './TrackSavedReference';
 export * from './TransferStateRequest';
 export * from './UserLeaderboardModel';
 export * from './UserMetricsModel';

@@ -156,13 +156,14 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
   const {
-    state: { profile },
+    state: { profile, player },
   } = useSpotify();
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
   const { dailySongs, allSongsRated } = useSongState();
 
   const logout = async () => {
     try {
+      if (player) player.disconnect();
       localStorage.removeItem("refreshToken");
       await call(UsersApi).apiUsersLogoutGet();
       history.push("/login");

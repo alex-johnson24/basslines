@@ -7,8 +7,11 @@ apis/UsersApi.ts
 apis/index.ts
 index.ts
 models/ArtistCountModel.ts
+models/ArtistDetails.ts
 models/DailyRatingModel.ts
 models/Device.ts
+models/ExternalUrls.ts
+models/Followers.ts
 models/GenreCountModel.ts
 models/GenreModel.ts
 models/Image.ts
@@ -32,6 +35,7 @@ models/SpotifyProfile.ts
 models/SpotifyTrack.ts
 models/SpotifyTrackDetails.ts
 models/TrackFeatures.ts
+models/TrackSavedReference.ts
 models/TransferStateRequest.ts
 models/UserLeaderboardModel.ts
 models/UserMetricsModel.ts

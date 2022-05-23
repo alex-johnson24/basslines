@@ -1,6 +1,12 @@
 import {
+  FavoriteBorderRounded,
+  FavoriteRounded,
+  ShuffleRounded,
+} from "@material-ui/icons";
+import {
   PauseRounded,
   PlayArrowRounded,
+  ShuffleOnRounded,
   SkipNextRounded,
   SkipPreviousRounded,
   VolumeUpRounded,
@@ -39,6 +45,11 @@ export default React.memo(function ControlPanel() {
   const { position, duration, paused, context, track_window } =
     playerState || {};
 
+  interface CurrentTrackInfo {
+    id?: string;
+    saved?: boolean;
+  }
+  const [currentTrack, setCurrentTrack] = React.useState<CurrentTrackInfo>();
   const [transferPromptOpen, setTransferPromptOpen] = React.useState(false);
   const [currentDevice, setCurrentDevice] = React.useState("");
   const [volumeSliderAnchor, setVolumeSliderAnchor] = React.useState(null);
@@ -63,6 +74,19 @@ export default React.memo(function ControlPanel() {
     }
 
     if (player) {
+      const playing = playerState?.track_window?.current_track;
+      if (playing.id !== currentTrack?.id) {
+        (async () => {
+          const likeArray = await callSpotify(SpotifyApi).checkSavedPost({
+            requestBody: [playing?.id],
+          });
+          setCurrentTrack({
+            id: playing.id,
+            saved: likeArray?.[0]?.saved ?? false,
+          });
+        })();
+      }
+
       timer.current = setTimeout(() => {
         player.getCurrentState().then(setPlayerState).catch(console.warn);
       }, 1000);
@@ -112,7 +136,10 @@ export default React.memo(function ControlPanel() {
           display: "flex",
           alignItems: "center",
           opacity: disabled ? 0 : 1,
-          backgroundColor: theme.palette.mode === "dark" ? "rgba(0,0,0,.9)" : "rgba(248,248,248,.9)",
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? "rgba(0,0,0,.9)"
+              : "rgba(248,248,248,.9)",
         }}
       >
         {track_window ? (
@@ -202,6 +229,29 @@ export default React.memo(function ControlPanel() {
         </Grid>
         <Grid>
           <IconButton
+            disableRipple
+            sx={{ p: "2px 0 0" }}
+            onClick={() =>
+              callSpotify(SpotifyApi)
+                .saveOrRemoveIdPut({
+                  id: currentTrack?.id,
+                  save: !currentTrack?.saved,
+                })
+                .then(setCurrentTrack)
+                .catch(console.warn)
+            }
+            children={
+              currentTrack?.saved ? (
+                <FavoriteRounded
+                  fontSize="small"
+                  style={{ color: theme.palette.secondary.main }}
+                />
+              ) : (
+                <FavoriteBorderRounded fontSize="small" />
+              )
+            }
+          />
+          <IconButton
             disabled={disabled}
             sx={{ p: "2px 0 0" }}
             children={<VolumeUpRounded />}
@@ -210,6 +260,24 @@ export default React.memo(function ControlPanel() {
               setVolumeSliderAnchor(e.target);
             }}
             disableRipple
+          />
+          <IconButton
+            disableRipple
+            sx={{ p: "2px 0 0" }}
+            onClick={() =>
+              callSpotify(SpotifyApi)
+                .shufflePut({ shuffle: !playerState?.shuffle })
+                .catch(console.warn)
+            }
+            children={
+              <ShuffleRounded
+                style={{
+                  color: playerState?.shuffle
+                    ? theme.palette.secondary.main
+                    : "inherit",
+                }}
+              />
+            }
           />
         </Grid>
         <Popover

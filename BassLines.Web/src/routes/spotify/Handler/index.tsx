@@ -84,7 +84,7 @@ export default function SpotifyHandler() {
         <SpotifyLogo
           role="img"
           height="56px"
-          fill={theme.palette.success.main}
+          fill={theme.palette.text.secondary}
           style={{ marginBottom: 14 }}
         />
         <Typography

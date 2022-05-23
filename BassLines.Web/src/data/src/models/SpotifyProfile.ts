@@ -42,7 +42,7 @@ export interface SpotifyProfile {
      * @type {number}
      * @memberof SpotifyProfile
      */
-    followers?: number;
+    followers?: number | null;
     /**
      * 
      * @type {string}
