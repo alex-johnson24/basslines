@@ -9,13 +9,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  buildConfiguration: 'Release'
-  dotNetFramework: 'net6.0'
-  dotNetVersion: '6.0.x'
-  targetRuntime: 'linux-x64'
-
-# Build the app for .NET 6 framework
 steps:
 - task: Npm@1
   inputs:
@@ -31,18 +24,12 @@ steps:
       yarn prod:webpack
 - task: UseDotNet@2
   inputs:
-    version: $(dotNetVersion)
-    includePreviewVersions: true
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'Build .NET 6 Application'
-# Publish it as .NET 6 self-contained application for linux runtime
-- task: DotNetCoreCLI@2
+    packageType: 'sdk'
+    version: '6.x'
+- task: Bash@3
   inputs:
-    command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --framework $(dotNetFramework) --runtime $(targetRuntime) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
-# Package the file and uploads them as an artifact of the build
+    targetType: 'inline'
+    script: 'dotnet publish ./BassLines.Api/BassLines.Api.csproj -c Release'
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)' 
