@@ -152,6 +152,21 @@ const MyCharts = () => {
     userMetrics?.spotifySongs.map(({ link }) => link)
   );
 
+  const handleSpotifyArtistGet = async () => {
+    if (!authorized || !userMetrics?.topArtists) return undefined;
+
+    const artists = await callSpotify(SpotifyApi).artistsFromTrackIdsPost({
+      requestBody: userMetrics.topArtists
+        .map(({ trackRefLink }) => parseSpotifyId(trackRefLink)[0])
+        .filter(Boolean),
+    });
+
+    setArtistDetailsPool((c) => [
+      ...c,
+      ...artists.filter((a) => -1 === c.findIndex(({ id }) => id === a.id)),
+    ]);
+  };
+
   const handleSongChartClickPlay = (e) => {
     const link = e?.activePayload?.[0]?.payload?.link;
 
@@ -174,10 +189,10 @@ const MyCharts = () => {
   const handleGenreChartClickPlay = (e) => {
     try {
       const links = e?.activePayload?.[0]?.payload?.spotifyLinks;
-      if (!links?.length) throw new Error();
+      if (!links?.length) throw undefined;
 
       const uris = getListOfSpotifyUris(links);
-      if (!uris?.length) throw new Error();
+      if (!uris?.length || !profile?.premium) throw undefined;
 
       callSpotify(SpotifyApi).playPut({
         playContextRequest: {
@@ -189,6 +204,20 @@ const MyCharts = () => {
     } catch (e) {
       return undefined;
     }
+  };
+
+  const handleArtistClickPlay = (artistUri?: string) => {
+    if (!artistUri) return void 0;
+
+    callSpotify(SpotifyApi)
+      .playPut({
+        playContextRequest: {
+          contextUri: artistUri,
+          positionMs: 0,
+          deviceId,
+        },
+      })
+      .catch(console.warn);
   };
 
   return (
@@ -361,30 +390,7 @@ const MyCharts = () => {
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
-                    onAnimationEnd={() => {
-                      if (!authorized || !userMetrics?.topArtists)
-                        return undefined;
-
-                      (async () => {
-                        const artists = await callSpotify(
-                          SpotifyApi
-                        ).artistsFromTrackIdsPost({
-                          requestBody: userMetrics.topArtists
-                            .map(
-                              ({ trackRefLink }) =>
-                                parseSpotifyId(trackRefLink)[0]
-                            )
-                            .filter(Boolean),
-                        });
-
-                        setArtistDetailsPool((c) => [
-                          ...c,
-                          ...artists.filter(
-                            (a) => -1 === c.findIndex(({ id }) => id === a.id)
-                          ),
-                        ]);
-                      })();
-                    }}
+                    onAnimationEnd={handleSpotifyArtistGet}
                     dataKey="count"
                     data={userMetrics?.topArtists}
                     fill={`${theme.palette.primary.main}75`}
@@ -405,6 +411,7 @@ const MyCharts = () => {
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       // eslint-disable-next-line
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
                       const artistName = userMetrics?.topArtists[index]?.artist;
                       const artistUri = artistDetailsPool?.find(
                         ({ name }) =>
@@ -420,19 +427,7 @@ const MyCharts = () => {
                           fill={theme.palette.text.primary}
                           onMouseEnter={() => handleHover(artistName)}
                           onMouseLeave={() => setArtistImgUrl("")}
-                          onClick={() => {
-                            if (!artistUri) return void 0;
-
-                            callSpotify(SpotifyApi)
-                              .playPut({
-                                playContextRequest: {
-                                  contextUri: artistUri,
-                                  positionMs: 0,
-                                  deviceId,
-                                },
-                              })
-                              .catch(console.warn);
-                          }}
+                          onClick={() => handleArtistClickPlay(artistUri)}
                         >
                           {artistName}
                         </text>
