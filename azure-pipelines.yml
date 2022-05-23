@@ -19,13 +19,16 @@ variables:
 steps:
 - task: Npm@1
   inputs:
-    command: 'install'
-    workingDir: 'BassLines.Web'
-- task: Npm@1
-  inputs:
     command: 'custom'
     workingDir: 'BassLines.Web'
-    customCommand: 'prod:webpack'
+    customCommand: 'install -g yarn'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd ./BassLines.Web
+      yarn install
+      yarn prod:webpack
 - task: UseDotNet@2
   inputs:
     version: $(dotNetVersion)
