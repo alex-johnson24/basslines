@@ -7,20 +7,14 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
+      append_env_to_name: true,
       env: {
-
       },
       env_production: {
-
+        NODE_ENV: 'production'
       },
       env_staging: {
-        name: 'basslines',
-        script: 'dotnet /appl/dev.basslines.co/BassLines.Api.dll',
-        args: '',
-        instances: 1,
-        autorestart: true,
-        watch: false,
-        max_memory_restart: '1G',
+        NODE_ENV: 'staging'
       },
     }],
   };
