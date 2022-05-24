@@ -124,8 +124,8 @@ namespace BassLines.Api.Services
             {
                 Name = json.display_name,
                 Followers = json.followers.total ?? 0,
-                Link = json.external_urls.spotify,
-                PhotoUrl = json.images.FirstOrDefault().url,
+                Link = json.external_urls?.spotify,
+                PhotoUrl = json.images?.FirstOrDefault()?.url,
                 SpotifyId = json.id,
                 Premium = json.product == "premium"
             };
