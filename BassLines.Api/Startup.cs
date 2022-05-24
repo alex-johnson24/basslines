@@ -86,7 +86,7 @@ namespace BassLines
                 );
             });
 
-            if (_env.IsDevelopment())
+            if (_env.IsDevelopment() || string.IsNullOrEmpty(Configuration["ConnectionStrings:RedisCacheUrl"]))
             {
                 services.AddMemoryCache();
                 services.AddScoped<IReviewerRotationService, InMemoryReviewerRotationService>();
