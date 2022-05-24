@@ -1,6 +1,7 @@
 // @ts-ignore
 import * as Fetch from "whatwg-fetch";
 import { BaseAPI, Configuration, Middleware, ResponseContext } from "./src";
+import * as env from "../env.json";
 
 export type ApiConstructor<T extends BaseAPI> = new (config: Configuration) => T;
 
@@ -19,8 +20,7 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      // basePath: 'https://localhost:5001', // for local
-      basePath: "https://app.basslines.co", // for production
+      basePath: env.baseUrl, // for production
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );

@@ -7,14 +7,14 @@ module.exports = {
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
+      append_env_to_name: true,
       env: {
-
       },
       env_production: {
-
+        NODE_ENV: 'production'
       },
       env_staging: {
-
+        NODE_ENV: 'staging'
       },
     }],
   };
