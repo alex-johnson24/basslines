@@ -60,7 +60,7 @@ export interface Device {
      * @type {number}
      * @memberof Device
      */
-    volumePercent?: number;
+    volumePercent?: number | null;
 }
 
 export function DeviceFromJSON(json: any): Device {

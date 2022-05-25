@@ -15,7 +15,14 @@ import {
   styled,
 } from "@mui/material";
 import * as React from "react";
-import { LikesApi, SongModel, UserModel, UserRole } from "../../data/src";
+import {
+  LikesApi,
+  SongModel,
+  SpotifyApi,
+  SpotifyTrackDetails,
+  UserModel,
+  UserRole,
+} from "../../data/src";
 import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { format } from "date-fns";
@@ -23,15 +30,23 @@ import { call } from "../../data/callWrapper";
 import { parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import { useUserState } from "../../contexts";
+import {
+  AddRounded,
+  FavoriteBorderRounded,
+  PlayArrowRounded,
+} from "@material-ui/icons";
+import { FavoriteRounded } from "@mui/icons-material";
 
 interface ISongCardProps {
-  song: SongModel;
+  song: SongModel & { saved?: boolean };
   allSongsRated: boolean;
   setSelectedSong: React.Dispatch<React.SetStateAction<SongModel>>;
   setRatingAnchor: React.Dispatch<React.SetStateAction<unknown>>;
   refreshSongs: () => void;
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   ranking?: "first" | "second" | "third";
+  toggleSaved: (id: string, save: boolean) => Promise<void>;
+  trackDetails?: SpotifyTrackDetails
 }
 
 const SmallAvatar = styled(Avatar)(({ theme }) => ({
@@ -40,25 +55,28 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
   border: `2px solid ${theme.palette.background.paper}`,
 }));
 
-const SongCard = (props: ISongCardProps) => {
-  const {userInfo, userCanReview} = useUserState();
-
+const SongCard = React.memo((props: ISongCardProps) => {
+  const { userInfo, userCanReview } = useUserState();
+  const theme = useTheme();
   const firstName = props.song?.user?.firstName;
   const lastName = props.song?.user?.lastName;
+  const {
+    state: { authorized, deviceId },
+    callSpotify,
+  } = useSpotify();
 
   const songIsRated = typeof props.song.rating === "number";
   const isUserSong = props.song.user.username === userInfo?.username;
   const isCurrentSubmissionDate =
     format(props.song.submitteddate, "yyyy-MM-dd") ===
     format(new Date(), "yyyy-MM-dd");
-  const { state: authorized } = useSpotify();
 
   const saveLike = async () => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
             likeModel: {
-              ...props.song.likes.filter(f => f.userId === userInfo.id)[0]
+              ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
             },
           })
         : await call(LikesApi).apiLikesPost({
@@ -70,7 +88,7 @@ const SongCard = (props: ISongCardProps) => {
     }
   };
 
-  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link)
+  const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
 
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
@@ -119,6 +137,55 @@ const SongCard = (props: ISongCardProps) => {
                 {props.song.title}
               </Typography>
             )}
+            {isValid && authorized && (
+              <>
+                <IconButton
+                  disableRipple
+                  onClick={() =>
+                    callSpotify(SpotifyApi)
+                      .playPut({
+                        playContextRequest: {
+                          uris: [`spotify:track:${spotifyTrackId}`],
+                          deviceId,
+                          positionMs: 0,
+                        },
+                      })
+                      .catch(console.warn)
+                  }
+                  sx={{ "& svg": { fontSize: "14px" } }}
+                  children={<PlayArrowRounded />}
+                />
+                <IconButton
+                  disableRipple
+                  onClick={() =>
+                    props.toggleSaved(spotifyTrackId, !props.song.saved)
+                  }
+                  sx={{ "& svg": { fontSize: "14px" } }}
+                  children={
+                    props.song.saved === undefined ? null : props.song.saved ? (
+                      <FavoriteRounded
+                        htmlColor={theme.palette.secondary.main}
+                      />
+                    ) : (
+                      <FavoriteBorderRounded />
+                    )
+                  }
+                />
+                <IconButton
+                  disableRipple
+                  onClick={() =>
+                    callSpotify(SpotifyApi)
+                      .addToQueueSpotifyIdDeviceDeviceIdPost({
+                        spotifyId: spotifyTrackId,
+                        deviceId,
+                      })
+                      .catch(console.warn)
+                  }
+                  sx={{ "& svg": { fontSize: "14px" } }}
+                  children={<AddRounded />}
+                />
+              </>
+            )}
           </Grid>
           <Grid container alignItems="center" item xs={12}>
             <Typography
@@ -165,13 +232,15 @@ const SongCard = (props: ISongCardProps) => {
           </Grid>
         </Grid>
         <Grid container alignItems="center" item xs={1}>
-          <Tooltip title={userCanReview ? "Click to rate" : ""}>
+          <Tooltip title={userCanReview && !isUserSong ? "Click to rate" : ""}>
             <Typography
-              sx={{ cursor: userCanReview ? "pointer" : "unset" }}
+              sx={{
+                cursor: userCanReview && !isUserSong ? "pointer" : "unset",
+              }}
               color="secondary"
               variant="h5"
               onClick={(e) => {
-                if (userCanReview) {
+                if (userCanReview && !isUserSong) {
                   props.setRatingAnchor(e.currentTarget);
                   props.setSelectedSong(props.song);
                 }
@@ -241,6 +310,6 @@ const SongCard = (props: ISongCardProps) => {
       </Grid>
     </Paper>
   );
-};
+});
 
 export default SongCard;

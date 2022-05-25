@@ -5,7 +5,7 @@ namespace BassLines.Api.ViewModels
     public class Track : SpotifEntityyRoot
     {
         public string name { get; set; }
-        public List<Artist> artists { get; set; }
+        public List<ArtistDetails> artists { get; set; }
         public List<string> available_markets { get; set; }
         public int? disc_number { get; set; }
         public int? duration_ms { get; set; }

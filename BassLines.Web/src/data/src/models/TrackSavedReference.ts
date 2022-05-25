@@ -16,46 +16,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Image
+ * @interface TrackSavedReference
  */
-export interface Image {
-    /**
-     * 
-     * @type {number}
-     * @memberof Image
-     */
-    height?: number | null;
+export interface TrackSavedReference {
     /**
      * 
      * @type {string}
-     * @memberof Image
+     * @memberof TrackSavedReference
      */
-    url?: string | null;
+    id?: string | null;
     /**
      * 
-     * @type {number}
-     * @memberof Image
+     * @type {boolean}
+     * @memberof TrackSavedReference
      */
-    width?: number | null;
+    saved?: boolean;
 }
 
-export function ImageFromJSON(json: any): Image {
-    return ImageFromJSONTyped(json, false);
+export function TrackSavedReferenceFromJSON(json: any): TrackSavedReference {
+    return TrackSavedReferenceFromJSONTyped(json, false);
 }
 
-export function ImageFromJSONTyped(json: any, ignoreDiscriminator: boolean): Image {
+export function TrackSavedReferenceFromJSONTyped(json: any, ignoreDiscriminator: boolean): TrackSavedReference {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'height': !exists(json, 'height') ? undefined : json['height'],
-        'url': !exists(json, 'url') ? undefined : json['url'],
-        'width': !exists(json, 'width') ? undefined : json['width'],
+        'id': !exists(json, 'id') ? undefined : json['id'],
+        'saved': !exists(json, 'saved') ? undefined : json['saved'],
     };
 }
 
-export function ImageToJSON(value?: Image | null): any {
+export function TrackSavedReferenceToJSON(value?: TrackSavedReference | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -64,9 +57,8 @@ export function ImageToJSON(value?: Image | null): any {
     }
     return {
         
-        'height': value.height,
-        'url': value.url,
-        'width': value.width,
+        'id': value.id,
+        'saved': value.saved,
     };
 }
 

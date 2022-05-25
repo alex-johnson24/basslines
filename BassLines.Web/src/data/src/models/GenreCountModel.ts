@@ -31,6 +31,12 @@ export interface GenreCountModel {
      * @memberof GenreCountModel
      */
     count?: number;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof GenreCountModel
+     */
+    spotifyLinks?: Array<string> | null;
 }
 
 export function GenreCountModelFromJSON(json: any): GenreCountModel {
@@ -45,6 +51,7 @@ export function GenreCountModelFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'genre': !exists(json, 'genre') ? undefined : json['genre'],
         'count': !exists(json, 'count') ? undefined : json['count'],
+        'spotifyLinks': !exists(json, 'spotifyLinks') ? undefined : json['spotifyLinks'],
     };
 }
 
@@ -59,6 +66,7 @@ export function GenreCountModelToJSON(value?: GenreCountModel | null): any {
         
         'genre': value.genre,
         'count': value.count,
+        'spotifyLinks': value.spotifyLinks,
     };
 }
 

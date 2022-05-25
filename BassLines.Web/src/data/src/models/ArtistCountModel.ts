@@ -31,6 +31,12 @@ export interface ArtistCountModel {
      * @memberof ArtistCountModel
      */
     count?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ArtistCountModel
+     */
+    trackRefLink?: string | null;
 }
 
 export function ArtistCountModelFromJSON(json: any): ArtistCountModel {
@@ -45,6 +51,7 @@ export function ArtistCountModelFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'artist': !exists(json, 'artist') ? undefined : json['artist'],
         'count': !exists(json, 'count') ? undefined : json['count'],
+        'trackRefLink': !exists(json, 'trackRefLink') ? undefined : json['trackRefLink'],
     };
 }
 
@@ -59,6 +66,7 @@ export function ArtistCountModelToJSON(value?: ArtistCountModel | null): any {
         
         'artist': value.artist,
         'count': value.count,
+        'trackRefLink': value.trackRefLink,
     };
 }
 

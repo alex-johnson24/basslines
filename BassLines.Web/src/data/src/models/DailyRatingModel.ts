@@ -43,6 +43,12 @@ export interface DailyRatingModel {
      * @memberof DailyRatingModel
      */
     artist?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof DailyRatingModel
+     */
+    link?: string | null;
 }
 
 export function DailyRatingModelFromJSON(json: any): DailyRatingModel {
@@ -59,6 +65,7 @@ export function DailyRatingModelFromJSONTyped(json: any, ignoreDiscriminator: bo
         'rating': !exists(json, 'rating') ? undefined : json['rating'],
         'title': !exists(json, 'title') ? undefined : json['title'],
         'artist': !exists(json, 'artist') ? undefined : json['artist'],
+        'link': !exists(json, 'link') ? undefined : json['link'],
     };
 }
 
@@ -75,6 +82,7 @@ export function DailyRatingModelToJSON(value?: DailyRatingModel | null): any {
         'rating': value.rating,
         'title': value.title,
         'artist': value.artist,
+        'link': value.link,
     };
 }
 

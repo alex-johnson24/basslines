@@ -1,15 +1,13 @@
+using System.Linq;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using BassLines.Api.Interfaces;
 using BassLines.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
+using static BassLines.Api.Services.SpotifyService;
 
 namespace BassLines.Api.Controllers
 {
@@ -113,6 +111,23 @@ namespace BassLines.Api.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        [HttpGet]
+        [Route("/search/artist")]
+        [ProducesResponseType(typeof (ArtistDetails), 200)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> SearchArtists([FromQuery] string query, int? pageSize = 10)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.SearchArtist(accessToken, query, pageSize));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpGet]
         [Route("/me")]
@@ -147,6 +162,46 @@ namespace BassLines.Api.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        [HttpPost]
+        [Route("/tracks")]
+        [ProducesResponseType(typeof (List<SpotifyTrackDetails>), 200)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> GetTracks([FromBody] List<string> ids)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.GetTracks(accessToken, ids));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        
+        [HttpPost]
+        [Route("/artists-from-trackIds")]
+        [ProducesResponseType(typeof (List<ArtistDetails>), 200)]
+        [ProducesResponseType(typeof (string), 500)]
+        public async Task<IActionResult> GetArtistsFromTracks([FromBody] List<string> trackIds)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                var artistIds = (await _spotifyService.GetTracks(accessToken, trackIds))
+                    .ToArray()
+                    .Select(t => t.ArtistDetails.SpotifyId)
+                    .ToList();
+                return Ok(await _spotifyService.GetArtists(accessToken, artistIds));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         
         [HttpGet]
         [Route("/track/{id}/details")]
@@ -223,6 +278,59 @@ namespace BassLines.Api.Controllers
                 var accessToken = HttpContext.Request.Headers["spotify_token"];
                 var status = await _spotifyService.Play(accessToken, request, request.device_id);
                 return this.StatusCode((int)status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpPut]
+        [Route("/shuffle")]
+        public async Task<IActionResult> Shuffle([FromQuery] bool shuffle)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                var status = await _spotifyService.Shuffle(accessToken, shuffle);
+                return this.StatusCode((int)status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+        [HttpPut]
+        [ProducesResponseType(typeof (TrackSavedReference), 200)]
+        [ProducesResponseType(typeof (string), 400)]
+        [Route("/save-or-remove/{id}")]
+        public async Task<IActionResult> SaveOrRemoveTrack([FromRoute] string id, [FromQuery] bool save = true)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.SaveOrRemoveTrack(accessToken, id, save));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof (List<TrackSavedReference>), 200)]
+        [ProducesResponseType(typeof (string), 400)]
+        [Route("/check-saved")]
+        public async Task<IActionResult> CheckSavedTracks([FromBody] List<string> ids)
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["spotify_token"];
+                return Ok(await _spotifyService.CheckForSavedTracks(accessToken, ids));
+                
             }
             catch (Exception ex)
             {

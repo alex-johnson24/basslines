@@ -2,10 +2,10 @@ using System.Collections.Generic;
 
 namespace BassLines.Api.ViewModels
 {
-    public class SearchRoot
+    public class SearchRoot<T>
     {
         public string href { get; set; }
-        public List<TrackDetails> items { get; set; }
+        public List<T> items { get; set; }
         public int? limit { get; set; }
         public string next { get; set; }
         public int? offset { get; set; }
@@ -15,7 +15,14 @@ namespace BassLines.Api.ViewModels
 
     public class SearchResponse
     {
-        public SearchRoot tracks { get; set; }
+        public SearchRoot<TrackDetails> tracks { get; set; }
+        public SearchRoot<ArtistDetails> artists { get; set; }
+    }
+
+    public class MultipleEntityResponse
+    {
+        public List<TrackDetails> tracks { get; set; } = new List<TrackDetails>();
+        public List<ArtistDetails> artists { get; set; } = new List<ArtistDetails>();
     }
 
     public class RecommendationsResponse
