@@ -106,7 +106,7 @@ namespace BassLines.Api.Services
                 Hpassword = hpassword,
                 Salt = salt,
                 Roleid = defaultRole.Id,
-                Disablereviewing = true
+                Disablereviewing = false
             };
 
             _userRepo.CreateUser(toCreate);
