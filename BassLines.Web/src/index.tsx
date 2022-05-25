@@ -19,6 +19,7 @@ declare global {
   interface Window {
     __BASENAME__: string;
     __APP_VERSION__: string;
+    __API_URL__: string;
   }
 }
 

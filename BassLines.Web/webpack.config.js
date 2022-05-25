@@ -66,7 +66,7 @@ module.exports = (env, argv) => {
         version: argv.mode === "development" ? devVersion : prodVersion,
       }),
       new CopyPlugin({
-        patterns: [{ from: "assets" }],
+        patterns: [{ from: "assets" }, "configs.js"],
       }),
     ],
     entry: {

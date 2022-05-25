@@ -17,22 +17,11 @@ const unauthenticatedResponseHandlerMiddleware: Middleware = {
   },
 };
 
-const getBasePath = () => {
-  switch (process.env.NODE_ENV) {
-    case "production":
-      return "https://app.basslines.co";
-    case "staging":
-      return "https://dev.basslines.co";
-    default:
-      return "https://localhost:5001";
-  }
-};
-
 const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      basePath: getBasePath(), // for production
+      basePath: window.__API_URL__, // for production
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );
