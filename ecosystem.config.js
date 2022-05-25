@@ -1,7 +1,7 @@
 module.exports = {
     apps: [{
       name: 'basslines',
-      script: 'dotnet /appl/dev.basslines.co/BassLines.Api.dll',
+      script: 'dotnet ./BassLines.Api.dll',
       args: '',
       instances: 1,
       autorestart: true,
