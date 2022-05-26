@@ -1,3 +1,3 @@
 var externalEnv = {
-  "baseUrl": __API_URL__
+  "baseUrl": "__API_URL__"
 }
