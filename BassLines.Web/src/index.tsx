@@ -43,7 +43,7 @@ const App = (props: AppProps) => {
             <ColorModeWithProvider>
               <SpotifyProvider>
                 <CssBaseline />
-                <Root basepath={props.basename} />
+                <Root basepath={props.basename} version={props.version} />
               </SpotifyProvider>
             </ColorModeWithProvider>
           </LocalizationProvider>
