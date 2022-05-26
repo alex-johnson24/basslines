@@ -17,6 +17,7 @@ import ControlPanel from "./spotify/ControlPanel";
 
 interface IRootProps {
   basepath: string;
+  version: string;
 }
 
 interface Jwt extends UserModel {
@@ -66,6 +67,7 @@ export default React.memo(function Root(props: IRootProps) {
           basepath={props.basepath}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
+          version={props.version}
           content={
             <>
               <Route
