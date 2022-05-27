@@ -165,8 +165,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed">
-        <Toolbar>
-          <Box>
+        <Toolbar disableGutters>
+          <Box sx={{marginLeft: "24px"}}>
             <DatePicker
               label="Submission Date"
               value={props.selectedDate}
@@ -189,14 +189,14 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           </Box>
           <Box
             component="img"
-            sx={{ margin: "0 auto", height: "48px" }}
+            sx={{ position: "fixed", width: "100%", height: "48px", zIndex: -1 }}
             display={{ xs: "none", md: "block" }}
             src={`basslines.svg`}
           />
-          <Box sx={{ marginRight: "20px" }}>
+          <Box sx={{ marginLeft: "auto", marginRight: "20px" }}>
             <GlobalSearch />
           </Box>
-          <SettingsDialog />
+          <SettingsDialog sx={{marginRight: "24px"}} />
         </Toolbar>
       </AppBar>
       <Drawer

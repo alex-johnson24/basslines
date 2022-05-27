@@ -6,9 +6,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Paper,
+  IconButton,
   Slide,
   Switch,
+  SxProps,
+  Theme,
   Typography,
 } from "@mui/material";
 import { ColorModeContext } from "../contexts/colorModeContext";
@@ -24,7 +26,11 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const SettingsDialog = () => {
+interface IProps {
+  sx: SxProps<Theme>;
+}
+
+const SettingsDialog = (props: IProps) => {
   const [open, setOpen] = React.useState(false);
   const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
 
@@ -33,8 +39,10 @@ const SettingsDialog = () => {
   };
 
   return (
-    <>
-      <SettingsIcon onClick={handleChange} sx={{ cursor: "pointer" }} />
+    <Box sx={{ ...props.sx }}>
+      <IconButton onClick={handleChange}>
+        <SettingsIcon sx={{color: "white"}} />
+      </IconButton>
       <Dialog
         onClose={handleChange}
         maxWidth="xs"
@@ -75,7 +83,7 @@ const SettingsDialog = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   );
 };
 
