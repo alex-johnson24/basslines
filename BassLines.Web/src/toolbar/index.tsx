@@ -15,15 +15,15 @@ import HomeIcon from "@mui/icons-material/Home";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button, Grid, Link, TextField } from "@mui/material";
+import { Button, Grid, Link, Switch, TextField } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
 import GlobalSearch from "./GlobalSearch";
-import { ColorModeContext } from "../contexts/colorModeContext";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useSpotify } from "../contexts/spotifyContext";
 import { useSongState } from "../contexts/songContext";
+import SettingsDialog from "./SettingsDialog";
 
 const drawerWidth = 240;
 
@@ -142,7 +142,6 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
   const {
     state: { profile, player },
   } = useSpotify();
-  const { toggleColorMode, curTheme } = React.useContext(ColorModeContext);
   const { dailySongs, allSongsRated } = useSongState();
 
   const logout = async () => {
@@ -166,18 +165,8 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed">
-        <Toolbar>
-          {/* <Box>
-            <Typography>
-              {curTheme === "cyberPalette" ? "Night City" : "Light City"}
-            </Typography>
-          </Box>
-          <Switch
-            color="secondary"
-            checked={curTheme === "cyberPalette"}
-            onChange={toggleColorMode}
-          /> */}
-          <Box>
+        <Toolbar disableGutters>
+          <Box sx={{marginLeft: "24px"}}>
             <DatePicker
               label="Submission Date"
               value={props.selectedDate}
@@ -200,13 +189,14 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           </Box>
           <Box
             component="img"
-            sx={{ margin: "0 auto", height: "48px" }}
+            sx={{ position: "fixed", width: "100%", height: "48px", zIndex: -1 }}
             display={{ xs: "none", md: "block" }}
             src={`basslines.svg`}
           />
-          <Box sx={{ marginRight: "20px" }}>
+          <Box sx={{ marginLeft: "auto", marginRight: "20px" }}>
             <GlobalSearch />
           </Box>
+          <SettingsDialog sx={{marginRight: "24px"}} />
         </Toolbar>
       </AppBar>
       <Drawer

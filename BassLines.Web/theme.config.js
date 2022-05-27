@@ -24,25 +24,25 @@ export const themeConfig = {
             "contrastText": "#ffffff"
         },
     },
-    "cyberPalette": {
+    "darkPalette": {
         mode: "dark",
         "text": {
             "primary": "rgba(256, 256, 256, 0.87)",
             "secondary": "rgba(256, 256, 256, 0.54)",
             "disabled": "rgba(256, 256, 256, 0.38)",
             "hint": "rgba(256, 256, 256, 0.38)",
-            "textColor": "#fef901"
+            "textColor": "rgba(256, 256, 256, 0.54)"
         },
         "secondary": {
-            "main": "#fef901",
-            "light": "#fffb28",
-            "dark": "#ceca00",
-            "contrastText": "#000"
+            "main": "#50d292",
+            "light": "#87ffc3",
+            "dark": "#00a064",
+            "contrastText": "#ffffff"
         },
         "primary": {
-            "main": "#3e3e48",
-            "light": "#6b6b73",
-            "dark": "#212121",
+            "main": "#606060",
+            "light": "#B3B3B3",
+            "dark": "#000007",
             "contrastText": "#ffffff"
         }
     }

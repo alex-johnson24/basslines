@@ -9,11 +9,11 @@ import { ThemeProvider } from "@mui/material/styles";
 
 
 const useTheme = () => {
-    const [mode, setMode] = React.useState<'palette' | 'cyberPalette'>(localStorage.getItem('theme') === 'cyberPalette' ? 'cyberPalette' : 'palette');
+    const [mode, setMode] = React.useState<'palette' | 'darkPalette'>(localStorage.getItem('theme') === 'darkPalette' ? 'darkPalette' : 'palette');
     const colorMode = React.useMemo( 
         () => ({
             toggleColorMode: () => {
-                setMode((prevMode) => (prevMode === 'palette' ? 'cyberPalette' : 'palette'));
+                setMode((prevMode) => (prevMode === 'palette' ? 'darkPalette' : 'palette'));
             }, curTheme: mode
         }),
         [mode],
