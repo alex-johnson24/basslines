@@ -80,24 +80,10 @@ const Login = () => {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Box sx={{ display: "flex" }}>
-            <Typography variant="h4" color="secondary">
-              Bass
-            </Typography>
-            <Typography
-              sx={{
-                color: "primary.main",
-                fontWeight: 300,
-                fontStyle: "italic",
-              }}
-              variant="h4"
-            >
-              Lines
-            </Typography>
-          </Box>
+          <Box component="img" sx={{height: "48px"}} src="basslines.svg" />
           <Box component="form" onSubmit={submitLogin} sx={{ mt: 1 }}>
             <TextField
               margin="normal"

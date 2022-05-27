@@ -55,13 +55,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
-  [theme.breakpoints.down("md")]: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  [theme.breakpoints.up("md")]: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-  },
+  zIndex: theme.zIndex.drawer + 1,
 }));
 
 const Drawer = styled(MuiDrawer)(({ theme }) => ({
@@ -76,17 +70,6 @@ const Drawer = styled(MuiDrawer)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     ...closedMixin(theme),
     "& .MuiDrawer-paper": closedMixin(theme),
-  },
-}));
-
-const DateBox = styled(Box)(({ theme }) => ({
-  marginRight: "auto",
-  [theme.breakpoints.up("md")]: {
-    marginLeft: 0,
-  },
-  [theme.breakpoints.down("md")]: {
-    marginLeft: 0,
-    marginRight: "auto",
   },
 }));
 
@@ -127,6 +110,7 @@ interface IMiniDrawerProps {
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
   content: JSX.Element;
   basepath: string;
+  version: string;
 }
 
 const drawerItems = [
@@ -182,7 +166,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       <CssBaseline />
       <AppBar position="fixed">
         <Toolbar>
-          <DateBox>
+          <Box>
             <DatePicker
               label="Submission Date"
               value={props.selectedDate}
@@ -202,7 +186,13 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
                 />
               )}
             />
-          </DateBox>
+          </Box>
+          <Box
+            component="img"
+            sx={{ margin: "0 auto", height: "48px" }}
+            display={{ xs: "none", md: "block" }}
+            src={`basslines.svg`}
+          />
           <Box sx={{ marginRight: "20px" }}>
             <GlobalSearch />
           </Box>
@@ -215,29 +205,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           sx: { boxShadow: "-2px 0 6px -1px rgb(0, 0, 0, .20) inset" },
         }}
       >
-        <DrawerHeader
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            padding: 0,
-            margin: "0 auto",
-          }}
-        >
-          <Typography variant="h4" color="secondary">
-            Bass
-          </Typography>
-          <Typography
-            sx={{
-              color: theme.palette.primary.light,
-              fontWeight: 300,
-              fontStyle: "italic",
-            }}
-            variant="h4"
-          >
-            Lines
-          </Typography>
-        </DrawerHeader>
-        <Divider />
+        <DrawerHeader />
         <List>
           {drawerItems.map((item, index) => (
             <ListItem
@@ -415,10 +383,13 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
             </Box>
           </Box>
         )}
+        <Typography sx={{ margin: "auto auto 10px auto" }} variant="caption">
+          {props.version}
+        </Typography>
         <Button
           variant="contained"
           color="secondary"
-          sx={{ color: theme.palette.primary.main, marginTop: "auto" }}
+          sx={{ color: theme.palette.primary.main }}
           onClick={logout}
         >
           Logout
