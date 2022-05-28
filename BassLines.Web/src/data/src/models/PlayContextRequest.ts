@@ -24,12 +24,6 @@ export interface PlayContextRequest {
      * @type {string}
      * @memberof PlayContextRequest
      */
-    deviceId?: string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof PlayContextRequest
-     */
     contextUri?: string | null;
     /**
      * 
@@ -55,7 +49,6 @@ export function PlayContextRequestFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'deviceId': !exists(json, 'device_id') ? undefined : json['device_id'],
         'contextUri': !exists(json, 'context_uri') ? undefined : json['context_uri'],
         'uris': !exists(json, 'uris') ? undefined : json['uris'],
         'positionMs': !exists(json, 'position_ms') ? undefined : json['position_ms'],
@@ -71,7 +64,6 @@ export function PlayContextRequestToJSON(value?: PlayContextRequest | null): any
     }
     return {
         
-        'device_id': value.deviceId,
         'context_uri': value.contextUri,
         'uris': value.uris,
         'position_ms': value.positionMs,

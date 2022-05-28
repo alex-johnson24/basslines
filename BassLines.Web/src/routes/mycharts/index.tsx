@@ -96,7 +96,7 @@ const MyCharts = () => {
 
   const { userInfo } = useUserState();
   const {
-    state: { deviceId, profile, authorized },
+    state: { profile, authorized },
     callSpotify,
   } = useSpotify();
 
@@ -179,7 +179,6 @@ const MyCharts = () => {
           playContextRequest: {
             uris: [`spotify:track:${id}`],
             positionMs: 0,
-            deviceId,
           },
         })
         .catch(console.warn);
@@ -198,7 +197,6 @@ const MyCharts = () => {
         playContextRequest: {
           uris,
           positionMs: 0,
-          deviceId,
         },
       });
     } catch (e) {
@@ -214,7 +212,6 @@ const MyCharts = () => {
         playContextRequest: {
           contextUri: artistUri,
           positionMs: 0,
-          deviceId,
         },
       })
       .catch(console.warn);
@@ -247,7 +244,6 @@ const MyCharts = () => {
               callSpotify(SpotifyApi)
                 .playPut({
                   playContextRequest: {
-                    deviceId,
                     uris,
                     positionMs: 0,
                   },

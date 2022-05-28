@@ -44,9 +44,8 @@ import {
     TransferStateRequestToJSON,
 } from '../models';
 
-export interface AddToQueueSpotifyIdDeviceDeviceIdPostRequest {
+export interface AddToQueueSpotifyIdPostRequest {
     spotifyId: string;
-    deviceId: string;
 }
 
 export interface ArtistsFromTrackIdsPostRequest {
@@ -106,13 +105,9 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async addToQueueSpotifyIdDeviceDeviceIdPostRaw(requestParameters: AddToQueueSpotifyIdDeviceDeviceIdPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async addToQueueSpotifyIdPostRaw(requestParameters: AddToQueueSpotifyIdPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.spotifyId === null || requestParameters.spotifyId === undefined) {
-            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling addToQueueSpotifyIdDeviceDeviceIdPost.');
-        }
-
-        if (requestParameters.deviceId === null || requestParameters.deviceId === undefined) {
-            throw new runtime.RequiredError('deviceId','Required parameter requestParameters.deviceId was null or undefined when calling addToQueueSpotifyIdDeviceDeviceIdPost.');
+            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling addToQueueSpotifyIdPost.');
         }
 
         const queryParameters: any = {};
@@ -120,7 +115,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/add-to-queue/{spotifyId}/device/{deviceId}`.replace(`{${"spotifyId"}}`, encodeURIComponent(String(requestParameters.spotifyId))).replace(`{${"deviceId"}}`, encodeURIComponent(String(requestParameters.deviceId))),
+            path: `/add-to-queue/{spotifyId}`.replace(`{${"spotifyId"}}`, encodeURIComponent(String(requestParameters.spotifyId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -131,8 +126,8 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async addToQueueSpotifyIdDeviceDeviceIdPost(requestParameters: AddToQueueSpotifyIdDeviceDeviceIdPostRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.addToQueueSpotifyIdDeviceDeviceIdPostRaw(requestParameters, initOverrides);
+    async addToQueueSpotifyIdPost(requestParameters: AddToQueueSpotifyIdPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.addToQueueSpotifyIdPostRaw(requestParameters, initOverrides);
     }
 
     /**

@@ -20,12 +20,13 @@ import {
   IconButton,
   Popover,
   Slider,
+  SvgIcon,
   Typography,
   useTheme,
 } from "@mui/material";
 import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
-import { SpotifyApi } from "../../../data/src";
+import { Device, MyDevices, SpotifyApi } from "../../../data/src";
 import { convertSecondsToLengthString } from "../../../utils";
 import { SongItem } from "../SongAutocomplete";
 import SpotifyLogo from "../spotifyLogo";
@@ -36,11 +37,11 @@ export default React.memo(function ControlPanel() {
   const {
     callSpotify,
     dispatch,
-    state: { player, deviceId },
+    state: { player },
   } = useSpotify();
   const theme = useTheme();
 
-  const { playerState, setPlayerState } = useSpotifyWebPlayer();
+  const { playerState, setPlayerState, deviceId } = useSpotifyWebPlayer();
 
   const { position, duration, paused, context, track_window } =
     playerState || {};
@@ -54,11 +55,13 @@ export default React.memo(function ControlPanel() {
   const [currentDevice, setCurrentDevice] = React.useState("");
   const [volumeSliderAnchor, setVolumeSliderAnchor] = React.useState(null);
   const [volumeSliderPosition, setVolumeSliderPosition] = React.useState(50);
+  const [transferStateMenuOpen, setTransferStateMenuOpen] =
+    React.useState(false);
   const [trackPosition, setTrackPosition] = React.useState(
     (position / duration) * 100
   );
 
-  const transferPlayerState = async () => {
+  const transferPlayerStateHere = async () => {
     await callSpotify(SpotifyApi)
       .playerPut({
         transferStateRequest: { deviceIds: [deviceId] },
@@ -75,7 +78,7 @@ export default React.memo(function ControlPanel() {
 
     if (player) {
       const playing = playerState?.track_window?.current_track;
-      if (playing.id !== currentTrack?.id) {
+      if (playing && playing?.id !== currentTrack?.id) {
         (async () => {
           const likeArray = await callSpotify(SpotifyApi).checkSavedPost({
             requestBody: [playing?.id],
@@ -107,8 +110,12 @@ export default React.memo(function ControlPanel() {
           (d) => d.isActive && d.id !== deviceId && d.name !== "BassLines"
         );
 
+        setVolumeSliderPosition(
+          devices?.find((d) => d.name === "BassLines")?.volumePercent || 50
+        );
+
         if (!anotherDeviceActive) {
-          await transferPlayerState();
+          await transferPlayerStateHere();
         } else {
           //ask user if they want to play here
           setCurrentDevice(devices.find((d) => d.isActive).name);
@@ -117,7 +124,8 @@ export default React.memo(function ControlPanel() {
       })();
   }, [deviceId]);
 
-  const disabled = paused == undefined;
+  const disabled =
+    paused == undefined || playerState?.track_window?.current_track == null;
 
   return !player ? (
     <></>
@@ -135,7 +143,7 @@ export default React.memo(function ControlPanel() {
           transition: ".1666s all ease-in-out",
           display: "flex",
           alignItems: "center",
-          opacity: disabled ? 0 : 1,
+          opacity: 1,
           backgroundColor:
             theme.palette.mode === "dark"
               ? "rgba(0,0,0,.9)"
@@ -217,19 +225,24 @@ export default React.memo(function ControlPanel() {
           >
             <Typography
               paragraph={false}
-              children={convertSecondsToLengthString(position / 1000)}
+              children={
+                disabled ? "" : convertSecondsToLengthString(position / 1000)
+              }
               fontSize={".7rem"}
             />
             <Typography
               paragraph={false}
-              children={convertSecondsToLengthString(duration / 1000)}
+              children={
+                disabled ? "" : convertSecondsToLengthString(duration / 1000)
+              }
               fontSize={".7rem"}
             />
           </Grid>
         </Grid>
-        <Grid>
+        <Grid sx={{ "& button": { margin: "0 3px" } }}>
           <IconButton
             disableRipple
+            disabled={disabled}
             sx={{ p: "2px 0 0" }}
             onClick={() =>
               callSpotify(SpotifyApi)
@@ -241,7 +254,7 @@ export default React.memo(function ControlPanel() {
                 .catch(console.warn)
             }
             children={
-              currentTrack?.saved ? (
+              currentTrack?.saved && !disabled ? (
                 <FavoriteRounded
                   fontSize="small"
                   style={{ color: theme.palette.secondary.main }}
@@ -263,6 +276,7 @@ export default React.memo(function ControlPanel() {
           />
           <IconButton
             disableRipple
+            disabled={disabled}
             sx={{ p: "2px 0 0" }}
             onClick={() =>
               callSpotify(SpotifyApi)
@@ -276,6 +290,22 @@ export default React.memo(function ControlPanel() {
                     ? theme.palette.secondary.main
                     : "inherit",
                 }}
+              />
+            }
+          />
+          <IconButton
+            disableRipple
+            sx={{ p: "2px 0 0" }}
+            onClick={() => setTransferStateMenuOpen(true)}
+            children={
+              <Box
+                component="img"
+                sx={{
+                  width: "100%",
+                  height: "20px",
+                  ml: 0.8,
+                }}
+                src={`speaker.svg`}
               />
             }
           />
@@ -320,8 +350,13 @@ export default React.memo(function ControlPanel() {
         open={transferPromptOpen}
         currentDevice={currentDevice}
         onClose={() => setTransferPromptOpen(false)}
-        onAccept={transferPlayerState}
+        onAccept={transferPlayerStateHere}
       />
+      {transferStateMenuOpen && (
+        <TransferStateAllDevices
+          onClose={() => setTransferStateMenuOpen(false)}
+        />
+      )}
     </>
   );
 });
@@ -330,7 +365,8 @@ interface ITransferStatePromptProps {
   open?: boolean;
   currentDevice?: string;
   onClose: VoidFunction;
-  onAccept: VoidFunction;
+  onAccept?: VoidFunction;
+  onDeviceSelect?: (deviceId: string) => Promise<void>;
 }
 const TransferStatePrompt = ({
   open,
@@ -368,7 +404,7 @@ const TransferStatePrompt = ({
           children={
             <>
               It looks like you're already listening on{" "}
-              <strong>${currentDevice}</strong>!
+              <strong>{currentDevice}</strong>!
             </>
           }
         />
@@ -391,6 +427,112 @@ const TransferStatePrompt = ({
           }}
           onClick={onClose}
         />
+      </Grid>
+    </Dialog>
+  );
+};
+
+const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
+  const theme = useTheme();
+
+  const { callSpotify } = useSpotify();
+
+  const [devices, setDevices] = React.useState<Device[]>();
+
+  React.useEffect(() => {
+    callSpotify(SpotifyApi)
+      .devicesGet()
+      .then((data) => setDevices(data.devices))
+      .catch((e) => {
+        console.warn(e);
+        onClose();
+      });
+  }, []);
+
+  return (
+    <Dialog
+      open
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{ elevation: 1, sx: { borderRadius: "10px" } }}
+    >
+      <Grid
+        p={6}
+        container
+        width={"100%"}
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <SpotifyLogo
+          role="img"
+          height="56px"
+          fill={theme.palette.success.main}
+          style={{ marginBottom: 14 }}
+        />
+        <Typography
+          fontSize="1.7rem"
+          textAlign="center"
+          children="Connect to a device"
+        />
+        <Box component={"ul"} sx={{ paddingInlineStart: 0 }}>
+          {!devices ? (
+            <CircularProgress size={20} />
+          ) : (
+            devices.map((d, i, a) => (
+              <Grid
+                key={d.id}
+                component={"li"}
+                sx={{
+                  mb: i !== a.length - 1 ? 1.5 : 0,
+                  p: "12px 0",
+                  listStyle: "none",
+                  borderRadius: "7px",
+                  display: "flex",
+                  bgcolor: d.isActive
+                    ? theme.palette.secondary.light + "40" // 40 lightens hex value
+                    : "",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  callSpotify(SpotifyApi)
+                    .playerPut({
+                      transferStateRequest: { deviceIds: [d.id] },
+                    })
+                    .then(onClose)
+                    .catch(console.warn);
+                }}
+              >
+                <Grid xs={3} justifyContent="center" alignItems={"center"}>
+                  <Box
+                    component="img"
+                    sx={{
+                      width: "100%",
+                      height: "36px",
+                      ml: 3,
+                    }}
+                    src={`speaker.svg`}
+                  />
+                </Grid>
+                <Grid xs={9} display="flex" flexDirection="column">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={700}
+                    children={
+                      d.isActive ? "Listening on" : d.name + ": " + d.type
+                    }
+                  />
+                  <Typography
+                    variant="caption"
+                    children={d.isActive ? d.name : "Spotify Connect"}
+                  />
+                </Grid>
+              </Grid>
+            ))
+          )}
+        </Box>
       </Grid>
     </Dialog>
   );

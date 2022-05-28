@@ -21,8 +21,8 @@ namespace BassLines.Api.Interfaces
         Task<SpotifyTrackDetails> GetTrackDetails(string accessToken, string songId);
         Task<HttpStatusCode> TransferPlayerState(string accessToken, TransferStateRequest request);
         Task<MyDevices> GetDevices(string accessToken);
-        Task<HttpStatusCode> AddTrackToQueue(string accessToken, string spotifyId, string deviceId);
-        Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request, string device_id = null);
+        Task<HttpStatusCode> AddTrackToQueue(string accessToken, string spotifyId);
+        Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request);
         Task<HttpStatusCode> Shuffle(string accessToken, bool shuffle);
         Task<TrackSavedReference> SaveOrRemoveTrack(string accessToken, string id, bool save);
         Task<List<TrackSavedReference>> CheckForSavedTracks(string accessToken, List<string> ids);

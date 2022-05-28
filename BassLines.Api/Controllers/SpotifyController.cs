@@ -255,13 +255,13 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpPost]
-        [Route("/add-to-queue/{spotifyId}/device/{deviceId}")]
-        public async Task<IActionResult> AddTrackToQueue([FromRoute]string spotifyId, string deviceId)
+        [Route("/add-to-queue/{spotifyId}")]
+        public async Task<IActionResult> AddTrackToQueue([FromRoute]string spotifyId)
         {
             try
             {
                 var accessToken = HttpContext.Request.Headers["spotify_token"];
-                var status = await _spotifyService.AddTrackToQueue(accessToken, spotifyId, deviceId);
+                var status = await _spotifyService.AddTrackToQueue(accessToken, spotifyId);
                 return this.StatusCode((int)status);
             }
             catch (Exception ex)
@@ -276,7 +276,7 @@ namespace BassLines.Api.Controllers
             try
             {
                 var accessToken = HttpContext.Request.Headers["spotify_token"];
-                var status = await _spotifyService.Play(accessToken, request, request.device_id);
+                var status = await _spotifyService.Play(accessToken, request);
                 return this.StatusCode((int)status);
             }
             catch (Exception ex)
