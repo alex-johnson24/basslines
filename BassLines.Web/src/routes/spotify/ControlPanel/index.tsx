@@ -26,7 +26,12 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
-import { Device, MyDevices, SpotifyApi } from "../../../data/src";
+import {
+  Device,
+  MyDevices,
+  SpotifyApi,
+  SpotifyPlaybackState,
+} from "../../../data/src";
 import { convertSecondsToLengthString } from "../../../utils";
 import { SongItem } from "../SongAutocomplete";
 import SpotifyLogo from "../spotifyLogo";
@@ -50,6 +55,9 @@ export default React.memo(function ControlPanel() {
     id?: string;
     saved?: boolean;
   }
+
+  const [playbackState, setPlaybackState] =
+    React.useState<SpotifyPlaybackState>();
   const [currentTrack, setCurrentTrack] = React.useState<CurrentTrackInfo>();
   const [transferPromptOpen, setTransferPromptOpen] = React.useState(false);
   const [currentDevice, setCurrentDevice] = React.useState("");
@@ -61,21 +69,33 @@ export default React.memo(function ControlPanel() {
     (position / duration) * 100
   );
 
-  const transferPlayerStateHere = async () => {
+  const transferPlayerStateHere = async (cb?: () => void | Promise<void>) => {
     await callSpotify(SpotifyApi)
       .playerPut({
-        transferStateRequest: { deviceIds: [deviceId], },
+        transferStateRequest: { deviceIds: [deviceId] },
       })
       .catch(console.warn);
+    if (cb) await cb();
   };
 
   const timer = React.useRef<NodeJS.Timer>(null);
+  const interval = React.useRef<NodeJS.Timer>(null);
+
+  const hydratePlaybackState = () => {
+    callSpotify(SpotifyApi)
+      .playbackStateGet()
+      .then(setPlaybackState)
+      .catch(console.warn);
+  };
+
   const hydratePlayerState = () =>
     player.getCurrentState().then(setPlayerState).catch(console.warn);
 
   React.useEffect(() => {
     if (player) {
-      const playing = playerState?.track_window?.current_track;
+      const playing =
+        playerState?.track_window?.current_track ?? playbackState?.item;
+
       if (playing && playing?.id !== currentTrack?.id) {
         (async () => {
           const likeArray = await callSpotify(SpotifyApi).checkSavedPost({
@@ -98,13 +118,23 @@ export default React.memo(function ControlPanel() {
     setTrackPosition((position / duration) * 100);
 
     return () => (timer.current ? clearTimeout(timer.current) : undefined);
-  }, [playerState]);
+  }, [playerState, playbackState]);
 
   React.useEffect(() => {
     if (player && !playerState) {
       hydratePlayerState();
     }
   }, [player, playerState]);
+
+  React.useEffect(() => {
+    hydratePlaybackState();
+
+    interval.current = setInterval(() => {
+      hydratePlaybackState();
+    }, 15000);
+
+    return () => clearInterval(interval.current);
+  }, []);
 
   React.useEffect(() => {
     if (!deviceId) return undefined;
@@ -130,8 +160,11 @@ export default React.memo(function ControlPanel() {
       })();
   }, [deviceId]);
 
-  const disabled =
+  const playingExternally =
     paused == undefined || playerState?.track_window?.current_track == null;
+
+  const shuffling =
+    (playingExternally && playbackState?.shuffleState) || playerState?.shuffle;
 
   return !player ? (
     <></>
@@ -148,6 +181,7 @@ export default React.memo(function ControlPanel() {
           left: "240px",
           transition: ".1666s all ease-in-out",
           display: "flex",
+          flexWrap: "wrap",
           alignItems: "center",
           opacity: 1,
           backgroundColor:
@@ -156,13 +190,15 @@ export default React.memo(function ControlPanel() {
               : "rgba(248,248,248,.9)",
         }}
       >
-        {track_window ? (
+        {track_window || playbackState ? (
           <SongItem
             style={{ width: "180px" }}
             song={{
-              title: track_window.current_track?.name,
-              artist: track_window.current_track?.artists?.[0]?.name,
-              images: track_window.current_track?.album?.images,
+              title: (track_window?.current_track ?? playbackState?.item)?.name,
+              artist: (track_window?.current_track ?? playbackState?.item)
+                ?.artists?.[0]?.name,
+              images: (track_window?.current_track ?? playbackState?.item)
+                ?.album?.images,
             }}
             element="div"
           />
@@ -173,29 +209,73 @@ export default React.memo(function ControlPanel() {
         )}
         <Grid width="fit-content">
           <IconButton
-            disabled={disabled}
+            disabled={
+              !playingExternally &&
+              !playerState?.track_window?.previous_tracks?.length
+            }
             sx={{ p: "2px 0 0" }}
             children={<SkipPreviousRounded />}
             onClick={async () => {
-              position <= 2000
+              playingExternally
+                ? callSpotify(SpotifyApi)
+                    .nextOrPreviousNextOrPreviousPost({
+                      nextOrPrevious: "previous",
+                    })
+                    .then(() => hydratePlaybackState())
+                    .catch(console.warn)
+                : position <= 2000
                 ? await player.previousTrack()
                 : await player.seek(0);
             }}
             disableRipple
           />
           <IconButton
-            disabled={disabled}
+            disabled={playingExternally && !playbackState}
             sx={{ p: "2px 0 0" }}
-            children={paused ? <PlayArrowRounded /> : <PauseRounded />}
-            onClick={async () => await player.togglePlay()}
+            children={
+              !playingExternally ? (
+                paused ? (
+                  <PlayArrowRounded />
+                ) : (
+                  <PauseRounded />
+                )
+              ) : playbackState?.isPlaying ? (
+                <PauseRounded />
+              ) : (
+                <PlayArrowRounded />
+              )
+            }
+            onClick={async () =>
+              !playingExternally
+                ? await player.togglePlay()
+                : playbackState.isPlaying
+                ? callSpotify(SpotifyApi)
+                    .pausePut()
+                    .then(() => hydratePlaybackState())
+                    .catch(console.warn)
+                : callSpotify(SpotifyApi)
+                    .playPut({ playContextRequest: {} })
+                    .then(() => hydratePlaybackState())
+                    .catch(console.warn)
+            }
             disableRipple
           />
           <IconButton
-            disabled={disabled}
+            disabled={
+              !playingExternally &&
+              !playerState?.track_window?.next_tracks?.length
+            }
             sx={{ p: "2px 0 0" }}
             children={<SkipNextRounded />}
             onClick={async () => {
-              await player.nextTrack();
+              playingExternally
+                ? callSpotify(SpotifyApi)
+                    .nextOrPreviousNextOrPreviousPost({
+                      nextOrPrevious: "next",
+                    })
+                    .then(() => hydratePlaybackState())
+                    .catch(console.warn)
+                : await player.nextTrack();
             }}
             disableRipple
           />
@@ -213,7 +293,7 @@ export default React.memo(function ControlPanel() {
             sx={{ width: "100%" }}
             color="secondary"
             size="small"
-            disabled={disabled}
+            disabled={playingExternally}
             onChange={(e, n: number) => setTrackPosition(n)}
             onChangeCommitted={(e, numOutOf100: number) => {
               setTrackPosition(numOutOf100);
@@ -232,14 +312,18 @@ export default React.memo(function ControlPanel() {
             <Typography
               paragraph={false}
               children={
-                disabled ? "" : convertSecondsToLengthString(position / 1000)
+                playingExternally
+                  ? ""
+                  : convertSecondsToLengthString(position / 1000)
               }
               fontSize={".7rem"}
             />
             <Typography
               paragraph={false}
               children={
-                disabled ? "" : convertSecondsToLengthString(duration / 1000)
+                playingExternally
+                  ? ""
+                  : convertSecondsToLengthString(duration / 1000)
               }
               fontSize={".7rem"}
             />
@@ -248,7 +332,7 @@ export default React.memo(function ControlPanel() {
         <Grid sx={{ "& button": { margin: "0 3px" } }}>
           <IconButton
             disableRipple
-            disabled={disabled}
+            disabled={!currentTrack}
             sx={{ p: "2px 0 0" }}
             onClick={() =>
               callSpotify(SpotifyApi)
@@ -260,7 +344,7 @@ export default React.memo(function ControlPanel() {
                 .catch(console.warn)
             }
             children={
-              currentTrack?.saved && !disabled ? (
+              currentTrack?.saved ? (
                 <FavoriteRounded
                   fontSize="small"
                   style={{ color: theme.palette.secondary.main }}
@@ -271,7 +355,7 @@ export default React.memo(function ControlPanel() {
             }
           />
           <IconButton
-            disabled={disabled}
+            disabled={playingExternally}
             sx={{ p: "2px 0 0" }}
             children={<VolumeUpRounded />}
             onClick={(e) => {
@@ -282,19 +366,20 @@ export default React.memo(function ControlPanel() {
           />
           <IconButton
             disableRipple
-            disabled={disabled}
+            disabled={playbackState?.shuffleState == undefined}
             sx={{ p: "2px 0 0" }}
             onClick={() =>
               callSpotify(SpotifyApi)
-                .shufflePut({ shuffle: !playerState?.shuffle })
+                .shufflePut({
+                  shuffle: !shuffling,
+                })
+                .then(() => hydratePlaybackState())
                 .catch(console.warn)
             }
             children={
               <ShuffleRounded
                 style={{
-                  color: playerState?.shuffle
-                    ? theme.palette.secondary.main
-                    : "inherit",
+                  color: shuffling ? theme.palette.secondary.main : "inherit",
                 }}
               />
             }
@@ -308,7 +393,8 @@ export default React.memo(function ControlPanel() {
                 component="img"
                 sx={{
                   width: "100%",
-                  height: "24px",
+                  height: "23px",
+                  mt: "1px",
                   ml: "4px",
                 }}
                 src={`speaker.svg`}
@@ -351,21 +437,45 @@ export default React.memo(function ControlPanel() {
             />
           }
         />
+        {playingExternally &&
+          playbackState?.device?.name &&
+          playbackState?.device?.name !== "BassLines" && (
+            <Grid
+              bgcolor={theme.palette.secondary.main + "88"}
+              width="100%"
+              display="flex"
+              justifyContent="center"
+            >
+              <Typography variant="caption" p={1} fontSize=".87rem">
+                Playing on {playbackState?.device?.name}
+              </Typography>
+            </Grid>
+          )}
       </Box>
       <TransferStatePrompt
         open={transferPromptOpen}
         currentDevice={currentDevice}
-        onClose={() => setTransferPromptOpen(false)}
-        onAccept={transferPlayerStateHere}
+        onClose={() => {
+          setTransferPromptOpen(false);
+          hydratePlaybackState();
+        }}
+        onAccept={() => {
+          transferPlayerStateHere(() => hydratePlaybackState());
+        }}
       />
       {transferStateMenuOpen && (
         <TransferStateAllDevices
-          onClose={() => setTransferStateMenuOpen(false)}
+          onClose={() => {
+            setTransferStateMenuOpen(false);
+            hydratePlaybackState();
+          }}
         />
       )}
     </>
   );
 });
+
+//TODO: perhaps move playbackState refreshing to BE services
 
 interface ITransferStatePromptProps {
   open?: boolean;
@@ -479,7 +589,7 @@ const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
           style={{ marginBottom: 14 }}
         />
         <Typography
-          fontSize="1.7rem"
+          fontSize="1.6rem"
           textAlign="center"
           children="Connect to a device"
         />
@@ -502,16 +612,16 @@ const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
                     : "",
                   cursor: "pointer",
                 }}
-                onClick={() => {
-                  callSpotify(SpotifyApi)
+                onClick={async () => {
+                  await callSpotify(SpotifyApi)
                     .playerPut({
                       transferStateRequest: { deviceIds: [d.id] },
                     })
-                    .then(onClose)
+                    .then(() => onClose())
                     .catch(console.warn);
                 }}
               >
-                <Grid xs={3} justifyContent="center" alignItems={"center"}>
+                <Grid item xs={3} justifyContent="center" alignItems={"center"}>
                   <Box
                     component="img"
                     sx={{
@@ -522,7 +632,7 @@ const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
                     src={`speaker.svg`}
                   />
                 </Grid>
-                <Grid xs={9} display="flex" flexDirection="column">
+                <Grid item xs={9} display="flex" flexDirection="column">
                   <Typography
                     variant="subtitle2"
                     fontWeight={700}

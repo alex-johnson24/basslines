@@ -325,7 +325,21 @@ namespace BassLines.Api.Services
             return await (await _spotifyClient.GetAsync("me/player/devices")).DeserializeHttp<MyDevices>();
         }
 
-        public async Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request)
+        public async Task<SpotifyPlaybackState> GetPlaybackState(string accessToken)
+        {
+            ApplyBearerAuth(accessToken);
+
+            var res = await _spotifyClient.GetAsync("me/player");
+
+            if (res == null || res?.StatusCode == HttpStatusCode.NoContent)
+            {
+                return new SpotifyPlaybackState();
+            }
+
+            return await res.DeserializeHttp<SpotifyPlaybackState>();
+        }
+
+        public async Task<HttpStatusCode> Play(string accessToken, PlayContextRequest request = null)
         {
             ApplyBearerAuth(accessToken);
 
@@ -334,6 +348,20 @@ namespace BassLines.Api.Services
             var response = await _spotifyClient.PutAsync($"me/player/play", content);
 
             return response.StatusCode;
+        }
+
+        public async Task<HttpStatusCode> Pause(string accessToken)
+        {
+            ApplyBearerAuth(accessToken);
+
+            return (await _spotifyClient.PutAsync($"me/player/pause", null)).StatusCode;
+        }
+        
+        public async Task<HttpStatusCode> NextOrPrevious(string accessToken, string nextOrPrevious)
+        {
+            ApplyBearerAuth(accessToken);
+
+            return (await _spotifyClient.PostAsync($"me/player/{nextOrPrevious}", null)).StatusCode;
         }
 
         public async Task<HttpStatusCode> Shuffle(string accessToken, bool shuffle)
