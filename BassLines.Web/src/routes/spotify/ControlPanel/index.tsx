@@ -64,18 +64,16 @@ export default React.memo(function ControlPanel() {
   const transferPlayerStateHere = async () => {
     await callSpotify(SpotifyApi)
       .playerPut({
-        transferStateRequest: { deviceIds: [deviceId] },
+        transferStateRequest: { deviceIds: [deviceId], },
       })
       .catch(console.warn);
   };
 
   const timer = React.useRef<NodeJS.Timer>(null);
+  const hydratePlayerState = () =>
+    player.getCurrentState().then(setPlayerState).catch(console.warn);
 
   React.useEffect(() => {
-    if (paused) {
-      return undefined;
-    }
-
     if (player) {
       const playing = playerState?.track_window?.current_track;
       if (playing && playing?.id !== currentTrack?.id) {
@@ -90,15 +88,23 @@ export default React.memo(function ControlPanel() {
         })();
       }
 
-      timer.current = setTimeout(() => {
-        player.getCurrentState().then(setPlayerState).catch(console.warn);
-      }, 1000);
+      if (paused) {
+        return undefined;
+      }
+
+      timer.current = setTimeout(hydratePlayerState, 1000);
     }
 
     setTrackPosition((position / duration) * 100);
 
     return () => (timer.current ? clearTimeout(timer.current) : undefined);
   }, [playerState]);
+
+  React.useEffect(() => {
+    if (player && !playerState) {
+      hydratePlayerState();
+    }
+  }, [player, playerState]);
 
   React.useEffect(() => {
     if (!deviceId) return undefined;
@@ -302,8 +308,8 @@ export default React.memo(function ControlPanel() {
                 component="img"
                 sx={{
                   width: "100%",
-                  height: "20px",
-                  ml: 0.8,
+                  height: "24px",
+                  ml: "4px",
                 }}
                 src={`speaker.svg`}
               />
