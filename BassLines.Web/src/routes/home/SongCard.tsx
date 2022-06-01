@@ -46,7 +46,7 @@ interface ISongCardProps {
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   ranking?: "first" | "second" | "third";
   toggleSaved: (id: string, save: boolean) => Promise<void>;
-  trackDetails?: SpotifyTrackDetails
+  trackDetails?: SpotifyTrackDetails;
 }
 
 const SmallAvatar = styled(Avatar)(({ theme }) => ({
@@ -61,7 +61,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
   const firstName = props.song?.user?.firstName;
   const lastName = props.song?.user?.lastName;
   const {
-    state: { authorized, deviceId },
+    state: { authorized },
     callSpotify,
   } = useSpotify();
 
@@ -146,7 +146,6 @@ const SongCard = React.memo((props: ISongCardProps) => {
                       .playPut({
                         playContextRequest: {
                           uris: [`spotify:track:${spotifyTrackId}`],
-                          deviceId,
                           positionMs: 0,
                         },
                       })
@@ -175,9 +174,8 @@ const SongCard = React.memo((props: ISongCardProps) => {
                   disableRipple
                   onClick={() =>
                     callSpotify(SpotifyApi)
-                      .addToQueueSpotifyIdDeviceDeviceIdPost({
+                      .addToQueueSpotifyIdPost({
                         spotifyId: spotifyTrackId,
-                        deviceId,
                       })
                       .catch(console.warn)
                   }

@@ -41,6 +41,7 @@ import { SpotifyPlayerState } from "./types";
 
 export default function useSpotifyWebPlayer() {
   const [playerState, setPlayerState] = React.useState<SpotifyPlayerState>();
+  const [deviceId, setDeviceId] = React.useState<string>();
   const {
     dispatch,
     state: {
@@ -80,7 +81,7 @@ export default function useSpotifyWebPlayer() {
           dispatch({ type: "setPlayer", payload: player });
 
           player.addListener("ready", async ({ device_id }) => {
-            dispatch({ type: "setDeviceId", payload: device_id });
+            setDeviceId(device_id)
           });
           player.addListener("not_ready", (arg) =>
             console.log("not_ready", arg)
@@ -105,7 +106,7 @@ export default function useSpotifyWebPlayer() {
     })();
   }
 
-  return { playerState, setPlayerState };
+  return { playerState, setPlayerState, deviceId };
 }
 
 function loadSpotifyPlayer(): Promise<any> {

@@ -114,7 +114,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
 
   const {
-    state: { deviceId, profile, authorized },
+    state: { profile, authorized },
     callSpotify,
   } = useSpotify();
 
@@ -162,7 +162,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         type: "setDailySongs",
         payload: songsResults.map((s) => ({
           ...s,
-          saved: savedArr?.find(({ id }) => s.link.includes(id))?.saved,
+          saved: savedArr?.find(({ id }) => s.link?.includes(id))?.saved,
         })),
       });
     }
@@ -178,7 +178,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         type: "setDailySongs",
         payload: dailySongs.map((s) => ({
           ...s,
-          saved: s.link?.includes(id) ? saved : s.saved,
+          saved: s?.link?.includes(id) ? saved : s.saved,
         })),
       });
     } catch (ex) {
@@ -406,7 +406,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
               callSpotify(SpotifyApi)
                 .playPut({
                   playContextRequest: {
-                    deviceId,
                     uris,
                     positionMs: 0,
                   },
