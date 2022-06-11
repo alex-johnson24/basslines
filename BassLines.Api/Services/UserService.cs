@@ -1,6 +1,7 @@
 using AutoMapper;
 using BassLines.Api.Interfaces;
 using BassLines.Api.Models;
+using BassLines.Api.Utils;
 using BassLines.Api.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -188,6 +189,7 @@ namespace BassLines.Api.Services
                     new Claim("firstName", user.Firstname),
                     new Claim("lastName", user.Lastname),
                     new Claim("role", user.Role.Name),
+                    new Claim(BassLinesUtils.USER_STUDIO_ITEM_KEY, user.Studioid.ToString()),
                 }),
                 Issuer = _authSettings.ValidIssuer,
                 Audience = _authSettings.ValidAudience,
@@ -222,9 +224,9 @@ namespace BassLines.Api.Services
             if (!principal.Claims.Any(w => w.Type == "username" && w.Value == username)) throw new UserNotFoundException();
         }
 
-        public IEnumerable<UserModel> GetUsers()
+        public IEnumerable<UserModel> GetUsers(Guid studioId)
         {
-            return _mapper.Map<List<UserModel>>(_userRepo.GetUsers());
+            return _mapper.Map<List<UserModel>>(_userRepo.GetUsers(studioId));
         }
     }
 }

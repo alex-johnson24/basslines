@@ -8,6 +8,7 @@ using BassLines.Api.Models;
 using BassLines.Api.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
 using BassLines.Api.Interfaces;
+using BassLines.Api.Utils;
 
 namespace BassLines.Api.Services
 {
@@ -27,20 +28,25 @@ namespace BassLines.Api.Services
             _mapper = mapper;
         }
 
-        public override string GetCurrentReviewer() => _cache.Get(CURRENT_REVIEWER_KEY).FromRedisCache<string>();
+        public override string GetCurrentReviewer(Guid studioId) => _cache.Get(CURRENT_REVIEWER_KEY.ToGuidKey(studioId)).FromRedisCache<string>();
 
         public override void RebuildReviewerQueue()
         {
-            var reviewerQueue = GetReviewerOrder();
+            var studioIds = GetStudioIds();
 
-            var listAsBytes = reviewerQueue.ToRedisCache();
+            studioIds.ForEach((studioId) =>
+            {
+                var reviewerQueue = GetReviewerOrder(studioId);
 
-            _cache.Set(REVIEWER_LIST_KEY, listAsBytes, _opts);
+                var listAsBytes = reviewerQueue.ToRedisCache();
+
+                _cache.Set(REVIEWER_LIST_KEY.ToGuidKey(studioId), listAsBytes, _opts);
+            });
         }
 
-        public override void RotateReviewer()
+        public override void RotateReviewer(Guid studioId)
         {
-            var reviewerBytes = _cache.Get(REVIEWER_LIST_KEY);
+            var reviewerBytes = _cache.Get(REVIEWER_LIST_KEY.ToGuidKey(studioId));
 
             if (reviewerBytes == null) return;
 
@@ -48,12 +54,12 @@ namespace BassLines.Api.Services
 
             var newReviewer = reviewerQueue.Dequeue();
 
-            AssignNewReviewer(newReviewer);
+            AssignNewReviewer(newReviewer, studioId);
 
             var userAsBytes = newReviewer.ToRedisCache();
 
-            _cache.Set(CURRENT_REVIEWER_KEY, userAsBytes, _opts);
-            _cache.Remove(REVIEWER_NOTES_KEY);
+            _cache.Set(CURRENT_REVIEWER_KEY.ToGuidKey(studioId), userAsBytes, _opts);
+            _cache.Remove(REVIEWER_NOTES_KEY.ToGuidKey(studioId));
 
             if (reviewerQueue.Count == 0)
             {
@@ -62,13 +68,13 @@ namespace BassLines.Api.Services
             else
             {
                 var listAsBytes = reviewerQueue.ToRedisCache();
-                _cache.Set(REVIEWER_LIST_KEY, listAsBytes, _opts);
+                _cache.Set(REVIEWER_LIST_KEY.ToGuidKey(studioId), listAsBytes, _opts);
             }
         }
 
-        public override IEnumerable<UserModel> GetReviewerQueue()
+        public override IEnumerable<UserModel> GetReviewerQueue(Guid studioId)
         {
-            var reviewerQueueBytes = _cache.Get(REVIEWER_LIST_KEY);
+            var reviewerQueueBytes = _cache.Get(REVIEWER_LIST_KEY.ToGuidKey(studioId));
 
             if (reviewerQueueBytes == null) return new List<UserModel>();
 
@@ -77,16 +83,16 @@ namespace BassLines.Api.Services
             return _mapper.Map<List<UserModel>>(strReviewerQueue);
         }
 
-        public override string GetReviewerNotes()
+        public override string GetReviewerNotes(Guid studioId)
         {
-            var reviewerNotesBytes = _cache.Get(REVIEWER_NOTES_KEY);
+            var reviewerNotesBytes = _cache.Get(REVIEWER_NOTES_KEY.ToGuidKey(studioId));
             return reviewerNotesBytes.FromRedisCache<string>() ?? "";
         }
 
-        public override void SetReviewerNotes(string notes)
+        public override void SetReviewerNotes(string notes, Guid studioId)
         {
             var notesAsBytes = notes.ToRedisCache();
-            _cache.Set(REVIEWER_NOTES_KEY, notesAsBytes, _opts);
+            _cache.Set(REVIEWER_NOTES_KEY.ToGuidKey(studioId), notesAsBytes, _opts);
         }
     }
 

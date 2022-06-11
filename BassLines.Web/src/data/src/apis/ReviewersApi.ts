@@ -27,6 +27,10 @@ export interface ApiReviewersNotesPutRequest {
     reviewerNotesModel?: ReviewerNotesModel;
 }
 
+export interface ApiReviewersRotateReviewerGetRequest {
+    studioId?: string;
+}
+
 /**
  * 
  */
@@ -155,8 +159,12 @@ export class ReviewersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiReviewersRotateReviewerGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiReviewersRotateReviewerGetRaw(requestParameters: ApiReviewersRotateReviewerGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
+
+        if (requestParameters.studioId !== undefined) {
+            queryParameters['studioId'] = requestParameters.studioId;
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -172,8 +180,8 @@ export class ReviewersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiReviewersRotateReviewerGet(initOverrides?: RequestInit): Promise<void> {
-        await this.apiReviewersRotateReviewerGetRaw(initOverrides);
+    async apiReviewersRotateReviewerGet(requestParameters: ApiReviewersRotateReviewerGetRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiReviewersRotateReviewerGetRaw(requestParameters, initOverrides);
     }
 
 }

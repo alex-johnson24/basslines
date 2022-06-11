@@ -14,7 +14,8 @@ namespace BassLines.Api.Profiles
             CreateMap<User, UserModel>()
                 .ForMember(dest => dest.Role, m => m.MapFrom(src => src.Role.Flag))
                 .ReverseMap()
-                .ForMember(dest => dest.Role, m => m.Ignore());
+                .ForMember(dest => dest.Role, m => m.Ignore())
+                .ForMember(dest => dest.Studio, m => m.Ignore());
             
             CreateMap<Genre, GenreModel>()
                 .ReverseMap();

@@ -8,6 +8,8 @@ using AutoMapper;
 using BassLines.Api.Models;
 using Microsoft.AspNetCore.SignalR;
 using BassLines.Api.Hubs;
+using BassLines.Api.Filters;
+using BassLines.Api.Utils;
 
 namespace BassLines.Api.Controllers
 {
@@ -32,19 +34,22 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpPost]
+        [UserStudioClaimFilter]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 500)]
         public IActionResult Post(LikeModel model)
         {
             try
             {
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
                 var toLike = _mapper.Map<Like>(model);
                 _likesRepo.CreateLike(toLike);
                 _likesRepo.SaveChanges();
 
                 var likedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toLike.Songid));
 
-                _songHub.Clients.All.ReceiveSongEvent(likedSong);
+                _songHub.Clients.All.ReceiveSongEvent(likedSong, userStudioId);
 
                 return Ok(_mapper.Map<LikeModel>(toLike));
             }
@@ -56,6 +61,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpDelete]
+        [UserStudioClaimFilter]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 500)]
@@ -63,13 +69,15 @@ namespace BassLines.Api.Controllers
         {
             try
             {
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
                 var toUnlike = _mapper.Map<Like>(like);
                 _likesRepo.RemoveLike(toUnlike);
                 _likesRepo.SaveChanges();
 
                 var unlikedSong = _mapper.Map<SongModel>(_songRepo.GetSongById(toUnlike.Songid));
 
-                _songHub.Clients.All.ReceiveSongEvent(unlikedSong);
+                _songHub.Clients.All.ReceiveSongEvent(unlikedSong, userStudioId);
 
                 return Ok();
             }

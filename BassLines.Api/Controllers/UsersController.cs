@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BassLines.Api.Filters;
 using BassLines.Api.Interfaces;
+using BassLines.Api.Utils;
 using BassLines.Api.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,15 +27,17 @@ namespace BassLines.Api.Controllers
             _leaderboardService = leaderboardService;
         }
 
-        [Route("AllUsers")]
+        [Route("StudioUsers")]
         [HttpGet]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(List<UserModel>), 200)]
         [ProducesResponseType(typeof(string), 500)]
         public IActionResult GetUsers()
         {
             try
             {
-                var users = _userService.GetUsers();
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                var users = _userService.GetUsers(userStudioId);
                 return Ok(users);
             }
             catch (Exception ex)
@@ -170,6 +174,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [Route("LeaderboardMetrics")]
         [ProducesResponseType(typeof(List<UserLeaderboardModel>), 200)]
         [ProducesResponseType(typeof(string), 500)]
@@ -177,7 +182,8 @@ namespace BassLines.Api.Controllers
         {
             try
             {
-                var result = _leaderboardService.GetLeaderboardMetrics();
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                var result = _leaderboardService.GetLeaderboardMetrics(userStudioId);
                 return Ok(result);
             }
             catch (Exception ex)

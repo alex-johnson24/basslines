@@ -21,7 +21,7 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      basePath: window.__API_URL__.includes("__API_URL__") ? "http://localhost:5000" :  window.__API_URL__, // for production
+      basePath: window.__API_URL__.includes("__API_URL__") ? "https://localhost:5001" :  window.__API_URL__, // for production
       middleware: [unauthenticatedResponseHandlerMiddleware],
     })
   );
