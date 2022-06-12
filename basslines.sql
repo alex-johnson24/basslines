@@ -38,7 +38,7 @@ create table users(
   updatedatetime DATETIME2(3),
   PRIMARY KEY (id),
   CONSTRAINT FK_users_roleid FOREIGN KEY (roleid) REFERENCES roles(id) on delete set null,
-  CONSTRAINT FK_users_studioid FOREIGN KEY (studioid) REFERENCES studios(id) on delete set null
+  CONSTRAINT FK_users_studioid FOREIGN KEY (studioid) REFERENCES studios(id) on delete cascade
 );
 
 CREATE TRIGGER users_updatedatetime ON dbo.users

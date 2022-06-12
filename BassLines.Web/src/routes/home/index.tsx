@@ -248,8 +248,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const registerSongEvents = async () => {
     if (connection) {
       connection.on("ReceiveSongEvent", (song: SongModel, studioId: string) => {
-        console.log(userInfo);
-        console.log(studioId);
         if (studioId === userInfo.studioId) {
           dispatch({
             type: "receiveSongEvent",
