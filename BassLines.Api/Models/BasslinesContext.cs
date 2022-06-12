@@ -172,8 +172,8 @@ namespace BassLines.Api.Models
                 entity.ToTable("studios");
 
                 entity.Property(e => e.Id)
-                    .HasDefaultValueSql("(newid())")
-                    .HasColumnName("id");
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -219,7 +219,8 @@ namespace BassLines.Api.Models
                     .HasColumnName("salt");
 
                 entity.Property(e => e.Studioid)
-                    .HasColumnName("studioid");
+                    .HasColumnName("studioid")
+                    .HasDefaultValueSql("('00000000-0000-0000-0000-000000000000')");
 
                 entity.Property(e => e.Updatedatetime)
                     .HasPrecision(3)
@@ -235,6 +236,11 @@ namespace BassLines.Api.Models
                     .HasForeignKey(d => d.Roleid)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_users_roleid");
+
+                entity.HasOne(d => d.Studio)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.Studioid)
+                    .HasConstraintName("FK_users_studioid");
             });
 
             OnModelCreatingPartial(modelBuilder);

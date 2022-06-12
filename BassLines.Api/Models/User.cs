@@ -21,13 +21,13 @@ namespace BassLines.Api.Models
         public Guid? Roleid { get; set; }
         public DateTime? Createdatetime { get; set; }
         public DateTime? Updatedatetime { get; set; }
-        public bool Disablereviewing { get; set; }
+        public bool? Disablereviewing { get; set; }
         public Guid Studioid { get; set; }
 
         public virtual Role Role { get; set; }
+        public virtual Studio Studio { get; set; }
         public virtual ICollection<Like> Likes { get; set; }
         public virtual ICollection<Song> SongReviewers { get; set; }
         public virtual ICollection<Song> SongUsers { get; set; }
-        public virtual Studio Studio { get; set; }
     }
 }

@@ -66,7 +66,9 @@ namespace BassLines.Api.Services
             return _ctx.Studios.Select(s => s.Id).ToList();
         }
 
-        public abstract void RebuildReviewerQueue();
+        public abstract void RebuildReviewerQueue(Guid studioId);
+
+        public abstract void RebuildAllReviewerQueues();
 
         public abstract void RotateReviewer(Guid studioId);
 

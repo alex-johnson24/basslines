@@ -6,7 +6,9 @@ namespace BassLines.Api.Interfaces
 {
     public interface IReviewerRotationService
     {
-        void RebuildReviewerQueue();
+        void RebuildAllReviewerQueues();
+        
+        void RebuildReviewerQueue(Guid studioId);
 
         void RotateReviewer(Guid studioId);
 

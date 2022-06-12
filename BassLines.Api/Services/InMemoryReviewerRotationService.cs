@@ -25,16 +25,22 @@ namespace BassLines.Api.Services
 
         public override string GetCurrentReviewer(Guid studioId) => _cache.Get<string>(CURRENT_REVIEWER_KEY.ToGuidKey(studioId));
 
-        public override void RebuildReviewerQueue()
+        public override void RebuildAllReviewerQueues()
         {
             var studioIds = GetStudioIds();
 
             studioIds.ForEach((studioId) =>
             {
-                var reviewers = GetReviewerOrder(studioId);
-                _cache.Set(REVIEWER_LIST_KEY.ToGuidKey(studioId), reviewers);
-                RotateReviewer(studioId);
+                RebuildReviewerQueue(studioId);
             });
+        }
+
+        public override void RebuildReviewerQueue(Guid studioId)
+        {
+
+            var reviewers = GetReviewerOrder(studioId);
+            _cache.Set(REVIEWER_LIST_KEY.ToGuidKey(studioId), reviewers);
+            RotateReviewer(studioId);
         }
 
         public override void RotateReviewer(Guid studioId)
@@ -51,7 +57,7 @@ namespace BassLines.Api.Services
 
             if (reviewerQueue.Count == 0)
             {
-                RebuildReviewerQueue();
+                RebuildReviewerQueue(studioId);
             }
             else
             {
