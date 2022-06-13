@@ -62,30 +62,6 @@ export class UsersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiUsersAllUsersGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserModel>>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/api/Users/AllUsers`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
-    }
-
-    /**
-     */
-    async apiUsersAllUsersGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
-        const response = await this.apiUsersAllUsersGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
     async apiUsersGetPasswordResetTokenGetRaw(requestParameters: ApiUsersGetPasswordResetTokenGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
@@ -234,6 +210,30 @@ export class UsersApi extends runtime.BaseAPI {
      */
     async apiUsersSignInPost(requestParameters: ApiUsersSignInPostRequest, initOverrides?: RequestInit): Promise<UserModel> {
         const response = await this.apiUsersSignInPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiUsersStudioUsersGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserModel>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Users/StudioUsers`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserModelFromJSON));
+    }
+
+    /**
+     */
+    async apiUsersStudioUsersGet(initOverrides?: RequestInit): Promise<Array<UserModel>> {
+        const response = await this.apiUsersStudioUsersGetRaw(initOverrides);
         return await response.value();
     }
 

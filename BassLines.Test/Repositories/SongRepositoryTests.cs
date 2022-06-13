@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using BassLines.Api.Models;
 using BassLines.Api.Repositories;
-using BassLines.Api.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
@@ -29,7 +27,7 @@ namespace BassLines.Test
 
 
             var songRepository = new SongRepository(dbContextFactoryMock.Object);
-            var songs = songRepository.GetSongs();
+            var songs = songRepository.GetSongs(Guid.NewGuid());
 
             Assert.NotNull(songs);
         }

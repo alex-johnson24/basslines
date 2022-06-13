@@ -109,11 +109,11 @@ namespace BassLines.Api.Services
             _songRepo = songRepo;
         }
 
-        public IEnumerable<UserLeaderboardModel> GetLeaderboardMetrics()
+        public IEnumerable<UserLeaderboardModel> GetLeaderboardMetrics(Guid studioId)
         {
-            var users = _userRepo.GetLeaderboardUsers();
-            var UsersDailyWins = _songRepo.GetUserDailyWins();
-            var UsersMedalsEarned = _songRepo.GetUserMedalsEarned();
+            var users = _userRepo.GetLeaderboardUsers(studioId);
+            var UsersDailyWins = _songRepo.GetUserDailyWins(studioId);
+            var UsersMedalsEarned = _songRepo.GetUserMedalsEarned(studioId);
 
             return users.Select(s =>
             {

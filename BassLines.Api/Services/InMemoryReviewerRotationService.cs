@@ -5,6 +5,8 @@ using BassLines.Api.Interfaces;
 using BassLines.Api.ViewModels;
 using System.Linq;
 using AutoMapper;
+using System;
+using BassLines.Api.Utils;
 
 namespace BassLines.Api.Services
 {
@@ -21,54 +23,64 @@ namespace BassLines.Api.Services
             _mapper = mapper;
         }
 
-        public override string GetCurrentReviewer() => _cache.Get<string>(CURRENT_REVIEWER_KEY);
+        public override string GetCurrentReviewer(Guid studioId) => _cache.Get<string>(CURRENT_REVIEWER_KEY.ToGuidKey(studioId));
 
-        public override void RebuildReviewerQueue()
+        public override void RebuildAllReviewerQueues()
         {
-            var reviewerQueue = GetReviewerOrder();
+            var studioIds = GetStudioIds();
 
-            _cache.Set(REVIEWER_LIST_KEY, reviewerQueue);
-            RotateReviewer();
+            studioIds.ForEach((studioId) =>
+            {
+                RebuildReviewerQueue(studioId);
+            });
         }
 
-        public override void RotateReviewer()
+        public override void RebuildReviewerQueue(Guid studioId)
         {
-            var reviewerQueue = _cache.Get<Queue<string>>(REVIEWER_LIST_KEY);
+
+            var reviewers = GetReviewerOrder(studioId);
+            _cache.Set(REVIEWER_LIST_KEY.ToGuidKey(studioId), reviewers);
+            RotateReviewer(studioId);
+        }
+
+        public override void RotateReviewer(Guid studioId)
+        {
+            var reviewerQueue = _cache.Get<Queue<string>>(REVIEWER_LIST_KEY.ToGuidKey(studioId));
 
             if (reviewerQueue == null || reviewerQueue.Count < 1) return;
 
             var newReviewer = reviewerQueue.Dequeue();
 
-            AssignNewReviewer(newReviewer);
+            AssignNewReviewer(newReviewer, studioId);
 
-            _cache.Set(CURRENT_REVIEWER_KEY, newReviewer);
+            _cache.Set(CURRENT_REVIEWER_KEY.ToGuidKey(studioId), newReviewer);
 
             if (reviewerQueue.Count == 0)
             {
-                RebuildReviewerQueue();
+                RebuildReviewerQueue(studioId);
             }
             else
             {
-                _cache.Set(REVIEWER_LIST_KEY, reviewerQueue);
+                _cache.Set(REVIEWER_LIST_KEY.ToGuidKey(studioId), reviewerQueue);
             }
         }
 
-        public override IEnumerable<UserModel> GetReviewerQueue()
+        public override IEnumerable<UserModel> GetReviewerQueue(Guid studioId)
         {
-            var userQueue = _cache.Get<IEnumerable<string>>(REVIEWER_LIST_KEY)?.Select(u => _userRepo.GetUserByUsername(u));
+            var userQueue = _cache.Get<IEnumerable<string>>(REVIEWER_LIST_KEY.ToGuidKey(studioId))?.Select(u => _userRepo.GetUserByUsername(u));
             if (userQueue == null) return new List<UserModel>();
             return _mapper.Map<List<UserModel>>(userQueue);
         }
 
-        public override string GetReviewerNotes()
+        public override string GetReviewerNotes(Guid studioId)
         {
-            var userNotes = _cache.Get<string>(REVIEWER_NOTES_KEY);
+            var userNotes = _cache.Get<string>(REVIEWER_NOTES_KEY.ToGuidKey(studioId));
             return userNotes ?? "";
         }
 
-        public override void SetReviewerNotes(string notes)
+        public override void SetReviewerNotes(string notes, Guid studioId)
         {
-            _cache.Set(REVIEWER_NOTES_KEY, notes);
+            _cache.Set(REVIEWER_NOTES_KEY.ToGuidKey(studioId), notes);
         }
     }
 }

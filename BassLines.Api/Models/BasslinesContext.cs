@@ -13,6 +13,7 @@ namespace BassLines.Api.Models
         public virtual DbSet<Like> Likes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Song> Songs { get; set; }
+        public virtual DbSet<Studio> Studios { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -166,6 +167,20 @@ namespace BassLines.Api.Models
                     .HasConstraintName("FK_songs_userid");
             });
 
+            modelBuilder.Entity<Studio>(entity =>
+            {
+                entity.ToTable("studios");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnName("name");
+            });
+
             modelBuilder.Entity<User>(entity =>
             {
                 entity.ToTable("users");
@@ -203,6 +218,10 @@ namespace BassLines.Api.Models
                     .HasMaxLength(100)
                     .HasColumnName("salt");
 
+                entity.Property(e => e.Studioid)
+                    .HasColumnName("studioid")
+                    .HasDefaultValueSql("('00000000-0000-0000-0000-000000000000')");
+
                 entity.Property(e => e.Updatedatetime)
                     .HasPrecision(3)
                     .HasColumnName("updatedatetime");
@@ -217,6 +236,11 @@ namespace BassLines.Api.Models
                     .HasForeignKey(d => d.Roleid)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_users_roleid");
+
+                entity.HasOne(d => d.Studio)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.Studioid)
+                    .HasConstraintName("FK_users_studioid");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -10,5 +10,6 @@ namespace BassLines.Api.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public UserRole Role { get; set; }
+        public Guid StudioId { get; set; }
     }
 }

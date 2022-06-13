@@ -56,6 +56,12 @@ export interface UserModel {
      * @memberof UserModel
      */
     role?: UserRole;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserModel
+     */
+    studioId?: string;
 }
 
 export function UserModelFromJSON(json: any): UserModel {
@@ -73,6 +79,7 @@ export function UserModelFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'firstName': !exists(json, 'firstName') ? undefined : json['firstName'],
         'lastName': !exists(json, 'lastName') ? undefined : json['lastName'],
         'role': !exists(json, 'role') ? undefined : UserRoleFromJSON(json['role']),
+        'studioId': !exists(json, 'studioId') ? undefined : json['studioId'],
     };
 }
 
@@ -90,6 +97,7 @@ export function UserModelToJSON(value?: UserModel | null): any {
         'firstName': value.firstName,
         'lastName': value.lastName,
         'role': UserRoleToJSON(value.role),
+        'studioId': value.studioId,
     };
 }
 

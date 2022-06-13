@@ -7,7 +7,7 @@ namespace BassLines.Api.Interfaces
 {
     public interface IUserService
     {
-        IEnumerable<UserModel> GetUsers();
+        IEnumerable<UserModel> GetUsers(Guid studioId);
         UserModel CreateUser(RegistrationModel registrationModel);
         UserModel SignIn(LoginModel loginModel, out string jwt);
         string GeneratePasswordResetToken(string username);

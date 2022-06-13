@@ -111,7 +111,7 @@ const MyCharts = () => {
   React.useEffect(() => {
     const getUsers = async () => {
       try {
-        const users = await call(UsersApi).apiUsersAllUsersGet();
+        const users = await call(UsersApi).apiUsersStudioUsersGet();
         setUsers(users);
       } catch (e) {}
     };

@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace BassLines.Api.Utils
 {
     public static class BassLinesUtils
     {
+        public static readonly string USER_STUDIO_ITEM_KEY = "studioId";
+
         public static string RandomString(int size)
         {
             var builder = new StringBuilder(size);
@@ -45,6 +48,18 @@ namespace BassLines.Api.Utils
             }
 
             return default;
+        }
+
+        public static Guid? GetUserStudio(this ClaimsIdentity identity)
+        {
+            if (identity == null) return null;
+            var hasStudioId = Guid.TryParse(identity.FindFirst(USER_STUDIO_ITEM_KEY)?.Value, out Guid userStudioId);
+            return hasStudioId ? userStudioId : null;
+        }
+
+        public static string ToGuidKey(this string key, Guid uid)
+        {
+            return $"{key}_{uid}";
         }
     }
 }

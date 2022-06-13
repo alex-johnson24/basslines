@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BassLines.Api.ViewModels;
 
@@ -5,16 +6,18 @@ namespace BassLines.Api.Interfaces
 {
     public interface IReviewerRotationService
     {
-        void RebuildReviewerQueue();
+        void RebuildAllReviewerQueues();
+        
+        void RebuildReviewerQueue(Guid studioId);
 
-        void RotateReviewer();
+        void RotateReviewer(Guid studioId);
 
-        string GetCurrentReviewer();
+        string GetCurrentReviewer(Guid studioId);
 
-        IEnumerable<UserModel> GetReviewerQueue();
+        IEnumerable<UserModel> GetReviewerQueue(Guid studioId);
 
-        string GetReviewerNotes();
+        string GetReviewerNotes(Guid studioId);
 
-        void SetReviewerNotes(string notes);
+        void SetReviewerNotes(string notes, Guid studioId);
     }
 }

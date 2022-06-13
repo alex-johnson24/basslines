@@ -7,6 +7,6 @@ namespace BassLines.Api.Interfaces
 {
     public interface ILeaderboardService
     {
-        public IEnumerable<UserLeaderboardModel> GetLeaderboardMetrics();
+        public IEnumerable<UserLeaderboardModel> GetLeaderboardMetrics(Guid studioId);
     }
 }

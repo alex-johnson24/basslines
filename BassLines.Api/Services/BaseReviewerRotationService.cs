@@ -5,6 +5,7 @@ using BassLines.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using BassLines.Api.Interfaces;
 using BassLines.Api.ViewModels;
+using System;
 
 namespace BassLines.Api.Services
 {
@@ -21,13 +22,13 @@ namespace BassLines.Api.Services
             _ctx = ctx;
         }
 
-        protected Queue<string> GetReviewerOrder()
+        protected Queue<string> GetReviewerOrder(Guid studioId)
         {
             // Disablereviewing is nullable so directly compare
             var reviewerList = _ctx.Set<User>()
                 .AsNoTracking()
                 .Include(u => u.SongUsers)
-                .Where(w => w.Disablereviewing == false)
+                .Where(w => w.Disablereviewing == false && w.Studioid == studioId)
                 .OrderByDescending(o => o.SongUsers.Where(s => s.Rating.HasValue).Average(a => a.Rating))
                 .Select(s => s.Username)
                 .ToList();
@@ -35,7 +36,7 @@ namespace BassLines.Api.Services
             return new Queue<string>(reviewerList);
         }
 
-        protected void AssignNewReviewer(string newReviewer)
+        protected void AssignNewReviewer(string newReviewer, Guid studioId)
         {
 
             var roles = _ctx.Set<Role>().AsNoTracking().ToList();
@@ -43,7 +44,7 @@ namespace BassLines.Api.Services
             // "eligible users" are those who are not admins but are enabled to be in the reviewer rotation
             var eligibleUsers = _ctx.Set<User>()
                 .Include(i => i.Role)
-                .Where(w => w.Role.Name != UserRole.Administrator.ToString() && w.Disablereviewing == false)
+                .Where(w => w.Role.Name != UserRole.Administrator.ToString() && w.Disablereviewing == false && w.Studioid == studioId)
                 .AsNoTracking();
 
             // this will reset all non-admins to 'contributor'
@@ -60,16 +61,23 @@ namespace BassLines.Api.Services
             _ctx.SaveChanges();
         }
 
-        public abstract void RebuildReviewerQueue();
+        protected List<Guid> GetStudioIds()
+        {
+            return _ctx.Studios.Select(s => s.Id).ToList();
+        }
 
-        public abstract void RotateReviewer();
+        public abstract void RebuildReviewerQueue(Guid studioId);
 
-        public abstract string GetCurrentReviewer();
+        public abstract void RebuildAllReviewerQueues();
 
-        public abstract IEnumerable<UserModel> GetReviewerQueue();
+        public abstract void RotateReviewer(Guid studioId);
 
-        public abstract string GetReviewerNotes();
+        public abstract string GetCurrentReviewer(Guid studioId);
 
-        public abstract void SetReviewerNotes(string notes);
+        public abstract IEnumerable<UserModel> GetReviewerQueue(Guid studioId);
+
+        public abstract string GetReviewerNotes(Guid studioId);
+
+        public abstract void SetReviewerNotes(string notes, Guid studioId);
     }
 }

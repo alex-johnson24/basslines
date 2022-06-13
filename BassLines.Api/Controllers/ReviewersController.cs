@@ -8,6 +8,8 @@ using AutoMapper;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR;
 using BassLines.Api.Hubs;
+using BassLines.Api.Filters;
+using BassLines.Api.Utils;
 
 namespace BassLines.Api.Controllers
 {
@@ -32,6 +34,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 500)]
         [Route("Notes")]
@@ -39,7 +42,9 @@ namespace BassLines.Api.Controllers
         {
             try
             {
-                var reviewerNotes = _reviewerRotationService.GetReviewerNotes();
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                var reviewerNotes = _reviewerRotationService.GetReviewerNotes(userStudioId);
                 return Ok(reviewerNotes);
             }
             catch (Exception ex)
@@ -51,6 +56,7 @@ namespace BassLines.Api.Controllers
 
         [Authorize(Policy = "Reviewer")]
         [HttpPut]
+        [UserStudioClaimFilter]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 500)]
         [Route("Notes")]
@@ -58,8 +64,10 @@ namespace BassLines.Api.Controllers
         {
             try
             {
-                _reviewerRotationService.SetReviewerNotes(model.Notes ?? "");
-                _songHub.Clients.All.ReceiveNoteEvent(model.Notes);
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                _reviewerRotationService.SetReviewerNotes(model.Notes ?? "", userStudioId);
+                _songHub.Clients.All.ReceiveNoteEvent(model.Notes, userStudioId);
                 return Ok();
             }
             catch (Exception ex)
@@ -70,6 +78,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(UserModel), 200)]
         [ProducesResponseType(typeof(string), 500)]
         [Route("Active")]
@@ -77,7 +86,9 @@ namespace BassLines.Api.Controllers
         {
             try
             {
-                var activeReviewer = _reviewerRotationService.GetCurrentReviewer();
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                var activeReviewer = _reviewerRotationService.GetCurrentReviewer(userStudioId);
                 var activeReviewerUser = _mapper.Map<UserModel>(_userRepo.GetUserByUsername(activeReviewer));
                 return Ok(activeReviewerUser);
             }
@@ -93,11 +104,31 @@ namespace BassLines.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 500)]
         [Route("RebuildReviewerQueue")]
-        public IActionResult RebuildReviewerQueue()
+        public IActionResult RebuildReviewerQueue(Guid? studioId)
         {
             try
             {
-                _reviewerRotationService.RebuildReviewerQueue();
+                if (!studioId.HasValue) return BadRequest("A studioId is required to rebuild a single queue");
+                _reviewerRotationService.RebuildReviewerQueue(studioId.Value);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string), 500)]
+        [Route("RebuildAllReviewerQueues")]
+        public IActionResult RebuildAllReviewerQueues()
+        {
+            try
+            {
+                _reviewerRotationService.RebuildAllReviewerQueues();
                 return Ok();
             }
             catch (Exception ex)
@@ -112,11 +143,12 @@ namespace BassLines.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(string), 500)]
         [Route("RotateReviewer")]
-        public IActionResult RotateReviewer()
+        public IActionResult RotateReviewer(Guid? studioId)
         {
             try
             {
-                _reviewerRotationService.RotateReviewer();
+                if (!studioId.HasValue) return BadRequest("A studioId is required to rotate a reviewer");
+                _reviewerRotationService.RotateReviewer(studioId.Value);
                 return Ok();
             }
             catch (Exception ex)
@@ -127,6 +159,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(IEnumerable<UserModel>), 200)]
         [ProducesResponseType(typeof(string), 500)]
         [Route("GetReviewerQueue")]
@@ -134,7 +167,9 @@ namespace BassLines.Api.Controllers
         {
             try
             {
-                var reviewerQueue = _reviewerRotationService.GetReviewerQueue();
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                var reviewerQueue = _reviewerRotationService.GetReviewerQueue(userStudioId);
                 return Ok(reviewerQueue);
             }
             catch (Exception ex)

@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR;
 using BassLines.Api.Hubs;
 using AutoMapper;
+using BassLines.Api.Utils;
+using BassLines.Api.Filters;
 
 namespace BassLines.Api.Controllers
 {
@@ -33,14 +35,16 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(IEnumerable<SongModel>), 200)]
         [ProducesResponseType(typeof(string), 500)]
         public IActionResult Get()
         {
             try
             {
-
-                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.GetSongs()));
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.GetSongs(userStudioId)));
             }
             catch (Exception ex)
             {
@@ -50,6 +54,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [Route("SubmissionDate/{submitDateString}")]
         [ProducesResponseType(typeof(IEnumerable<SongModel>), 200)]
         [ProducesResponseType(typeof(string), 400)]
@@ -60,7 +65,9 @@ namespace BassLines.Api.Controllers
 
             try
             {
-                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.GetSongsByDate(submitDate)));
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.GetSongsByDate(submitDate, userStudioId)));
             }
             catch (Exception ex)
             {
@@ -70,6 +77,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
+        [UserStudioClaimFilter]
         [Route("SongSearch")]
         [ProducesResponseType(typeof(IEnumerable<SongModel>), 200)]
         [ProducesResponseType(typeof(string), 500)]
@@ -79,7 +87,8 @@ namespace BassLines.Api.Controllers
 
             try
             {
-                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.SongSearch(search)));
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
+                return Ok(_mapper.Map<IEnumerable<SongModel>>(_songRepo.SongSearch(search, userStudioId)));
             }
             catch (Exception ex)
             {
@@ -89,6 +98,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpPost]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(SongModel), 200)]
         [ProducesResponseType(typeof(ModelValidationState), 400)]
         [ProducesResponseType(typeof(string), 500)]
@@ -98,6 +108,8 @@ namespace BassLines.Api.Controllers
 
             try
             {
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
                 var toCreate = _mapper.Map<Song>(userSong);
 
                 _songRepo.SubmitSong(toCreate);
@@ -106,7 +118,7 @@ namespace BassLines.Api.Controllers
 
                 var created = _mapper.Map<SongModel>(toCreate);
 
-                _songHub.Clients.All.ReceiveSongEvent(created);
+                _songHub.Clients.All.ReceiveSongEvent(created, userStudioId);
 
                 return Ok(created);
             }
@@ -118,6 +130,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpPut]
+        [UserStudioClaimFilter]
         [ProducesResponseType(typeof(SongModel), 200)]
         [ProducesResponseType(typeof(ModelValidationState), 400)]
         [ProducesResponseType(typeof(string), 400)]
@@ -130,13 +143,15 @@ namespace BassLines.Api.Controllers
 
             try
             {
+                // UserStudioClaimFilter is required for this entry
+                var userStudioId = (Guid)HttpContext.Items[BassLinesUtils.USER_STUDIO_ITEM_KEY];
                 var toUpdate = _mapper.Map<Song>(userSong);
 
                 _songRepo.UpdateSong(toUpdate);
 
                 _songRepo.SaveChanges();
 
-                _songHub.Clients.All.ReceiveSongEvent(userSong);
+                _songHub.Clients.All.ReceiveSongEvent(userSong, userStudioId);
 
                 return Ok(userSong);
             }

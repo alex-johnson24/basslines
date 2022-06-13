@@ -106,9 +106,9 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
   const [localReviewerNotes, setLocalReviewerNotes] =
     React.useState<string>("");
-  const [tracksDetails, setTracksDetails] = React.useState<SpotifyTrackDetails[]>(
-    []
-  );
+  const [tracksDetails, setTracksDetails] = React.useState<
+    SpotifyTrackDetails[]
+  >([]);
 
   const [snackbarOpen, setSnackbarOpen] = React.useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState<string>("");
@@ -247,18 +247,22 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   const registerSongEvents = async () => {
     if (connection) {
-      connection.on("ReceiveSongEvent", (song: SongModel) => {
-        dispatch({
-          type: "receiveSongEvent",
-          payload: song,
-        });
+      connection.on("ReceiveSongEvent", (song: SongModel, studioId: string) => {
+        if (studioId === userInfo.studioId) {
+          dispatch({
+            type: "receiveSongEvent",
+            payload: song,
+          });
+        }
       });
-      connection.on("ReceiveNoteEvent", (notes: string) => {
-        dispatch({
-          type: "setReviewerNotes",
-          payload: notes,
-        });
-        setLocalReviewerNotes(notes);
+      connection.on("ReceiveNoteEvent", (notes: string, studioId: string) => {
+        if (studioId === userInfo.studioId) {
+          dispatch({
+            type: "setReviewerNotes",
+            payload: notes,
+          });
+          setLocalReviewerNotes(notes);
+        }
       });
     }
   };
