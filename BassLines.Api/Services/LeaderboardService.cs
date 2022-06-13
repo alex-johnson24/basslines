@@ -103,10 +103,12 @@ namespace BassLines.Api.Services
     {
         private readonly IUserRepository _userRepo;
         private readonly ISongRepository _songRepo;
-        public LeaderboardService(IUserRepository userRepo, ISongRepository songRepo)
+        private readonly IMetricsRepository _metricsRepo;
+        public LeaderboardService(IUserRepository userRepo, ISongRepository songRepo, IMetricsRepository metricsRepo)
         {
             _userRepo = userRepo;
             _songRepo = songRepo;
+            _metricsRepo = metricsRepo;
         }
 
         public IEnumerable<UserLeaderboardModel> GetLeaderboardMetrics(Guid studioId)
@@ -114,6 +116,7 @@ namespace BassLines.Api.Services
             var users = _userRepo.GetLeaderboardUsers(studioId);
             var UsersDailyWins = _songRepo.GetUserDailyWins(studioId);
             var UsersMedalsEarned = _songRepo.GetUserMedalsEarned(studioId);
+            var bayesianAvgs = _metricsRepo.GetBayesianAverages(studioId);
 
             return users.Select(s =>
             {
@@ -131,6 +134,7 @@ namespace BassLines.Api.Services
                 s.setSubmissionsCount(ldr);
                 s.setLikesOnMostLikedSong(ldr);
                 s.setUniqueGenres(ldr);
+                ldr.BayesianAverage = bayesianAvgs.FirstOrDefault(f => f.Key == s.Username).Value;
 
                 return ldr;
             });

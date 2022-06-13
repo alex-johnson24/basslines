@@ -61,5 +61,12 @@ namespace BassLines.Api.Utils
         {
             return $"{key}_{uid}";
         }
+
+        public static decimal CalculateBayesianAverage(decimal arithmeticAverage, int sampleCount, decimal confidenceValue, decimal populationAverage)
+        {
+            var rWeight = sampleCount / (sampleCount + confidenceValue);
+            var bayesianAverage = ((rWeight * arithmeticAverage) + ((1 - rWeight) * populationAverage));
+            return Decimal.Round(bayesianAverage, 2);
+        }
     }
 }

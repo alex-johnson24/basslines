@@ -17,5 +17,6 @@ namespace BassLines.Api.Interfaces
         Task<int> GetUniqueArtistCount(Guid userId);
         Task<int> GetUniqueGenreCount(Guid userId);
         Task<List<SpotifyLinkReference>> GetSpotifyTracks(Guid userId);
+        Dictionary<string, decimal> GetBayesianAverages(Guid studioId);
     }
 }
