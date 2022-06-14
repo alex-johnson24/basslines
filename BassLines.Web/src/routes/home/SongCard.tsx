@@ -36,6 +36,7 @@ import {
   PlayArrowRounded,
 } from "@material-ui/icons";
 import { FavoriteRounded } from "@mui/icons-material";
+import RatingPopover from "./RatingPopover";
 
 interface ISongCardProps {
   song: SongModel & { saved?: boolean };
@@ -75,13 +76,13 @@ const SongCard = React.memo((props: ISongCardProps) => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
-            likeModel: {
-              ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
-            },
-          })
+          likeModel: {
+            ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
+          },
+        })
         : await call(LikesApi).apiLikesPost({
-            likeModel: { userId: userInfo.id, songId: props.song.id },
-          });
+          likeModel: { userId: userInfo.id, songId: props.song.id },
+        });
       props.refreshSongs();
     } catch (err) {
       console.log(err);
@@ -89,6 +90,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
   };
 
   const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
+
 
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
@@ -229,24 +231,20 @@ const SongCard = React.memo((props: ISongCardProps) => {
             </Typography>
           </Grid>
         </Grid>
-        <Grid container alignItems="center" item xs={1}>
-          <Tooltip title={userCanReview && !isUserSong ? "Click to rate" : ""}>
-            <Typography
-              sx={{
-                cursor: userCanReview && !isUserSong ? "pointer" : "unset",
-              }}
-              color="secondary"
-              variant="h5"
-              onClick={(e) => {
-                if (userCanReview && !isUserSong) {
-                  props.setRatingAnchor(e.currentTarget);
-                  props.setSelectedSong(props.song);
-                }
-              }}
-            >
-              {props.song.rating || "--"}
-            </Typography>
-          </Tooltip>
+        <Grid container item xs={1} alignItems="center">
+          <RatingPopover selectedSong={props.song} />
+          <Typography
+            sx={{
+              cursor: userCanReview && !isUserSong ? "pointer" : "unset",
+            }}
+            color="secondary"
+            onClick={(e) => {
+              if (userCanReview && !isUserSong) {
+                props.setRatingAnchor(e.currentTarget);
+                props.setSelectedSong(props.song);
+              }
+            }}
+          />
         </Grid>
         <Grid
           container
@@ -264,10 +262,10 @@ const SongCard = React.memo((props: ISongCardProps) => {
                     color: isUserSong
                       ? "disabled"
                       : props.song.likes
-                          .map((m) => m.userId)
-                          .indexOf(userInfo.id) > -1
-                      ? "secondary.main"
-                      : "",
+                        .map((m) => m.userId)
+                        .indexOf(userInfo.id) > -1
+                        ? "secondary.main"
+                        : "",
                   }}
                 />
               </IconButton>

@@ -200,7 +200,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           await call(ReviewersApi).apiReviewersGetReviewerQueueGet()
         );
         await getReviewerNotes();
-      } catch (e) {}
+      } catch (e) { }
     })();
   }, []);
 
@@ -320,12 +320,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <RatingPopover
-        anchorEl={ratingPopoverAnchor}
-        handleClose={closeRatingPopover}
-        selectedSong={songToRate}
-        setSelectedSong={setSongToRate}
-      />
       <SongDialog
         open={songDialogOpen}
         handleClose={handleSongDialogClose}
@@ -414,7 +408,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                     positionMs: 0,
                   },
                 })
-                .catch((ex) => {});
+                .catch((ex) => { });
             }}
           >
             <PlayArrowRounded fontSize="small" /> Play todays BassLines{" "}

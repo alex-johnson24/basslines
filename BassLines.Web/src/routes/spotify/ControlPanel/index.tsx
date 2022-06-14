@@ -218,14 +218,14 @@ export default React.memo(function ControlPanel() {
             onClick={async () => {
               playingExternally
                 ? callSpotify(SpotifyApi)
-                    .nextOrPreviousNextOrPreviousPost({
-                      nextOrPrevious: "previous",
-                    })
-                    .then(() => hydratePlaybackState())
-                    .catch(console.warn)
+                  .nextOrPreviousNextOrPreviousPost({
+                    nextOrPrevious: "previous",
+                  })
+                  .then(() => hydratePlaybackState())
+                  .catch(console.warn)
                 : position <= 2000
-                ? await player.previousTrack()
-                : await player.seek(0);
+                  ? await player.previousTrack()
+                  : await player.seek(0);
             }}
             disableRipple
           />
@@ -249,11 +249,11 @@ export default React.memo(function ControlPanel() {
               !playingExternally
                 ? await player.togglePlay()
                 : playbackState.isPlaying
-                ? callSpotify(SpotifyApi)
+                  ? callSpotify(SpotifyApi)
                     .pausePut()
                     .then(() => hydratePlaybackState())
                     .catch(console.warn)
-                : callSpotify(SpotifyApi)
+                  : callSpotify(SpotifyApi)
                     .playPut({ playContextRequest: {} })
                     .then(() => hydratePlaybackState())
                     .catch(console.warn)
@@ -270,11 +270,11 @@ export default React.memo(function ControlPanel() {
             onClick={async () => {
               playingExternally
                 ? callSpotify(SpotifyApi)
-                    .nextOrPreviousNextOrPreviousPost({
-                      nextOrPrevious: "next",
-                    })
-                    .then(() => hydratePlaybackState())
-                    .catch(console.warn)
+                  .nextOrPreviousNextOrPreviousPost({
+                    nextOrPrevious: "next",
+                  })
+                  .then(() => hydratePlaybackState())
+                  .catch(console.warn)
                 : await player.nextTrack();
             }}
             disableRipple
