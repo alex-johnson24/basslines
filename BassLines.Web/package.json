@@ -1,6 +1,6 @@
 {
   "name": "basslines.web",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "basslines web client",
   "main": "index.tsx",
   "scripts": {
