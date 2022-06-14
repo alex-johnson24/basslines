@@ -4,9 +4,7 @@ import {
   Grid,
   Typography,
   useTheme,
-  useMediaQuery,
   IconButton,
-  Chip,
   Tooltip,
   Link,
   Box,
@@ -20,8 +18,6 @@ import {
   SongModel,
   SpotifyApi,
   SpotifyTrackDetails,
-  UserModel,
-  UserRole,
 } from "../../data/src";
 import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -36,12 +32,12 @@ import {
   PlayArrowRounded,
 } from "@material-ui/icons";
 import { FavoriteRounded } from "@mui/icons-material";
+import RatingInputField from "./RatingInputField";
 
 interface ISongCardProps {
   song: SongModel & { saved?: boolean };
   allSongsRated: boolean;
   setSelectedSong: React.Dispatch<React.SetStateAction<SongModel>>;
-  setRatingAnchor: React.Dispatch<React.SetStateAction<unknown>>;
   refreshSongs: () => void;
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   ranking?: "first" | "second" | "third";
@@ -75,13 +71,13 @@ const SongCard = React.memo((props: ISongCardProps) => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
-            likeModel: {
-              ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
-            },
-          })
+          likeModel: {
+            ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
+          },
+        })
         : await call(LikesApi).apiLikesPost({
-            likeModel: { userId: userInfo.id, songId: props.song.id },
-          });
+          likeModel: { userId: userInfo.id, songId: props.song.id },
+        });
       props.refreshSongs();
     } catch (err) {
       console.log(err);
@@ -89,6 +85,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
   };
 
   const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
+
 
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
@@ -229,24 +226,8 @@ const SongCard = React.memo((props: ISongCardProps) => {
             </Typography>
           </Grid>
         </Grid>
-        <Grid container alignItems="center" item xs={1}>
-          <Tooltip title={userCanReview && !isUserSong ? "Click to rate" : ""}>
-            <Typography
-              sx={{
-                cursor: userCanReview && !isUserSong ? "pointer" : "unset",
-              }}
-              color="secondary"
-              variant="h5"
-              onClick={(e) => {
-                if (userCanReview && !isUserSong) {
-                  props.setRatingAnchor(e.currentTarget);
-                  props.setSelectedSong(props.song);
-                }
-              }}
-            >
-              {props.song.rating || "--"}
-            </Typography>
-          </Tooltip>
+        <Grid container item xs={1} alignItems="center">
+          <RatingInputField selectedSong={props.song} />
         </Grid>
         <Grid
           container
@@ -264,10 +245,10 @@ const SongCard = React.memo((props: ISongCardProps) => {
                     color: isUserSong
                       ? "disabled"
                       : props.song.likes
-                          .map((m) => m.userId)
-                          .indexOf(userInfo.id) > -1
-                      ? "secondary.main"
-                      : "",
+                        .map((m) => m.userId)
+                        .indexOf(userInfo.id) > -1
+                        ? "secondary.main"
+                        : "",
                   }}
                 />
               </IconButton>

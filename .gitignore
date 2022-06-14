@@ -36,3 +36,4 @@ BassLines.Api/appsettings.Development.json
 node_modules/
 BassLines.Api/wwwroot/*
 BassLines.Api/logs/
+BassLines.Web/.yarn/*
