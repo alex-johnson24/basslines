@@ -4,9 +4,7 @@ import {
   Grid,
   Typography,
   useTheme,
-  useMediaQuery,
   IconButton,
-  Chip,
   Tooltip,
   Link,
   Box,
@@ -20,8 +18,6 @@ import {
   SongModel,
   SpotifyApi,
   SpotifyTrackDetails,
-  UserModel,
-  UserRole,
 } from "../../data/src";
 import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -36,13 +32,12 @@ import {
   PlayArrowRounded,
 } from "@material-ui/icons";
 import { FavoriteRounded } from "@mui/icons-material";
-import RatingPopover from "./RatingPopover";
+import RatingInputField from "./RatingInputField";
 
 interface ISongCardProps {
   song: SongModel & { saved?: boolean };
   allSongsRated: boolean;
   setSelectedSong: React.Dispatch<React.SetStateAction<SongModel>>;
-  setRatingAnchor: React.Dispatch<React.SetStateAction<unknown>>;
   refreshSongs: () => void;
   setEditSongDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   ranking?: "first" | "second" | "third";
@@ -232,19 +227,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
           </Grid>
         </Grid>
         <Grid container item xs={1} alignItems="center">
-          <RatingPopover selectedSong={props.song} />
-          <Typography
-            sx={{
-              cursor: userCanReview && !isUserSong ? "pointer" : "unset",
-            }}
-            color="secondary"
-            onClick={(e) => {
-              if (userCanReview && !isUserSong) {
-                props.setRatingAnchor(e.currentTarget);
-                props.setSelectedSong(props.song);
-              }
-            }}
-          />
+          <RatingInputField selectedSong={props.song} />
         </Grid>
         <Grid
           container

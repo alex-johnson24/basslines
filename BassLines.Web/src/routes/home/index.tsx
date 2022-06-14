@@ -31,7 +31,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import SongDialog from "./SongDialog";
-import RatingPopover from "./RatingPopover";
+import RatingInputField from "./RatingInputField";
 import SongCard from "./SongCard";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import HeadphoneIcon from "./HeadphoneIcon";
@@ -102,7 +102,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const [currentReviewer, setCurrentReviewer] = React.useState<UserModel>(null);
   const [songDialogOpen, setSongDialogOpen] = React.useState<boolean>(false);
   const [currentUserSong, setCurrentUserSong] = React.useState<SongModel>(null);
-  const [ratingPopoverAnchor, setRatingPopoverAnchor] = React.useState(null);
   const [songToRate, setSongToRate] = React.useState<SongModel>(null);
   const [localReviewerNotes, setLocalReviewerNotes] =
     React.useState<string>("");
@@ -210,10 +209,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   const handleSongDialogClose = () => {
     setSongDialogOpen(false);
-  };
-
-  const closeRatingPopover = () => {
-    setRatingPopoverAnchor(null);
   };
 
   const handleSnackbarClose = (
@@ -428,7 +423,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
               song={m}
               allSongsRated={allSongsRated}
               setSelectedSong={setSongToRate}
-              setRatingAnchor={setRatingPopoverAnchor}
               refreshSongs={getSongs}
               setEditSongDialogOpen={setSongDialogOpen}
               ranking={getSongRanking(m)}
