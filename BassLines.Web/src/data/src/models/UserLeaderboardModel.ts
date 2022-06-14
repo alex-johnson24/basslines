@@ -36,6 +36,12 @@ export interface UserLeaderboardModel {
      * @type {number}
      * @memberof UserLeaderboardModel
      */
+    bayesianAverage?: number | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserLeaderboardModel
+     */
     uniqueGenres?: number;
     /**
      * 
@@ -111,6 +117,7 @@ export function UserLeaderboardModelFromJSONTyped(json: any, ignoreDiscriminator
         
         'name': !exists(json, 'name') ? undefined : json['name'],
         'average': !exists(json, 'average') ? undefined : json['average'],
+        'bayesianAverage': !exists(json, 'bayesianAverage') ? undefined : json['bayesianAverage'],
         'uniqueGenres': !exists(json, 'uniqueGenres') ? undefined : json['uniqueGenres'],
         'highestRatedSong': !exists(json, 'highestRatedSong') ? undefined : json['highestRatedSong'],
         'highestRating': !exists(json, 'highestRating') ? undefined : json['highestRating'],
@@ -136,6 +143,7 @@ export function UserLeaderboardModelToJSON(value?: UserLeaderboardModel | null):
         
         'name': value.name,
         'average': value.average,
+        'bayesianAverage': value.bayesianAverage,
         'uniqueGenres': value.uniqueGenres,
         'highestRatedSong': value.highestRatedSong,
         'highestRating': value.highestRating,

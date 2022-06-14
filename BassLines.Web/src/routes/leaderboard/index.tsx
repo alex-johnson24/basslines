@@ -17,7 +17,7 @@ const Leaderboard = () => {
   >([]);
 
   var rankedItems: rankedItemTypes[] = [
-    { itemToBeRanked: "average", title: "Highest Average Users" },
+    { itemToBeRanked: "bayesianAverage", title: "Top Rated Submitters" },
     { itemToBeRanked: "daysWon", title: "Most Days Won" },
     { itemToBeRanked: "numberOfLikes", title: "Users' Total Likes Received" },
     {

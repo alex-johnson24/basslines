@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BassLines.Api.Interfaces;
 using BassLines.Api.Models;
+using BassLines.Api.Utils;
 using BassLines.Api.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,29 @@ namespace BassLines.Api.Repositories
         {
             _mapper = mapper;
             _ctxFactory = ctxFactory;
+        }
+
+        public Dictionary<string, decimal> GetBayesianAverages(Guid studioId)
+        {
+            var _ctx = _ctxFactory.CreateDbContext();
+            var initialData = _ctx.Users
+                                  .Where(w => w.Studioid == studioId && w.SongUsers.Count() > 20)
+                                  .Select(s => new
+                                  {
+                                      s.Username,
+                                      AvgRating = s.SongUsers.Where(w => w.Rating != null).Select(s => s.Rating).Average(),
+                                      SongCount = s.SongUsers.Where(w => w.Rating != null).Count()
+                                  })
+                                  .ToList();
+
+            var confidenceValue = initialData.Average(a => a.SongCount);
+            var populationAverage = initialData.Average(a => a.AvgRating);
+
+            var results = initialData
+                            .Select(s => new {s.Username, BayesianAverage = BassLinesUtils.CalculateBayesianAverage(s.AvgRating.Value, s.SongCount, Convert.ToDecimal(confidenceValue), populationAverage.Value)})
+                            .ToDictionary(t => t.Username, t => t.BayesianAverage);
+
+            return results;
         }
 
         public async Task<List<DailyRatingModel>> GetRecentRatings(Guid userId)

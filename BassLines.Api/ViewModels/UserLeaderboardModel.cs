@@ -5,6 +5,7 @@ namespace BassLines.Api.ViewModels
         //Calc place on frontend
         public string Name { get; set; }
         public decimal? Average { get; set; }
+        public decimal? BayesianAverage { get; set; }
         public int UniqueGenres { get; set; }
         public string HighestRatedSong { get; set; }
         public decimal? HighestRating { get; set; }
