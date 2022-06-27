@@ -2,6 +2,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const Package = require("./package.json");
+const CompressionPlugin = require("compression-webpack-plugin");
+const HtmlWebpackChangeAssetsExtensionPlugin = require("html-webpack-change-assets-extension-plugin");
 const path = require("path");
 const commitHash = require("child_process")
   .execSync("git rev-parse --short=8 HEAD")
@@ -19,17 +21,18 @@ module.exports = (env, argv) => {
       /(\r\n|\n|\r)/gm,
       ""
     );
-  const prodVersion =
-    `BassLines (${commitHash}) v${Package.version}`.replace(
-      /(\r\n|\n|\r)/gm,
-      ""
-    );
+  const prodVersion = `BassLines (${commitHash}) v${Package.version}`.replace(
+    /(\r\n|\n|\r)/gm,
+    ""
+  );
 
   return {
     output: {
       hashFunction: "xxhash64",
       pathinfo: false,
       path: `${__dirname}/../BassLines.Api/wwwroot`,
+      clean: true,
+      filename: "[name].[contenthash].js",
     },
     module: {
       rules: [
@@ -60,14 +63,20 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      new CompressionPlugin({
+        deleteOriginalAssets: true,
+        test: /\.(js|html|css)$/,
+      }),
       new HtmlWebpackPlugin({
         baseUrl: "/",
         template: "index.ejs",
         version: argv.mode === "development" ? devVersion : prodVersion,
+        jsExtension: ".gz",
       }),
       new CopyPlugin({
         patterns: [{ from: "assets" }, "configs.js"],
       }),
+      new HtmlWebpackChangeAssetsExtensionPlugin(),
     ],
     entry: {
       main: "./src/index.tsx",
@@ -75,6 +84,17 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: true,
       minimizer: [new TerserPlugin()],
+      runtimeChunk: "single",
+      moduleIds: "deterministic",
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: "vendors",
+            chunks: "all",
+          },
+        },
+      },
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".jsx"],

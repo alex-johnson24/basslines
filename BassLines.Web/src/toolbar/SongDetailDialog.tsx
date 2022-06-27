@@ -1,13 +1,6 @@
 import * as React from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Grid,
-  Typography,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Dialog, DialogContent, Grid, Typography } from "@mui/material";
+import Close from "@mui/icons-material/Close";
 import { SongModel } from "../data/src";
 import { format } from "date-fns";
 
@@ -38,7 +31,7 @@ const SongDetailDialog = (props: IProps) => {
       sx={{ minHeight: "300px" }}
     >
       <DialogContent>
-        <CloseIcon
+        <Close
           onClick={props.handleClose}
           sx={{ cursor: "pointer", right: "24px", position: "absolute" }}
         />

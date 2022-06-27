@@ -32,7 +32,6 @@ import { call } from "../../data/callWrapper";
 import {
   ArtistDetails,
   SpotifyApi,
-  SpotifyLinkReference,
   UserMetricsModel,
   UserModel,
   UsersApi,
@@ -42,7 +41,7 @@ import { useSpotify } from "../../contexts/spotifyContext";
 import { format } from "date-fns";
 import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
 import SpotifyLogo from "../spotify/spotifyLogo";
-import { PlayArrowRounded } from "@material-ui/icons";
+import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 
 const useStyles = makeStyles(() => {
   return {

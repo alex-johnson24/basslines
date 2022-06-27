@@ -23,6 +23,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace BassLines
 {
@@ -50,7 +51,7 @@ namespace BassLines
             IMapper mapper = mapperConfig.CreateMapper();
 
             services.AddOptions<AuthSettings>().Bind(Configuration.GetSection("AuthSettings"));
-            
+
             services.AddOptions<SpotifySettings>().Bind(Configuration.GetSection("SpotifySettings"));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -125,16 +126,16 @@ namespace BassLines
                 options.UseSqlServer(Configuration.GetConnectionString("BassLinesDatabase"),
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
-            services.AddHttpClient("Spotify", c => 
+            services.AddHttpClient("Spotify", c =>
             {
                 c.BaseAddress = new Uri("https://api.spotify.com/v1/");
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
-            
-            services.AddHttpClient("SpotifyToken", c => 
+
+            services.AddHttpClient("SpotifyToken", c =>
             {
                 c.BaseAddress = new Uri("https://accounts.spotify.com/api/token");
-                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", 
+                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
                     $"{Configuration["SpotifySettings:clientId"]}:{Configuration["SpotifySettings:clientSecret"]}".Base64Encode());
             });
         }
@@ -153,7 +154,30 @@ namespace BassLines
                 app.UseHttpsRedirection();
             }
 
-            app.UseStaticFiles();
+            // https://gunnarpeipman.com/aspnet-core-precompressed-files/
+            var mimeTypeProvider = new FileExtensionContentTypeProvider();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = context =>
+                {
+                    var headers = context.Context.Response.Headers;
+                    var contentType = headers["Content-Type"];
+
+                    if (contentType != "application/x-gzip" && !context.File.Name.EndsWith(".gz"))
+                    {
+                        return;
+                    }
+
+                    var fileNameToTry = context.File.Name.Substring(0, context.File.Name.Length - 3);
+
+                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
+                    {
+                        headers.Add("Content-Encoding", "gzip");
+                        headers["Content-Type"] = mimeType;
+                    }
+                }
+            });
 
             app.UseRouting();
 
@@ -169,8 +193,9 @@ namespace BassLines
 
             app.Run(async (context) =>
             {
+                context.Response.Headers.Add("Content-Encoding", "gzip");
                 context.Response.ContentType = "text/html";
-                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
+                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html.gz"));
             });
         }
     }

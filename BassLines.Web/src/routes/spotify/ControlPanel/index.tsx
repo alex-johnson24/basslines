@@ -1,16 +1,11 @@
-import {
-  FavoriteBorderRounded,
-  FavoriteRounded,
-  ShuffleRounded,
-} from "@material-ui/icons";
-import {
-  PauseRounded,
-  PlayArrowRounded,
-  ShuffleOnRounded,
-  SkipNextRounded,
-  SkipPreviousRounded,
-  VolumeUpRounded,
-} from "@mui/icons-material";
+import PauseRounded from "@mui/icons-material/PauseRounded";
+import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
+import SkipNextRounded from "@mui/icons-material/SkipNextRounded";
+import SkipPreviousRounded from "@mui/icons-material/SkipPreviousRounded";
+import VolumeUpRounded from "@mui/icons-material/VolumeUpRounded";
+import FavoriteBorderRounded from "@mui/icons-material/FavoriteBorderRounded";
+import FavoriteRounded from "@mui/icons-material/FavoriteRounded";
+import ShuffleRounded from "@mui/icons-material/ShuffleRounded";
 import {
   Box,
   Button,
@@ -20,7 +15,6 @@ import {
   IconButton,
   Popover,
   Slider,
-  SvgIcon,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -28,7 +22,6 @@ import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
 import {
   Device,
-  MyDevices,
   SpotifyApi,
   SpotifyPlaybackState,
 } from "../../../data/src";
@@ -218,14 +211,14 @@ export default React.memo(function ControlPanel() {
             onClick={async () => {
               playingExternally
                 ? callSpotify(SpotifyApi)
-                  .nextOrPreviousNextOrPreviousPost({
-                    nextOrPrevious: "previous",
-                  })
-                  .then(() => hydratePlaybackState())
-                  .catch(console.warn)
+                    .nextOrPreviousNextOrPreviousPost({
+                      nextOrPrevious: "previous",
+                    })
+                    .then(() => hydratePlaybackState())
+                    .catch(console.warn)
                 : position <= 2000
-                  ? await player.previousTrack()
-                  : await player.seek(0);
+                ? await player.previousTrack()
+                : await player.seek(0);
             }}
             disableRipple
           />
@@ -249,11 +242,11 @@ export default React.memo(function ControlPanel() {
               !playingExternally
                 ? await player.togglePlay()
                 : playbackState.isPlaying
-                  ? callSpotify(SpotifyApi)
+                ? callSpotify(SpotifyApi)
                     .pausePut()
                     .then(() => hydratePlaybackState())
                     .catch(console.warn)
-                  : callSpotify(SpotifyApi)
+                : callSpotify(SpotifyApi)
                     .playPut({ playContextRequest: {} })
                     .then(() => hydratePlaybackState())
                     .catch(console.warn)
@@ -270,11 +263,11 @@ export default React.memo(function ControlPanel() {
             onClick={async () => {
               playingExternally
                 ? callSpotify(SpotifyApi)
-                  .nextOrPreviousNextOrPreviousPost({
-                    nextOrPrevious: "next",
-                  })
-                  .then(() => hydratePlaybackState())
-                  .catch(console.warn)
+                    .nextOrPreviousNextOrPreviousPost({
+                      nextOrPrevious: "next",
+                    })
+                    .then(() => hydratePlaybackState())
+                    .catch(console.warn)
                 : await player.nextTrack();
             }}
             disableRipple

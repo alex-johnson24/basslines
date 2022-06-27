@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ColorModeContext } from "../contexts/colorModeContext";
-import SettingsIcon from "@mui/icons-material/Settings";
+import Settings from "@mui/icons-material/Settings";
 import { TransitionProps } from "@mui/material/transitions";
 
 const Transition = React.forwardRef(function Transition(
@@ -41,7 +41,7 @@ const SettingsDialog = (props: IProps) => {
   return (
     <Box sx={{ ...props.sx }}>
       <IconButton onClick={handleChange}>
-        <SettingsIcon sx={{color: "white"}} />
+        <Settings sx={{color: "white"}} />
       </IconButton>
       <Dialog
         onClose={handleChange}

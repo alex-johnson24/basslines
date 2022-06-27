@@ -22,28 +22,25 @@ import {
   SongsApi,
   SongModel,
   UserModel,
-  SongModelFromJSON,
   ReviewersApi,
   SpotifyApi,
   TrackSavedReference,
   SpotifyTrackDetails,
 } from "../../data/src";
-import AddIcon from "@mui/icons-material/Add";
 import { format } from "date-fns";
 import SongDialog from "./SongDialog";
-import RatingInputField from "./RatingInputField";
 import SongCard from "./SongCard";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import HeadphoneIcon from "./HeadphoneIcon";
-import SendIcon from "@mui/icons-material/Send";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import { useUserState } from "../../contexts";
 import { useSongDispatch, useSongState } from "../../contexts/songContext";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import SpotifyLogo from "../spotify/spotifyLogo";
-import { PlayArrowRounded } from "@material-ui/icons";
+import Add from "@mui/icons-material/Add";
+import Send from "@mui/icons-material/Send";
+import Refresh from "@mui/icons-material/Refresh";
+import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 
 const useStyles = makeStyles(() => {
   return {
@@ -199,7 +196,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           await call(ReviewersApi).apiReviewersGetReviewerQueueGet()
         );
         await getReviewerNotes();
-      } catch (e) { }
+      } catch (e) {}
     })();
   }, []);
 
@@ -371,7 +368,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                           sx={{ marginRight: "5px" }}
                           edge="end"
                         >
-                          <RefreshIcon />
+                          <Refresh />
                         </IconButton>
                       </Tooltip>
                     )}
@@ -381,7 +378,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                         sx={{ marginRight: "5px" }}
                         edge="end"
                       >
-                        <SendIcon />
+                        <Send />
                       </IconButton>
                     </Tooltip>
                   </InputAdornment>
@@ -403,7 +400,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                     positionMs: 0,
                   },
                 })
-                .catch((ex) => { });
+                .catch((ex) => {});
             }}
           >
             <PlayArrowRounded fontSize="small" /> Play todays BassLines{" "}
@@ -452,7 +449,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                       .indexOf(userInfo?.username) > -1
                   }
                 >
-                  <AddIcon />
+                  <Add />
                 </Fab>
               </span>
             </Tooltip>

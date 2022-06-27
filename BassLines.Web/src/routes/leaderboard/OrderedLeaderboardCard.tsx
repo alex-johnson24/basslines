@@ -1,8 +1,8 @@
 import { Box, Collapse, Grid, Paper, Typography } from "@mui/material";
 import * as React from "react";
 import { UserLeaderboardModel } from "../../data/src";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import ExpandLess from "@mui/icons-material/ExpandLess";
 import makeStyles from "@mui/styles/makeStyles";
 
 interface IProps {
@@ -70,12 +70,12 @@ const OrderedLeaderboardCard = (props: IProps) => {
         <Typography variant="h6" color="secondary.main" textAlign="center">
           {title}
           {!expanded ? (
-            <ExpandMoreIcon
+            <ExpandMore
               onClick={handleClick}
               className={classes.titleIcon}
             />
           ) : (
-            <ExpandLessIcon
+            <ExpandLess
               onClick={handleClick}
               className={classes.titleIcon}
             />

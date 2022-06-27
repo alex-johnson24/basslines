@@ -11,11 +11,11 @@ import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import HomeIcon from "@mui/icons-material/Home";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import { Button, Grid, Link, Switch, TextField } from "@mui/material";
+import Home from "@mui/icons-material/Home";
+import ThumbUp from "@mui/icons-material/ThumbUp";
+import BarChart from "@mui/icons-material/BarChart";
+import MusicNote from "@mui/icons-material/MusicNote";
+import { Button, Link, TextField } from "@mui/material";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
@@ -116,22 +116,22 @@ interface IMiniDrawerProps {
 const drawerItems = [
   {
     label: "Home",
-    icon: <HomeIcon />,
+    icon: <Home />,
     link: "/home",
   },
   {
     label: "My Charts",
-    icon: <ThumbUpIcon />,
+    icon: <ThumbUp />,
     link: "/mycharts",
   },
   {
     label: "Leaderboard",
-    icon: <BarChartIcon />,
+    icon: <BarChart />,
     link: "/leaderboard",
   },
   {
     label: "Songs",
-    icon: <MusicNoteIcon />,
+    icon: <MusicNote />,
     link: "/allsongs",
   },
 ];
@@ -166,7 +166,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       <CssBaseline />
       <AppBar position="fixed">
         <Toolbar disableGutters>
-          <Box sx={{marginLeft: "24px"}}>
+          <Box sx={{ marginLeft: "24px" }}>
             <DatePicker
               label="Submission Date"
               value={props.selectedDate}
@@ -189,14 +189,19 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           </Box>
           <Box
             component="img"
-            sx={{ position: "fixed", width: "100%", height: "48px", zIndex: -1 }}
+            sx={{
+              position: "fixed",
+              width: "100%",
+              height: "48px",
+              zIndex: -1,
+            }}
             display={{ xs: "none", md: "block" }}
             src={`basslines.svg`}
           />
           <Box sx={{ marginLeft: "auto", marginRight: "20px" }}>
             <GlobalSearch />
           </Box>
-          <SettingsDialog sx={{marginRight: "24px"}} />
+          <SettingsDialog sx={{ marginRight: "24px" }} />
         </Toolbar>
       </AppBar>
       <Drawer
