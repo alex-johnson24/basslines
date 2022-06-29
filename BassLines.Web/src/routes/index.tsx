@@ -1,11 +1,6 @@
 import * as React from "react";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import MiniDrawer from "../toolbar";
-import Login from "./login/index";
-import HomeDashboard from "./home";
-import Songs from "./songs";
-import Leaderboard from "./leaderboard";
-import MyCharts from "./mycharts";
 import { useUserDispatch, useUserState } from "../contexts";
 import jwt_decode from "jwt-decode";
 import { getCookieByName } from "../utils/textUtils";
@@ -14,6 +9,11 @@ import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
 import { useSpotify } from "../contexts/spotifyContext";
 import ControlPanel from "./spotify/ControlPanel";
+import Login from "./login";
+import Leaderboard from "./leaderboard";
+import HomeDashboard from "./home";
+import MyCharts from "./mycharts";
+import Songs from "./songs";
 
 interface IRootProps {
   basepath: string;
@@ -32,10 +32,7 @@ export default React.memo(function Root(props: IRootProps) {
     new Date()
   );
   const {
-    state: {
-      authorized,
-      profile,
-    },
+    state: { authorized, profile },
     callSpotify,
     dispatch: spotifyDispatch,
   } = useSpotify();

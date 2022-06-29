@@ -4,12 +4,13 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, Button, Grid, InputAdornment, styled } from "@mui/material";
+import { Button, InputAdornment, styled } from "@mui/material";
 import TextField, { TextFieldProps } from "@mui/material/TextField";
 import { call } from "../../data/callWrapper";
 import { RegistrationModel, UsersApi } from "../../data/src";
 import AppSnackbar, { IAppSnackbarProps } from "../../snackbar/AppSnackbar";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useMutation } from "react-query";
 
 const useStyles = makeStyles(() => {

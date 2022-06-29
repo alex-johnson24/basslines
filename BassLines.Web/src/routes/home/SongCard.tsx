@@ -19,19 +19,17 @@ import {
   SpotifyApi,
   SpotifyTrackDetails,
 } from "../../data/src";
-import EditIcon from "@mui/icons-material/Edit";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { format } from "date-fns";
 import { call } from "../../data/callWrapper";
 import { parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import { useUserState } from "../../contexts";
-import {
-  AddRounded,
-  FavoriteBorderRounded,
-  PlayArrowRounded,
-} from "@material-ui/icons";
-import { FavoriteRounded } from "@mui/icons-material";
+import AddRounded from "@mui/icons-material/AddRounded";
+import FavoriteRounded from "@mui/icons-material/FavoriteRounded";
+import FavoriteBorderRounded from "@mui/icons-material/FavoriteBorderRounded";
+import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
+import Edit from "@mui/icons-material/Edit";
+import ThumbUp from "@mui/icons-material/ThumbUp";
 import RatingInputField from "./RatingInputField";
 
 interface ISongCardProps {
@@ -71,13 +69,13 @@ const SongCard = React.memo((props: ISongCardProps) => {
     try {
       props.song.likes?.map((m) => m.userId).indexOf(userInfo.id) > -1
         ? await call(LikesApi).apiLikesDelete({
-          likeModel: {
-            ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
-          },
-        })
+            likeModel: {
+              ...props.song.likes.filter((f) => f.userId === userInfo.id)[0],
+            },
+          })
         : await call(LikesApi).apiLikesPost({
-          likeModel: { userId: userInfo.id, songId: props.song.id },
-        });
+            likeModel: { userId: userInfo.id, songId: props.song.id },
+          });
       props.refreshSongs();
     } catch (err) {
       console.log(err);
@@ -85,7 +83,6 @@ const SongCard = React.memo((props: ISongCardProps) => {
   };
 
   const [spotifyTrackId, isValid] = parseSpotifyId(props.song.link);
-
 
   return (
     <Paper sx={{ mt: "8px", p: "4px" }} variant="outlined">
@@ -240,15 +237,15 @@ const SongCard = React.memo((props: ISongCardProps) => {
           <Stack>
             <Box>
               <IconButton onClick={saveLike} disabled={isUserSong} size="small">
-                <ThumbUpIcon
+                <ThumbUp
                   sx={{
                     color: isUserSong
                       ? "disabled"
                       : props.song.likes
-                        .map((m) => m.userId)
-                        .indexOf(userInfo.id) > -1
-                        ? "secondary.main"
-                        : "",
+                          .map((m) => m.userId)
+                          .indexOf(userInfo.id) > -1
+                      ? "secondary.main"
+                      : "",
                   }}
                 />
               </IconButton>
@@ -282,7 +279,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
               size="small"
               onClick={() => props.setEditSongDialogOpen(true)}
             >
-              <EditIcon />
+              <Edit />
             </IconButton>
           )}
         </Grid>

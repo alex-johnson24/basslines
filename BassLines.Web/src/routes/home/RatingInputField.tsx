@@ -12,8 +12,8 @@ import {
 import { SongModel, SongsApi } from "../../data/src";
 import { call } from "../../data/callWrapper";
 import { useUserState } from "../../contexts";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
+import Check from "@mui/icons-material/Check";
+import Close from "@mui/icons-material/Close";
 
 interface IRatingInputField {
   selectedSong: SongModel;
@@ -91,7 +91,7 @@ const RatingInputField = (props: IRatingInputField) => {
                       marginBottom: "12px",
                     }}
                   >
-                    <CheckIcon />
+                    <Check />
                   </IconButton>
                 </Grid>
                 <Grid item>
@@ -104,7 +104,7 @@ const RatingInputField = (props: IRatingInputField) => {
                     }}
                     color="primary"
                   >
-                    <CloseIcon />
+                    <Close />
                   </IconButton>
                 </Grid>
               </Stack>

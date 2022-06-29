@@ -16,7 +16,7 @@ import { debounce } from "lodash";
 import { SongModel, SongsApi } from "../data/src";
 import { call } from "../data/callWrapper";
 import { useMutation } from "react-query";
-import SearchIcon from "@mui/icons-material/Search";
+import Search from "@mui/icons-material/Search";
 import SongDetailDialog from "./SongDetailDialog";
 import { useTheme } from "@mui/material/styles";
 
@@ -168,7 +168,7 @@ const GlobalSearch = () => {
       <ClickAwayListener onClickAway={resetSearch}>
         <Search>
           <SearchIconWrapper>
-            <SearchIcon />
+            <Search />
           </SearchIconWrapper>
           <StyledInputBase
             inputRef={inputRef}

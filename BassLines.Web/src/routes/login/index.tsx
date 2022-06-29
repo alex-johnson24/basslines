@@ -1,14 +1,6 @@
 import * as React from "react";
-import {
-  Avatar,
-  Box,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-} from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { Avatar, Box, Container, Grid, Link, TextField } from "@mui/material";
+import LockOutlined from "@mui/icons-material/LockOutlined";
 import { useUserDispatch } from "../../contexts";
 import { UsersApi, LoginModel, UserModel } from "../../data/src";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -18,20 +10,19 @@ import SignUpDialog from "./SignUpDialog";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 
-
 interface Jwt extends UserModel {
   exp: number;
 }
 
 const useStyles = makeStyles({
-      autofill: {
-        '& :-webkit-autofill': {
-          boxShadow: '0 0 0 100px transparent inset !important',
-          webkitBoxShadow: '0 0 0 100px transparent inset !important',
-          '-webkit-text-fill-color': 'black !important'
-        }
-      }
-  });
+  autofill: {
+    "& :-webkit-autofill": {
+      boxShadow: "0 0 0 100px transparent inset !important",
+      webkitBoxShadow: "0 0 0 100px transparent inset !important",
+      "-webkit-text-fill-color": "black !important",
+    },
+  },
+});
 
 const Login = () => {
   const classes = useStyles();
@@ -81,9 +72,9 @@ const Login = () => {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-            <LockOutlinedIcon />
+            <LockOutlined />
           </Avatar>
-          <Box component="img" sx={{height: "48px"}} src="basslines.svg" />
+          <Box component="img" sx={{ height: "48px" }} src="basslines.svg" />
           <Box component="form" onSubmit={submitLogin} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -96,7 +87,7 @@ const Login = () => {
               className={classes.autofill}
               autoFocus
               InputLabelProps={{
-                style: { color: "#3e3e48"}
+                style: { color: "#3e3e48" },
               }}
               onChange={(e) =>
                 setLoginCreds({
@@ -116,7 +107,7 @@ const Login = () => {
               autoComplete="current-password"
               className={classes.autofill}
               InputLabelProps={{
-                style: { color: "#3e3e48"}
+                style: { color: "#3e3e48" },
               }}
               onChange={(e) =>
                 setLoginCreds({
@@ -139,7 +130,7 @@ const Login = () => {
                 <Link
                   variant="body2"
                   sx={{ cursor: "pointer" }}
-                  color = "inherit"
+                  color="inherit"
                   onClick={() => {
                     setResetPasswordDialogOpen(true);
                   }}
@@ -153,7 +144,7 @@ const Login = () => {
                     setSignUpDialogOpen(true);
                   }}
                   variant="body2"
-                  color = "inherit"
+                  color="inherit"
                   sx={{ cursor: "pointer" }}
                 >
                   {"Don't have an account? Sign Up"}
@@ -168,4 +159,3 @@ const Login = () => {
 };
 
 export default Login;
-
