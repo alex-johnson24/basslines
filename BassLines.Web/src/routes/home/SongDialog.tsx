@@ -6,10 +6,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import {
-  Autocomplete,
-  Grid,
-} from "@mui/material";
+import { Autocomplete, Grid } from "@mui/material";
 import { call } from "../../data/callWrapper";
 import {
   GenresApi,
@@ -66,6 +63,8 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
     }
   };
 
+  const { mutateAsync: submit, isLoading } = useMutation(submitSong);
+
   React.useEffect(() => {
     if (props.open) {
       getGenres();
@@ -88,13 +87,13 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
     }
   }, [props.open]);
 
-  const genreRef = React.useRef<HTMLInputElement>(null)
+  const genreRef = React.useRef<HTMLInputElement>(null);
   const handleSongChange = (
     e: React.SyntheticEvent<Element, Event>,
     { title, artist, link }: SongBaseWithImages
   ) => {
     setUserSong((current) => ({ ...current, title, artist, link }));
-    genreRef.current.focus()
+    genreRef.current.focus();
   };
 
   return (
@@ -200,8 +199,12 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose} variant="outlined" color="inherit">Cancel</Button>
-        <Button onClick={submitSong} variant="contained" color="primary">Submit</Button>
+        <Button onClick={props.handleClose} variant="outlined" color="inherit">
+          Cancel
+        </Button>
+        <Button onClick={() => submit()} variant="contained" color="primary" disabled={isLoading}>
+          Submit
+        </Button>
       </DialogActions>
     </Dialog>
   );
