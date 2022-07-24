@@ -1,5 +1,10 @@
 import * as React from "react";
-import { Avatar, Box, Container, Grid, Link, TextField } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
 import LockOutlined from "@mui/icons-material/LockOutlined";
 import { useUserDispatch } from "../../contexts";
 import { UsersApi, LoginModel, UserModel } from "../../data/src";
@@ -74,7 +79,7 @@ const Login = () => {
           <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
             <LockOutlined />
           </Avatar>
-          <Box component="img" sx={{ height: "48px" }} src="basslines.svg" />
+          <Box component="img" sx={{ height: "48px" }} src="img/basslines.svg" />
           <Box component="form" onSubmit={submitLogin} sx={{ mt: 1 }}>
             <TextField
               margin="normal"

@@ -10,10 +10,11 @@ import SpotifyHandler from "./spotify/Handler";
 import { useSpotify } from "../contexts/spotifyContext";
 import ControlPanel from "./spotify/ControlPanel";
 import Login from "./login";
-import Leaderboard from "./leaderboard";
-import HomeDashboard from "./home";
-import MyCharts from "./mycharts";
-import Songs from "./songs";
+
+const Leaderboard = React.lazy(() => import(/* webpackChunkName: "leaderboard" */ "./leaderboard"));
+const HomeDashboard = React.lazy(() => import(/* webpackChunkName: "home" */ "./home"));
+const Songs = React.lazy(() => import(/* webpackChunkName: "songs" */ "./songs"));
+const MyCharts = React.lazy(() => import(/* webpackChunkName: "mycharts" */"./mycharts"));
 
 interface IRootProps {
   basepath: string;
@@ -69,11 +70,36 @@ export default React.memo(function Root(props: IRootProps) {
             <>
               <Route
                 path="/home"
-                component={() => <HomeDashboard selectedDate={selectedDate} />}
+                component={() => (
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <HomeDashboard selectedDate={selectedDate} />
+                  </React.Suspense>
+                )}
               />
-              <Route path="/allsongs" component={Songs} />
-              <Route path="/mycharts" component={MyCharts} />
-              <Route path="/leaderboard" component={Leaderboard} />
+              <Route
+                path="/allsongs"
+                component={() => (
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <Songs />
+                  </React.Suspense>
+                )}
+              />
+              <Route
+                path="/mycharts"
+                component={() => (
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <MyCharts />
+                  </React.Suspense>
+                )}
+              />
+              <Route
+                path="/leaderboard"
+                component={() => (
+                  <React.Suspense fallback={<div>Loading...</div>}>
+                    <Leaderboard />
+                  </React.Suspense>
+                )}
+              />
               <SpotifyHandler />
               {profile?.premium && <ControlPanel />}
             </>

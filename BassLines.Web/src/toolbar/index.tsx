@@ -15,7 +15,9 @@ import Home from "@mui/icons-material/Home";
 import ThumbUp from "@mui/icons-material/ThumbUp";
 import BarChart from "@mui/icons-material/BarChart";
 import MusicNote from "@mui/icons-material/MusicNote";
-import { Button, Link, TextField } from "@mui/material";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
 import { call } from "../data/callWrapper";
 import { UsersApi } from "../data/src";
 import { useHistory } from "react-router-dom";
@@ -196,7 +198,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               zIndex: -1,
             }}
             display={{ xs: "none", md: "block" }}
-            src={`basslines.svg`}
+            src={`img/basslines.svg`}
           />
           <Box sx={{ marginLeft: "auto", marginRight: "20px" }}>
             <GlobalSearch />

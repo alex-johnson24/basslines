@@ -1,6 +1,5 @@
 using System;
 using BassLines.Api.Hubs;
-using System.IO;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -15,7 +14,6 @@ using BassLines.Api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +21,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.StaticFiles;
 
 namespace BassLines
 {
@@ -86,6 +83,16 @@ namespace BassLines
                     )
                 );
             });
+
+            //services cors
+            services.AddCors(p => p.AddPolicy("appcors", builder =>
+            {
+                builder
+                    .WithOrigins("https://localhost:9000", "https://dev.basslines.co", "https://app.basslines.co")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            }));
 
             if (_env.IsDevelopment() || string.IsNullOrEmpty(Configuration["ConnectionStrings:RedisCacheUrl"]))
             {
@@ -153,33 +160,9 @@ namespace BassLines
             {
                 app.UseHttpsRedirection();
             }
-
-            // https://gunnarpeipman.com/aspnet-core-precompressed-files/
-            var mimeTypeProvider = new FileExtensionContentTypeProvider();
-
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                OnPrepareResponse = context =>
-                {
-                    var headers = context.Context.Response.Headers;
-                    var contentType = headers["Content-Type"];
-
-                    if (contentType != "application/x-gzip" && !context.File.Name.EndsWith(".gz"))
-                    {
-                        return;
-                    }
-
-                    var fileNameToTry = context.File.Name.Substring(0, context.File.Name.Length - 3);
-
-                    if (mimeTypeProvider.TryGetContentType(fileNameToTry, out var mimeType))
-                    {
-                        headers.Add("Content-Encoding", "gzip");
-                        headers["Content-Type"] = mimeType;
-                    }
-                }
-            });
-
             app.UseRouting();
+
+            app.UseCors("appcors");
 
             app.UseAuthentication();
 
@@ -188,14 +171,7 @@ namespace BassLines
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<SongHub>("songHub");
-            });
-
-            app.Run(async (context) =>
-            {
-                context.Response.Headers.Add("Content-Encoding", "gzip");
-                context.Response.ContentType = "text/html";
-                await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html.gz"));
+                endpoints.MapHub<SongHub>("api/songHub");
             });
         }
     }

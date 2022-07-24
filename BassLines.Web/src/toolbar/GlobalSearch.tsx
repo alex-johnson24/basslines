@@ -1,26 +1,23 @@
 import * as React from "react";
-import {
-  alpha,
-  Box,
-  Card,
-  CircularProgress,
-  ClickAwayListener,
-  InputBase,
-  List,
-  ListItemButton,
-  ListItemText,
-  styled,
-  useMediaQuery,
-} from "@mui/material";
-import { debounce } from "lodash";
+import { alpha, styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CircularProgress from "@mui/material/CircularProgress";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import InputBase from "@mui/material/InputBase";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import debounce from "lodash/debounce";
 import { SongModel, SongsApi } from "../data/src";
 import { call } from "../data/callWrapper";
 import { useMutation } from "react-query";
 import Search from "@mui/icons-material/Search";
 import SongDetailDialog from "./SongDetailDialog";
 import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
-const Search = styled("div")(({ theme }) => ({
+const SearchBox = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -166,7 +163,7 @@ const GlobalSearch = () => {
         handleClose={closeDetailDialog}
       />
       <ClickAwayListener onClickAway={resetSearch}>
-        <Search>
+        <SearchBox>
           <SearchIconWrapper>
             <Search />
           </SearchIconWrapper>
@@ -178,7 +175,7 @@ const GlobalSearch = () => {
             value={searchString}
             listCursor={listCursor}
           />
-        </Search>
+        </SearchBox>
       </ClickAwayListener>
       <ClickAwayListener onClickAway={() => setListCursor(null)}>
         <Card

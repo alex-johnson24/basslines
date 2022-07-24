@@ -1,7 +1,8 @@
 import * as React from "react";
 import { SpotifyApi, SpotifyTrackDetails, UserModel } from "../../../data/src";
 import { useSpotify } from "../../../contexts/spotifyContext";
-import { Box, Container } from "@mui/material";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 
 interface ITrackDetailsProps {
   trackId: string;

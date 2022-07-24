@@ -2,8 +2,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const Package = require("./package.json");
-const CompressionPlugin = require("compression-webpack-plugin");
-const HtmlWebpackChangeAssetsExtensionPlugin = require("html-webpack-change-assets-extension-plugin");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const path = require("path");
 const commitHash = require("child_process")
   .execSync("git rev-parse --short=8 HEAD")
@@ -30,9 +30,19 @@ module.exports = (env, argv) => {
     output: {
       hashFunction: "xxhash64",
       pathinfo: false,
-      path: `${__dirname}/../BassLines.Api/wwwroot`,
       clean: true,
-      filename: "[name].[contenthash].js",
+      filename: "./js/[name].[contenthash].bundle.js",
+      chunkFilename: "./js/[name].[contenthash].chunk.js",
+    },
+    devServer: {
+      static: {
+        directory: path.join(__dirname, "dist"),
+      },
+      compress: true,
+      port: 9000,
+      historyApiFallback: {
+        index: "/index.html",
+      },
     },
     module: {
       rules: [
@@ -63,20 +73,15 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
-      new CompressionPlugin({
-        deleteOriginalAssets: true,
-        test: /\.(js|html|css)$/,
-      }),
       new HtmlWebpackPlugin({
         baseUrl: "/",
         template: "index.ejs",
         version: argv.mode === "development" ? devVersion : prodVersion,
-        jsExtension: ".gz",
       }),
       new CopyPlugin({
-        patterns: [{ from: "assets" }, "configs.js"],
+        patterns: [{ from: "assets", to: "img" }, "configs.js"],
       }),
-      new HtmlWebpackChangeAssetsExtensionPlugin(),
+      //new BundleAnalyzerPlugin(),
     ],
     entry: {
       main: "./src/index.tsx",
@@ -87,13 +92,7 @@ module.exports = (env, argv) => {
       runtimeChunk: "single",
       moduleIds: "deterministic",
       splitChunks: {
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: "vendors",
-            chunks: "all",
-          },
-        },
+        chunks: "all",
       },
     },
     resolve: {

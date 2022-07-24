@@ -1,20 +1,15 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  Color,
-  Dialog,
-  FormControlLabel,
-  Grid,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
 import { call } from "../../../data/callWrapper";
 import { SpotifyApi } from "../../../data/src";
-import { getCookieByName } from "../../../utils/textUtils";
 import SpotifyLogo from "../spotifyLogo";
+import Checkbox from "@mui/material/Checkbox";
 
 export default function SpotifyHandler() {
   const {
@@ -43,7 +38,7 @@ export default function SpotifyHandler() {
     expiryRef.current = expiryTime;
     tokenRef.current = refreshToken;
   }, [expiryTime, refreshToken]);
-
+  
   React.useEffect(() => {
     const refreshToken = localStorage.getItem("refreshToken");
 

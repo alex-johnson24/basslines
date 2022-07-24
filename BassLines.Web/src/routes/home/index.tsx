@@ -1,21 +1,22 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
-import { useTheme } from "@mui/material/styles";
-import {
-  Box,
-  Button,
-  Container,
-  Fab,
-  FilledInput,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  Snackbar,
-  Theme,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { useTheme, Theme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Fab from "@mui/material/Fab";
+import FilledInput from "@mui/material/FilledInput";
+import FormControl from "@mui/material/FormControl";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import InputLabel from "@mui/material/InputLabel";
+import Snackbar from "@mui/material/Snackbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import Add from "@mui/icons-material/Add";
+import Send from "@mui/icons-material/Send";
+import Refresh from "@mui/icons-material/Refresh";
+import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 import { call } from "../../data/callWrapper";
 import { useMutation } from "react-query";
 import {
@@ -37,10 +38,6 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import SpotifyLogo from "../spotify/spotifyLogo";
-import Add from "@mui/icons-material/Add";
-import Send from "@mui/icons-material/Send";
-import Refresh from "@mui/icons-material/Refresh";
-import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 
 const useStyles = makeStyles(() => {
   return {

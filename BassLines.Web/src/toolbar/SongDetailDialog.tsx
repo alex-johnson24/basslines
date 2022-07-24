@@ -1,5 +1,8 @@
 import * as React from "react";
-import { Dialog, DialogContent, Grid, Typography } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import Close from "@mui/icons-material/Close";
 import { SongModel } from "../data/src";
 import { format } from "date-fns";

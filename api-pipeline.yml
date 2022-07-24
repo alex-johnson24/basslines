@@ -1,0 +1,32 @@
+trigger:
+ branches:
+  include:
+    - main
+    - release/*
+ paths:
+  include:
+    - BassLines.Api/*
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '6.x'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: 'dotnet publish ./BassLines.Api/BassLines.Api.csproj -c Release'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: './BassLines.Api/bin/Release/net6.0/publish'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'drop'
