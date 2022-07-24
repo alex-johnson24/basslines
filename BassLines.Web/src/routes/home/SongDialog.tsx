@@ -6,10 +6,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import {
-  Autocomplete,
-  Grid,
-} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Grid from "@mui/material/Grid";
 import { call } from "../../data/callWrapper";
 import {
   GenresApi,
@@ -55,10 +53,20 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
     }
   );
 
-  const submitSong = async () => {
-    const songResult = userSong.id
-      ? await call(SongsApi).apiSongsPut({ songModel: userSong })
-      : await call(SongsApi).apiSongsPost({ songModel: userSong });
+  const { mutateAsync: updateSong, status: getUpdateStatus } = useMutation(
+    async () => {
+      call(SongsApi).apiSongsPut({ songModel: userSong });
+    }
+  );
+
+  const { mutateAsync: submitSong, status: getSubmitStatus } = useMutation(
+    async () => {
+      await call(SongsApi).apiSongsPost({ songModel: userSong });
+    }
+  );
+
+  const submitData = async () => {
+    const songResult = userSong.id ? await updateSong() : await submitSong();
     if (songResult === null) {
       console.log("POST FAILED");
     } else {
@@ -88,13 +96,13 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
     }
   }, [props.open]);
 
-  const genreRef = React.useRef<HTMLInputElement>(null)
+  const genreRef = React.useRef<HTMLInputElement>(null);
   const handleSongChange = (
     e: React.SyntheticEvent<Element, Event>,
     { title, artist, link }: SongBaseWithImages
   ) => {
     setUserSong((current) => ({ ...current, title, artist, link }));
-    genreRef.current.focus()
+    genreRef.current.focus();
   };
 
   return (
@@ -200,8 +208,19 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose} variant="outlined" color="inherit">Cancel</Button>
-        <Button onClick={submitSong} variant="contained" color="primary">Submit</Button>
+        <Button onClick={props.handleClose} variant="outlined" color="inherit">
+          Cancel
+        </Button>
+        <Button
+          onClick={submitData}
+          variant="contained"
+          color="primary"
+          disabled={
+            getSubmitStatus === "loading" || getUpdateStatus === "loading"
+          }
+        >
+          Submit
+        </Button>
       </DialogActions>
     </Dialog>
   );

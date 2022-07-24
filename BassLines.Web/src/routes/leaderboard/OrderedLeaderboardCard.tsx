@@ -1,4 +1,8 @@
-import { Box, Collapse, Grid, Paper, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { UserLeaderboardModel } from "../../data/src";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -48,7 +52,7 @@ const OrderedLeaderboardCard = (props: IProps) => {
     return (
       <>
         {rank ? (
-          <img src={`${rank}.svg`} height="20px" width="20px" />
+          <img src={`img/${rank}.svg`} height="20px" width="20px" />
         ) : (
           `${index + 1}.`
         )}
@@ -70,15 +74,9 @@ const OrderedLeaderboardCard = (props: IProps) => {
         <Typography variant="h6" color="secondary.main" textAlign="center">
           {title}
           {!expanded ? (
-            <ExpandMore
-              onClick={handleClick}
-              className={classes.titleIcon}
-            />
+            <ExpandMore onClick={handleClick} className={classes.titleIcon} />
           ) : (
-            <ExpandLess
-              onClick={handleClick}
-              className={classes.titleIcon}
-            />
+            <ExpandLess onClick={handleClick} className={classes.titleIcon} />
           )}
         </Typography>
       </Box>

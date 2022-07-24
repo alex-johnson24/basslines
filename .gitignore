@@ -37,3 +37,4 @@ node_modules/
 BassLines.Api/wwwroot/*
 BassLines.Api/logs/
 BassLines.Web/.yarn/*
+BassLines.Web/dist/

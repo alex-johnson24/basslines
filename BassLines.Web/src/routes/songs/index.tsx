@@ -1,7 +1,7 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
-import { useTheme } from "@mui/material/styles";
-import { Container, Theme } from "@mui/material";
+import { useTheme, Theme } from "@mui/material/styles";
+import Container from "@mui/material/Container";
 import { call } from "../../data/callWrapper";
 import { useMutation } from "react-query";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";

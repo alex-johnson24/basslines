@@ -1,12 +1,10 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
-import {
-  Autocomplete,
-  Box,
-  CircularProgress,
-  Grid,
-  Typography,
-} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import { SongModel, SpotifyApi, SongBaseWithImages } from "../../../data/src";
 import { useSpotify } from "../../../contexts/spotifyContext";
@@ -32,7 +30,10 @@ const useStyles = makeStyles(() => {
 
 interface ISongAutocompleteProps {
   setSong: (value: React.SetStateAction<SongModel>) => void;
-  handleChange: (e: React.SyntheticEvent<Element, Event>, s: SongBaseWithImages) => void;
+  handleChange: (
+    e: React.SyntheticEvent<Element, Event>,
+    s: SongBaseWithImages
+  ) => void;
 }
 
 export default function SongAutoComplete({
@@ -44,7 +45,9 @@ export default function SongAutoComplete({
 
   const [query, setQuery] = React.useState("");
   const [songsOpen, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState<readonly SongBaseWithImages[]>([]);
+  const [options, setOptions] = React.useState<readonly SongBaseWithImages[]>(
+    []
+  );
   const [loading, setLoading] = React.useState(false);
 
   const getOptions = async (query: string) => {
@@ -95,7 +98,9 @@ export default function SongAutoComplete({
         option.title === value.title && option.artist === value.artist
       }
       // @ts-ignore
-      getOptionLabel={(option: SongBaseWithImages) => option.title || option || ""}
+      getOptionLabel={(option: SongBaseWithImages) =>
+        option.title || option || ""
+      }
       options={options}
       fullWidth
       loading={loading}
@@ -133,20 +138,23 @@ export const SongItem = ({
   song,
   element,
   ...props
-}: React.HTMLAttributes<HTMLElement> & { song: SongBaseWithImages, element?: React.ElementType }) => {
+}: React.HTMLAttributes<HTMLElement> & {
+  song: SongBaseWithImages;
+  element?: React.ElementType;
+}) => {
   const imgHeight = "65px";
 
   return (
     <Box
-    component={element ?? "li"}
-    key={props.id}
-    sx={{
-      height: imgHeight,
-      display: "flex",
-      width: "100%",
-      p: 0,
-    }}
-    {...props}
+      component={element ?? "li"}
+      key={props.id}
+      sx={{
+        height: imgHeight,
+        display: "flex",
+        width: "100%",
+        p: 0,
+      }}
+      {...props}
     >
       <Box
         component="img"

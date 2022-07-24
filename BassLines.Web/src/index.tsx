@@ -10,10 +10,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { UserProvider } from "./contexts";
 import Root from "./routes";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { CssBaseline } from "@mui/material";
 import ColorModeWithProvider from "./helpers/useTheme";
 import { SpotifyProvider } from "./contexts/spotifyContext";
 import { SongProvider } from "./contexts/songContext";
+import CssBaseline from "@mui/material/CssBaseline";
+import { getApiUrl } from "./data/callWrapper";
 
 declare global {
   interface Window {
@@ -38,7 +39,7 @@ const App = (props: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <UserProvider>
-        <SongProvider>
+        <SongProvider apiUrl={getApiUrl()}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <ColorModeWithProvider>
               <SpotifyProvider>

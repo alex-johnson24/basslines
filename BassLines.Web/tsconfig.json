@@ -2,10 +2,11 @@
   "compilerOptions": {
     "sourceMap": true,
     "noImplicitAny": false,
-    "module": "commonjs",
+    "module": "ESNext",
     "target": "es6",
     "jsx": "react",
     "lib": ["es2015", "es2016", "dom", "es2018"],
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
