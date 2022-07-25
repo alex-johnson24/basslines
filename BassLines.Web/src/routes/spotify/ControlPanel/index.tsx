@@ -6,25 +6,19 @@ import VolumeUpRounded from "@mui/icons-material/VolumeUpRounded";
 import FavoriteBorderRounded from "@mui/icons-material/FavoriteBorderRounded";
 import FavoriteRounded from "@mui/icons-material/FavoriteRounded";
 import ShuffleRounded from "@mui/icons-material/ShuffleRounded";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  Grid,
-  IconButton,
-  Popover,
-  Slider,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Popover from "@mui/material/Popover";
+import Slider from "@mui/material/Slider";
+import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
-import {
-  Device,
-  SpotifyApi,
-  SpotifyPlaybackState,
-} from "../../../data/src";
+import { Device, SpotifyApi, SpotifyPlaybackState } from "../../../data/src";
 import { convertSecondsToLengthString } from "../../../utils";
 import { SongItem } from "../SongAutocomplete";
 import SpotifyLogo from "../spotifyLogo";
@@ -390,7 +384,7 @@ export default React.memo(function ControlPanel() {
                   mt: "1px",
                   ml: "4px",
                 }}
-                src={`speaker.svg`}
+                src={`img/speaker.svg`}
               />
             }
           />
@@ -622,7 +616,7 @@ const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
                       height: "36px",
                       ml: 3,
                     }}
-                    src={`speaker.svg`}
+                    src={`img/speaker.svg`}
                   />
                 </Grid>
                 <Grid item xs={9} display="flex" flexDirection="column">

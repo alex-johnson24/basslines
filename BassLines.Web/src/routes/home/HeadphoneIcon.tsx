@@ -1,4 +1,4 @@
-import { Tooltip } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import SvgIcon, { SvgIconProps } from "@mui/material/SvgIcon";
 import { UserModel } from "../../data/src";
 import * as React from "react";

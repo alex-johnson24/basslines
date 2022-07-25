@@ -1,11 +1,11 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
-- release/*
+ branches:
+  include:
+    - main
+    - release/*
+ paths:
+  include:
+    - BassLines.Web/*
 
 pool:
   vmImage: ubuntu-latest
@@ -23,17 +23,9 @@ steps:
       cd ./BassLines.Web
       yarn install
       yarn prod:webpack
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '6.x'
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: 'dotnet publish ./BassLines.Api/BassLines.Api.csproj -c Release'
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: './BassLines.Api/bin/Release/net6.0/publish'
+    rootFolderOrFile: './BassLines.Web/dist'
     includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'

@@ -1,17 +1,14 @@
-import {
-  Avatar,
-  Paper,
-  Grid,
-  Typography,
-  useTheme,
-  IconButton,
-  Tooltip,
-  Link,
-  Box,
-  Stack,
-  Badge,
-  styled,
-} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { useTheme, styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Link from "@mui/material/Link";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Badge from "@mui/material/Badge";
 import * as React from "react";
 import {
   LikesApi,
@@ -98,7 +95,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
           <Badge
             overlap="rectangular"
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            badgeContent={<SmallAvatar src={`${props.ranking}.svg`} />}
+            badgeContent={<SmallAvatar src={`img/${props.ranking}.svg`} />}
             invisible={!props.ranking}
           >
             <Avatar

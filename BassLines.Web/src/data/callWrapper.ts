@@ -6,6 +6,12 @@ export type ApiConstructor<T extends BaseAPI> = new (
   config: Configuration
 ) => T;
 
+export const getApiUrl = () => {
+  return window.__API_URL__.includes("__API_URL__")
+    ? "https://localhost:5001"
+    : window.__API_URL__; // for production
+};
+
 const unauthenticatedResponseHandlerMiddleware: Middleware = {
   post: async (context: ResponseContext): Promise<Response | void> => {
     if (context.response.status === 401) {
@@ -21,8 +27,9 @@ const call = <T extends BaseAPI>(api: ApiConstructor<T>): T => {
   return new api(
     new Configuration({
       fetchApi: Fetch.fetch,
-      basePath: window.__API_URL__.includes("__API_URL__") ? "https://localhost:5001" :  window.__API_URL__, // for production
+      basePath: getApiUrl(),
       middleware: [unauthenticatedResponseHandlerMiddleware],
+      credentials: "include"
     })
   );
 };

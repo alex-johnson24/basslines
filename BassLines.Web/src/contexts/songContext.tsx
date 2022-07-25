@@ -25,7 +25,7 @@ type State = {
   allSongsRated: boolean;
 };
 
-type SongProviderProps = { children: React.ReactNode };
+type SongProviderProps = { children: React.ReactNode; apiUrl: string };
 
 const SongStateContext = React.createContext<State | undefined>(undefined);
 const SongDispatchContext = React.createContext<Dispatch | undefined>(
@@ -97,7 +97,10 @@ function songReducer(state: State, action: Action): State {
   }
 }
 
-const SongProvider = React.memo(function ({ children }: SongProviderProps) {
+const SongProvider = React.memo(function ({
+  children,
+  apiUrl,
+}: SongProviderProps) {
   const [state, dispatch] = React.useReducer(songReducer, {
     dailySongs: [],
     selectedDate: new Date(),
@@ -110,7 +113,7 @@ const SongProvider = React.memo(function ({ children }: SongProviderProps) {
 
   React.useEffect(() => {
     const newConnection = new HubConnectionBuilder()
-      .withUrl("songHub")
+      .withUrl(`${apiUrl}/api/songHub`)
       .withAutomaticReconnect()
       .build();
 

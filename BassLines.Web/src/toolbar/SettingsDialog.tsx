@@ -1,21 +1,18 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Slide,
-  Switch,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import Slide from "@mui/material/Slide";
+import Switch from "@mui/material/Switch";
+import Typography from "@mui/material/Typography";
 import { ColorModeContext } from "../contexts/colorModeContext";
 import Settings from "@mui/icons-material/Settings";
 import { TransitionProps } from "@mui/material/transitions";
+import { SxProps, Theme } from "@mui/material/styles";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -41,7 +38,7 @@ const SettingsDialog = (props: IProps) => {
   return (
     <Box sx={{ ...props.sx }}>
       <IconButton onClick={handleChange}>
-        <Settings sx={{color: "white"}} />
+        <Settings sx={{ color: "white" }} />
       </IconButton>
       <Dialog
         onClose={handleChange}

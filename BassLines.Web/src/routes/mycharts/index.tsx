@@ -1,32 +1,29 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Typography,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import FormControl from "@mui/material/FormControl";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Select from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
 import {
-  LineChart,
+  ResponsiveContainer,
+  CartesianGrid,
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
-  ResponsiveContainer,
   BarChart,
   Bar,
   PieChart,
   Pie,
   LabelList,
+  LineChart
 } from "recharts";
 import { call } from "../../data/callWrapper";
 import {
@@ -298,56 +295,56 @@ const MyCharts = () => {
           <Grid className={classes.chartBox} item xs={12} md={6}>
             <div style={{ height: "300px" }}>
               <Typography variant="h5">Recent Ratings</Typography>
-              <ResponsiveContainer>
-                <LineChart
-                  width={500}
-                  height={300}
-                  onClick={handleSongChartClickPlay}
-                  data={userMetrics?.dailyRatings.map((m) => ({
-                    ...m,
-                    submittedDate: format(m.submittedDate, "yyyy-MM-dd"),
-                  }))}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="submittedDate" />
-                  <YAxis domain={[0, 10]} />
-                  <Tooltip content={renderTooltip} />
-                  <Line
-                    dataKey="rating"
-                    stroke={theme.palette.secondary.main}
-                    strokeWidth={3}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+                <ResponsiveContainer>
+                  <LineChart
+                    width={500}
+                    height={300}
+                    onClick={handleSongChartClickPlay}
+                    data={userMetrics?.dailyRatings.map((m) => ({
+                      ...m,
+                      submittedDate: format(m.submittedDate, "yyyy-MM-dd"),
+                    }))}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="submittedDate" />
+                    <YAxis domain={[0, 10]} />
+                    <Tooltip content={renderTooltip} />
+                    <Line
+                      dataKey="rating"
+                      stroke={theme.palette.secondary.main}
+                      strokeWidth={3}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
             </div>
           </Grid>
           <Grid className={classes.chartBox} item xs={12} md={6}>
             <div style={{ height: "300px" }}>
               <Typography variant="h5">Top Genres</Typography>
-              <ResponsiveContainer>
-                <BarChart
-                  width={500}
-                  height={300}
-                  data={userMetrics?.topGenres}
-                  onClick={handleGenreChartClickPlay}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="genre" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar
-                    dataKey="count"
-                    fill={theme.palette.primary.main}
-                    barSize={30}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+                <ResponsiveContainer>
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={userMetrics?.topGenres}
+                    onClick={handleGenreChartClickPlay}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="genre" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar
+                      dataKey="count"
+                      fill={theme.palette.primary.main}
+                      barSize={30}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
             </div>
           </Grid>
           <Grid
@@ -382,89 +379,90 @@ const MyCharts = () => {
             />
             <div style={{ height: "300px" }}>
               <Typography variant="h5">Top Artists</Typography>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    onAnimationEnd={handleSpotifyArtistGet}
-                    dataKey="count"
-                    data={userMetrics?.topArtists}
-                    fill={`${theme.palette.primary.main}75`}
-                    label={({
-                      cx,
-                      cy,
-                      midAngle,
-                      innerRadius,
-                      outerRadius,
-                      value,
-                      index,
-                    }) => {
-                      const RADIAN = Math.PI / 180;
-                      // eslint-disable-next-line
-                      const radius =
-                        25 + innerRadius + (outerRadius - innerRadius);
-                      // eslint-disable-next-line
-                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                      // eslint-disable-next-line
-                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      onAnimationEnd={handleSpotifyArtistGet}
+                      dataKey="count"
+                      data={userMetrics?.topArtists}
+                      fill={`${theme.palette.primary.main}75`}
+                      label={({
+                        cx,
+                        cy,
+                        midAngle,
+                        innerRadius,
+                        outerRadius,
+                        value,
+                        index,
+                      }) => {
+                        const RADIAN = Math.PI / 180;
+                        // eslint-disable-next-line
+                        const radius =
+                          25 + innerRadius + (outerRadius - innerRadius);
+                        // eslint-disable-next-line
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                        // eslint-disable-next-line
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-                      const artistName = userMetrics?.topArtists[index]?.artist;
-                      const artistUri = artistDetailsPool?.find(
-                        ({ name }) =>
-                          name?.toLowerCase() == artistName.toLowerCase()
-                      )?.uri;
-                      return (
-                        <text
-                          x={x}
-                          y={y}
-                          style={{ cursor: artistUri ? "pointer" : "" }}
-                          textAnchor={x > cx ? "start" : "end"}
-                          dominantBaseline="central"
-                          fill={theme.palette.text.primary}
-                          onMouseEnter={() => handleHover(artistName)}
-                          onMouseLeave={() => setArtistImgUrl("")}
-                          onClick={() => handleArtistClickPlay(artistUri)}
-                        >
-                          {artistName}
-                        </text>
-                      );
-                    }}
-                  />
-                  <Tooltip content={renderPieTooltip} />
-                </PieChart>
-              </ResponsiveContainer>
+                        const artistName =
+                          userMetrics?.topArtists[index]?.artist;
+                        const artistUri = artistDetailsPool?.find(
+                          ({ name }) =>
+                            name?.toLowerCase() == artistName.toLowerCase()
+                        )?.uri;
+                        return (
+                          <text
+                            x={x}
+                            y={y}
+                            style={{ cursor: artistUri ? "pointer" : "" }}
+                            textAnchor={x > cx ? "start" : "end"}
+                            dominantBaseline="central"
+                            fill={theme.palette.text.primary}
+                            onMouseEnter={() => handleHover(artistName)}
+                            onMouseLeave={() => setArtistImgUrl("")}
+                            onClick={() => handleArtistClickPlay(artistUri)}
+                          >
+                            {artistName}
+                          </text>
+                        );
+                      }}
+                    />
+                    <Tooltip content={renderPieTooltip} />
+                  </PieChart>
+                </ResponsiveContainer>
             </div>
           </Grid>
           <Grid className={classes.chartBox} item xs={12} md={6}>
             <div style={{ height: "300px" }}>
               <Typography variant="h5">Top Songs</Typography>
-              <ResponsiveContainer>
-                <BarChart
-                  width={500}
-                  height={300}
-                  data={userMetrics?.topSongs.map((m, i) => ({
-                    ...m,
-                    ranking: `#${i + 1}`,
-                  }))}
-                  layout="vertical"
-                  onClick={handleSongChartClickPlay}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" domain={[0, 10]} />
-                  <YAxis type="category" dataKey="ranking" />
-                  <Tooltip content={renderTooltip} />
-                  <Bar
-                    dataKey="rating"
-                    fill={theme.palette.secondary.main}
-                    barSize={6}
+                <ResponsiveContainer>
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={userMetrics?.topSongs.map((m, i) => ({
+                      ...m,
+                      ranking: `#${i + 1}`,
+                    }))}
+                    layout="vertical"
+                    onClick={handleSongChartClickPlay}
                   >
-                    <LabelList
-                      dataKey="title"
-                      position="top"
-                      fill={theme.palette.text.primary}
-                    />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" domain={[0, 10]} />
+                    <YAxis type="category" dataKey="ranking" />
+                    <Tooltip content={renderTooltip} />
+                    <Bar
+                      dataKey="rating"
+                      fill={theme.palette.secondary.main}
+                      barSize={6}
+                    >
+                      <LabelList
+                        dataKey="title"
+                        position="top"
+                        fill={theme.palette.text.primary}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
             </div>
           </Grid>
         </Grid>

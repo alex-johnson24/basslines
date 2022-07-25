@@ -3,7 +3,7 @@ import { useMutation } from "react-query";
 import { UsersApi, UserLeaderboardModel } from "../../data/src";
 import { call } from "../../data/callWrapper";
 import OrderedLeaderboardCard from "./OrderedLeaderboardCard";
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid";
 
 interface rankedItemTypes {
   itemToBeRanked: keyof UserLeaderboardModel;

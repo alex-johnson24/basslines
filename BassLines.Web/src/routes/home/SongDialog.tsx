@@ -6,7 +6,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Autocomplete, Grid } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import Grid from "@mui/material/Grid";
 import { call } from "../../data/callWrapper";
 import {
   GenresApi,
