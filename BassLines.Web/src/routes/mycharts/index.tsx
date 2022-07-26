@@ -151,7 +151,7 @@ const MyCharts = () => {
   const handleSpotifyArtistGet = async () => {
     if (!authorized || !userMetrics?.topArtists) return undefined;
 
-    const artists = await callSpotify(SpotifyApi).artistsFromTrackIdsPost({
+    const artists = await callSpotify(SpotifyApi).apiSpotifyArtistsFromTrackIdsPost({
       requestBody: userMetrics.topArtists
         .map(({ trackRefLink }) => parseSpotifyId(trackRefLink)[0])
         .filter(Boolean),
@@ -171,7 +171,7 @@ const MyCharts = () => {
 
     if (isValid && profile?.premium) {
       callSpotify(SpotifyApi)
-        .playPut({
+        .apiSpotifyPlayPut({
           playContextRequest: {
             uris: [`spotify:track:${id}`],
             positionMs: 0,
@@ -189,7 +189,7 @@ const MyCharts = () => {
       const uris = getListOfSpotifyUris(links);
       if (!uris?.length || !profile?.premium) throw undefined;
 
-      callSpotify(SpotifyApi).playPut({
+      callSpotify(SpotifyApi).apiSpotifyPlayPut({
         playContextRequest: {
           uris,
           positionMs: 0,
@@ -204,7 +204,7 @@ const MyCharts = () => {
     if (!artistUri) return void 0;
 
     callSpotify(SpotifyApi)
-      .playPut({
+      .apiSpotifyPlayPut({
         playContextRequest: {
           contextUri: artistUri,
           positionMs: 0,
@@ -238,7 +238,7 @@ const MyCharts = () => {
             sx={{ color: "#50d292" }}
             onClick={async () => {
               callSpotify(SpotifyApi)
-                .playPut({
+                .apiSpotifyPlayPut({
                   playContextRequest: {
                     uris,
                     positionMs: 0,

@@ -34,7 +34,7 @@ export default function SpotifyRedirect() {
           .withPostMiddleware(async (ctx) => {
             await handleSpotifyAuth(ctx.response.headers.get("spotify_auth"));
           })
-          .modelGet({ code });
+          .apiSpotifyModelGet({ code });
       } catch (e) {
         console.error(e);
       }

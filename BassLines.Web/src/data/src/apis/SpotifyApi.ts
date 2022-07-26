@@ -47,61 +47,61 @@ import {
     TransferStateRequestToJSON,
 } from '../models';
 
-export interface AddToQueueSpotifyIdPostRequest {
+export interface ApiSpotifyAddToQueueSpotifyIdPostRequest {
     spotifyId: string;
 }
 
-export interface ArtistsFromTrackIdsPostRequest {
+export interface ApiSpotifyArtistsFromTrackIdsPostRequest {
     requestBody?: Array<string>;
 }
 
-export interface CheckSavedPostRequest {
+export interface ApiSpotifyCheckSavedPostRequest {
     requestBody?: Array<string>;
 }
 
-export interface ModelGetRequest {
+export interface ApiSpotifyModelGetRequest {
     code?: string;
 }
 
-export interface NextOrPreviousNextOrPreviousPostRequest {
+export interface ApiSpotifyNextOrPreviousNextOrPreviousPostRequest {
     nextOrPrevious: string;
 }
 
-export interface PlayPutRequest {
+export interface ApiSpotifyPlayPutRequest {
     playContextRequest?: PlayContextRequest;
 }
 
-export interface PlayerPutRequest {
+export interface ApiSpotifyPlayerPutRequest {
     transferStateRequest?: TransferStateRequest;
 }
 
-export interface SaveOrRemoveIdPutRequest {
+export interface ApiSpotifySaveOrRemoveIdPutRequest {
     id: string;
     save?: boolean;
 }
 
-export interface SearchArtistGetRequest {
+export interface ApiSpotifySearchArtistGetRequest {
     query?: string;
     pageSize?: number;
 }
 
-export interface SearchGetRequest {
+export interface ApiSpotifySearchGetRequest {
     query?: string;
 }
 
-export interface ShufflePutRequest {
+export interface ApiSpotifyShufflePutRequest {
     shuffle?: boolean;
 }
 
-export interface TrackIdDetailsGetRequest {
+export interface ApiSpotifyTrackIdDetailsGetRequest {
     id: string;
 }
 
-export interface TrackIdGetRequest {
+export interface ApiSpotifyTrackIdGetRequest {
     id: string;
 }
 
-export interface TracksPostRequest {
+export interface ApiSpotifyTracksPostRequest {
     requestBody?: Array<string>;
 }
 
@@ -112,9 +112,9 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async addToQueueSpotifyIdPostRaw(requestParameters: AddToQueueSpotifyIdPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyAddToQueueSpotifyIdPostRaw(requestParameters: ApiSpotifyAddToQueueSpotifyIdPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.spotifyId === null || requestParameters.spotifyId === undefined) {
-            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling addToQueueSpotifyIdPost.');
+            throw new runtime.RequiredError('spotifyId','Required parameter requestParameters.spotifyId was null or undefined when calling apiSpotifyAddToQueueSpotifyIdPost.');
         }
 
         const queryParameters: any = {};
@@ -122,7 +122,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/add-to-queue/{spotifyId}`.replace(`{${"spotifyId"}}`, encodeURIComponent(String(requestParameters.spotifyId))),
+            path: `/api/Spotify/add-to-queue/{spotifyId}`.replace(`{${"spotifyId"}}`, encodeURIComponent(String(requestParameters.spotifyId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -133,8 +133,86 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async addToQueueSpotifyIdPost(requestParameters: AddToQueueSpotifyIdPostRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.addToQueueSpotifyIdPostRaw(requestParameters, initOverrides);
+    async apiSpotifyAddToQueueSpotifyIdPost(requestParameters: ApiSpotifyAddToQueueSpotifyIdPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyAddToQueueSpotifyIdPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async apiSpotifyArtistsFromTrackIdsPostRaw(requestParameters: ApiSpotifyArtistsFromTrackIdsPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ArtistDetails>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Spotify/artists-from-trackIds`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.requestBody,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ArtistDetailsFromJSON));
+    }
+
+    /**
+     */
+    async apiSpotifyArtistsFromTrackIdsPost(requestParameters: ApiSpotifyArtistsFromTrackIdsPostRequest, initOverrides?: RequestInit): Promise<Array<ArtistDetails>> {
+        const response = await this.apiSpotifyArtistsFromTrackIdsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiSpotifyCheckSavedPostRaw(requestParameters: ApiSpotifyCheckSavedPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<TrackSavedReference>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Spotify/check-saved`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.requestBody,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TrackSavedReferenceFromJSON));
+    }
+
+    /**
+     */
+    async apiSpotifyCheckSavedPost(requestParameters: ApiSpotifyCheckSavedPostRequest, initOverrides?: RequestInit): Promise<Array<TrackSavedReference>> {
+        const response = await this.apiSpotifyCheckSavedPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiSpotifyDevicesGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<MyDevices>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Spotify/devices`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MyDevicesFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiSpotifyDevicesGet(initOverrides?: RequestInit): Promise<MyDevices> {
+        const response = await this.apiSpotifyDevicesGetRaw(initOverrides);
+        return await response.value();
     }
 
     /**
@@ -163,91 +241,13 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async artistsFromTrackIdsPostRaw(requestParameters: ArtistsFromTrackIdsPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ArtistDetails>>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/artists-from-trackIds`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters.requestBody,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ArtistDetailsFromJSON));
-    }
-
-    /**
-     */
-    async artistsFromTrackIdsPost(requestParameters: ArtistsFromTrackIdsPostRequest, initOverrides?: RequestInit): Promise<Array<ArtistDetails>> {
-        const response = await this.artistsFromTrackIdsPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async checkSavedPostRaw(requestParameters: CheckSavedPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<TrackSavedReference>>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/check-saved`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters.requestBody,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(TrackSavedReferenceFromJSON));
-    }
-
-    /**
-     */
-    async checkSavedPost(requestParameters: CheckSavedPostRequest, initOverrides?: RequestInit): Promise<Array<TrackSavedReference>> {
-        const response = await this.checkSavedPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async devicesGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<MyDevices>> {
+    async apiSpotifyMeGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyProfile>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/devices`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => MyDevicesFromJSON(jsonValue));
-    }
-
-    /**
-     */
-    async devicesGet(initOverrides?: RequestInit): Promise<MyDevices> {
-        const response = await this.devicesGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async meGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyProfile>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/me`,
+            path: `/api/Spotify/me`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -258,14 +258,14 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async meGet(initOverrides?: RequestInit): Promise<SpotifyProfile> {
-        const response = await this.meGetRaw(initOverrides);
+    async apiSpotifyMeGet(initOverrides?: RequestInit): Promise<SpotifyProfile> {
+        const response = await this.apiSpotifyMeGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async modelGetRaw(requestParameters: ModelGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyModelGetRaw(requestParameters: ApiSpotifyModelGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         if (requestParameters.code !== undefined) {
@@ -275,7 +275,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/model`,
+            path: `/api/Spotify/model`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -286,15 +286,15 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async modelGet(requestParameters: ModelGetRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.modelGetRaw(requestParameters, initOverrides);
+    async apiSpotifyModelGet(requestParameters: ApiSpotifyModelGetRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyModelGetRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async nextOrPreviousNextOrPreviousPostRaw(requestParameters: NextOrPreviousNextOrPreviousPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyNextOrPreviousNextOrPreviousPostRaw(requestParameters: ApiSpotifyNextOrPreviousNextOrPreviousPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.nextOrPrevious === null || requestParameters.nextOrPrevious === undefined) {
-            throw new runtime.RequiredError('nextOrPrevious','Required parameter requestParameters.nextOrPrevious was null or undefined when calling nextOrPreviousNextOrPreviousPost.');
+            throw new runtime.RequiredError('nextOrPrevious','Required parameter requestParameters.nextOrPrevious was null or undefined when calling apiSpotifyNextOrPreviousNextOrPreviousPost.');
         }
 
         const queryParameters: any = {};
@@ -302,7 +302,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/next-or-previous/{nextOrPrevious}`.replace(`{${"nextOrPrevious"}}`, encodeURIComponent(String(requestParameters.nextOrPrevious))),
+            path: `/api/Spotify/next-or-previous/{nextOrPrevious}`.replace(`{${"nextOrPrevious"}}`, encodeURIComponent(String(requestParameters.nextOrPrevious))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -313,19 +313,19 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async nextOrPreviousNextOrPreviousPost(requestParameters: NextOrPreviousNextOrPreviousPostRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.nextOrPreviousNextOrPreviousPostRaw(requestParameters, initOverrides);
+    async apiSpotifyNextOrPreviousNextOrPreviousPost(requestParameters: ApiSpotifyNextOrPreviousNextOrPreviousPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyNextOrPreviousNextOrPreviousPostRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async pausePutRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyPausePutRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/pause`,
+            path: `/api/Spotify/pause`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -336,13 +336,13 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async pausePut(initOverrides?: RequestInit): Promise<void> {
-        await this.pausePutRaw(initOverrides);
+    async apiSpotifyPausePut(initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyPausePutRaw(initOverrides);
     }
 
     /**
      */
-    async playPutRaw(requestParameters: PlayPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyPlayPutRaw(requestParameters: ApiSpotifyPlayPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -350,7 +350,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/play`,
+            path: `/api/Spotify/play`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -362,19 +362,19 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async playPut(requestParameters: PlayPutRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.playPutRaw(requestParameters, initOverrides);
+    async apiSpotifyPlayPut(requestParameters: ApiSpotifyPlayPutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyPlayPutRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async playbackStateGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyPlaybackState>> {
+    async apiSpotifyPlaybackStateGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyPlaybackState>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/playback-state`,
+            path: `/api/Spotify/playback-state`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -385,14 +385,14 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async playbackStateGet(initOverrides?: RequestInit): Promise<SpotifyPlaybackState> {
-        const response = await this.playbackStateGetRaw(initOverrides);
+    async apiSpotifyPlaybackStateGet(initOverrides?: RequestInit): Promise<SpotifyPlaybackState> {
+        const response = await this.apiSpotifyPlaybackStateGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async playerPutRaw(requestParameters: PlayerPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyPlayerPutRaw(requestParameters: ApiSpotifyPlayerPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -400,7 +400,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/player`,
+            path: `/api/Spotify/player`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -412,19 +412,19 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async playerPut(requestParameters: PlayerPutRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.playerPutRaw(requestParameters, initOverrides);
+    async apiSpotifyPlayerPut(requestParameters: ApiSpotifyPlayerPutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyPlayerPutRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async refreshGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyRefreshGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/refresh`,
+            path: `/api/Spotify/refresh`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -435,15 +435,15 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async refreshGet(initOverrides?: RequestInit): Promise<void> {
-        await this.refreshGetRaw(initOverrides);
+    async apiSpotifyRefreshGet(initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyRefreshGetRaw(initOverrides);
     }
 
     /**
      */
-    async saveOrRemoveIdPutRaw(requestParameters: SaveOrRemoveIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<TrackSavedReference>> {
+    async apiSpotifySaveOrRemoveIdPutRaw(requestParameters: ApiSpotifySaveOrRemoveIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<TrackSavedReference>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling saveOrRemoveIdPut.');
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling apiSpotifySaveOrRemoveIdPut.');
         }
 
         const queryParameters: any = {};
@@ -455,7 +455,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/save-or-remove/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: `/api/Spotify/save-or-remove/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -466,14 +466,14 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async saveOrRemoveIdPut(requestParameters: SaveOrRemoveIdPutRequest, initOverrides?: RequestInit): Promise<TrackSavedReference> {
-        const response = await this.saveOrRemoveIdPutRaw(requestParameters, initOverrides);
+    async apiSpotifySaveOrRemoveIdPut(requestParameters: ApiSpotifySaveOrRemoveIdPutRequest, initOverrides?: RequestInit): Promise<TrackSavedReference> {
+        const response = await this.apiSpotifySaveOrRemoveIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async searchArtistGetRaw(requestParameters: SearchArtistGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ArtistDetails>> {
+    async apiSpotifySearchArtistGetRaw(requestParameters: ApiSpotifySearchArtistGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ArtistDetails>> {
         const queryParameters: any = {};
 
         if (requestParameters.query !== undefined) {
@@ -487,7 +487,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/search/artist`,
+            path: `/api/Spotify/search/artist`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -498,14 +498,14 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async searchArtistGet(requestParameters: SearchArtistGetRequest, initOverrides?: RequestInit): Promise<ArtistDetails> {
-        const response = await this.searchArtistGetRaw(requestParameters, initOverrides);
+    async apiSpotifySearchArtistGet(requestParameters: ApiSpotifySearchArtistGetRequest, initOverrides?: RequestInit): Promise<ArtistDetails> {
+        const response = await this.apiSpotifySearchArtistGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async searchGetRaw(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongBaseWithImages>>> {
+    async apiSpotifySearchGetRaw(requestParameters: ApiSpotifySearchGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SongBaseWithImages>>> {
         const queryParameters: any = {};
 
         if (requestParameters.query !== undefined) {
@@ -515,7 +515,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/search`,
+            path: `/api/Spotify/search`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -526,14 +526,14 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async searchGet(requestParameters: SearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongBaseWithImages>> {
-        const response = await this.searchGetRaw(requestParameters, initOverrides);
+    async apiSpotifySearchGet(requestParameters: ApiSpotifySearchGetRequest, initOverrides?: RequestInit): Promise<Array<SongBaseWithImages>> {
+        const response = await this.apiSpotifySearchGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async shufflePutRaw(requestParameters: ShufflePutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiSpotifyShufflePutRaw(requestParameters: ApiSpotifyShufflePutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         if (requestParameters.shuffle !== undefined) {
@@ -543,7 +543,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/shuffle`,
+            path: `/api/Spotify/shuffle`,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -554,15 +554,15 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async shufflePut(requestParameters: ShufflePutRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.shufflePutRaw(requestParameters, initOverrides);
+    async apiSpotifyShufflePut(requestParameters: ApiSpotifyShufflePutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyShufflePutRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async trackIdDetailsGetRaw(requestParameters: TrackIdDetailsGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyTrackDetails>> {
+    async apiSpotifyTrackIdDetailsGetRaw(requestParameters: ApiSpotifyTrackIdDetailsGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyTrackDetails>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling trackIdDetailsGet.');
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling apiSpotifyTrackIdDetailsGet.');
         }
 
         const queryParameters: any = {};
@@ -570,7 +570,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/track/{id}/details`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: `/api/Spotify/track/{id}/details`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -581,16 +581,16 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async trackIdDetailsGet(requestParameters: TrackIdDetailsGetRequest, initOverrides?: RequestInit): Promise<SpotifyTrackDetails> {
-        const response = await this.trackIdDetailsGetRaw(requestParameters, initOverrides);
+    async apiSpotifyTrackIdDetailsGet(requestParameters: ApiSpotifyTrackIdDetailsGetRequest, initOverrides?: RequestInit): Promise<SpotifyTrackDetails> {
+        const response = await this.apiSpotifyTrackIdDetailsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async trackIdGetRaw(requestParameters: TrackIdGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyTrack>> {
+    async apiSpotifyTrackIdGetRaw(requestParameters: ApiSpotifyTrackIdGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyTrack>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling trackIdGet.');
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling apiSpotifyTrackIdGet.');
         }
 
         const queryParameters: any = {};
@@ -598,7 +598,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/track/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: `/api/Spotify/track/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -609,14 +609,14 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async trackIdGet(requestParameters: TrackIdGetRequest, initOverrides?: RequestInit): Promise<SpotifyTrack> {
-        const response = await this.trackIdGetRaw(requestParameters, initOverrides);
+    async apiSpotifyTrackIdGet(requestParameters: ApiSpotifyTrackIdGetRequest, initOverrides?: RequestInit): Promise<SpotifyTrack> {
+        const response = await this.apiSpotifyTrackIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async tracksPostRaw(requestParameters: TracksPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SpotifyTrackDetails>>> {
+    async apiSpotifyTracksPostRaw(requestParameters: ApiSpotifyTracksPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SpotifyTrackDetails>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -624,7 +624,7 @@ export class SpotifyApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/tracks`,
+            path: `/api/Spotify/tracks`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -636,8 +636,8 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
-    async tracksPost(requestParameters: TracksPostRequest, initOverrides?: RequestInit): Promise<Array<SpotifyTrackDetails>> {
-        const response = await this.tracksPostRaw(requestParameters, initOverrides);
+    async apiSpotifyTracksPost(requestParameters: ApiSpotifyTracksPostRequest, initOverrides?: RequestInit): Promise<Array<SpotifyTrackDetails>> {
+        const response = await this.apiSpotifyTracksPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

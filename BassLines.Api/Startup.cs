@@ -91,7 +91,8 @@ namespace BassLines
                     .WithOrigins("https://localhost:9000", "https://dev.basslines.co", "https://app.basslines.co")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials();
+                    .AllowCredentials()
+                    .WithExposedHeaders("spotify_auth");
             }));
 
             if (_env.IsDevelopment() || string.IsNullOrEmpty(Configuration["ConnectionStrings:RedisCacheUrl"]))

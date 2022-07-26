@@ -116,7 +116,7 @@ const SpotifyProvider = React.memo(function ({
             return Promise.resolve(ctx.response);
           },
         })
-        .refreshGet();
+        .apiSpotifyRefreshGet();
       dispatch({
         type: "authorize",
         payload: {
