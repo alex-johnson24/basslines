@@ -21,7 +21,7 @@ export default function TrackDetails({ trackId }: ITrackDetailsProps) {
       if (!authorized) return undefined;
       setLoading(true);
       try {
-        const track = await callSpotify(SpotifyApi).trackIdDetailsGet({
+        const track = await callSpotify(SpotifyApi).apiSpotifyTrackIdDetailsGet({
           id: trackId,
         });
         setTrackDetails(track);

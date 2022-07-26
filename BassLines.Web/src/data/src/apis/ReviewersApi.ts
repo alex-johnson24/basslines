@@ -27,6 +27,10 @@ export interface ApiReviewersNotesPutRequest {
     reviewerNotesModel?: ReviewerNotesModel;
 }
 
+export interface ApiReviewersRebuildReviewerQueueGetRequest {
+    studioId?: string;
+}
+
 export interface ApiReviewersRotateReviewerGetRequest {
     studioId?: string;
 }
@@ -136,8 +140,35 @@ export class ReviewersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiReviewersRebuildReviewerQueueGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async apiReviewersRebuildAllReviewerQueuesGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Reviewers/RebuildAllReviewerQueues`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async apiReviewersRebuildAllReviewerQueuesGet(initOverrides?: RequestInit): Promise<void> {
+        await this.apiReviewersRebuildAllReviewerQueuesGetRaw(initOverrides);
+    }
+
+    /**
+     */
+    async apiReviewersRebuildReviewerQueueGetRaw(requestParameters: ApiReviewersRebuildReviewerQueueGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.studioId !== undefined) {
+            queryParameters['studioId'] = requestParameters.studioId;
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -153,8 +184,8 @@ export class ReviewersApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiReviewersRebuildReviewerQueueGet(initOverrides?: RequestInit): Promise<void> {
-        await this.apiReviewersRebuildReviewerQueueGetRaw(initOverrides);
+    async apiReviewersRebuildReviewerQueueGet(requestParameters: ApiReviewersRebuildReviewerQueueGetRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiReviewersRebuildReviewerQueueGetRaw(requestParameters, initOverrides);
     }
 
     /**

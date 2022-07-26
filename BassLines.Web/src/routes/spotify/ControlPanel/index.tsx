@@ -58,7 +58,7 @@ export default React.memo(function ControlPanel() {
 
   const transferPlayerStateHere = async (cb?: () => void | Promise<void>) => {
     await callSpotify(SpotifyApi)
-      .playerPut({
+      .apiSpotifyPlayerPut({
         transferStateRequest: { deviceIds: [deviceId] },
       })
       .catch(console.warn);
@@ -70,7 +70,7 @@ export default React.memo(function ControlPanel() {
 
   const hydratePlaybackState = () => {
     callSpotify(SpotifyApi)
-      .playbackStateGet()
+      .apiSpotifyPlaybackStateGet()
       .then(setPlaybackState)
       .catch(console.warn);
   };
@@ -85,7 +85,7 @@ export default React.memo(function ControlPanel() {
 
       if (playing && playing?.id !== currentTrack?.id) {
         (async () => {
-          const likeArray = await callSpotify(SpotifyApi).checkSavedPost({
+          const likeArray = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({
             requestBody: [playing?.id],
           });
           setCurrentTrack({
@@ -128,7 +128,7 @@ export default React.memo(function ControlPanel() {
 
     dispatch({ type: "setDeviceId", payload: deviceId }),
       (async () => {
-        const { devices } = await callSpotify(SpotifyApi).devicesGet();
+        const { devices } = await callSpotify(SpotifyApi).apiSpotifyDevicesGet();
         const anotherDeviceActive = devices.some(
           (d) => d.isActive && d.id !== deviceId && d.name !== "BassLines"
         );
@@ -205,7 +205,7 @@ export default React.memo(function ControlPanel() {
             onClick={async () => {
               playingExternally
                 ? callSpotify(SpotifyApi)
-                    .nextOrPreviousNextOrPreviousPost({
+                    .apiSpotifyNextOrPreviousNextOrPreviousPost({
                       nextOrPrevious: "previous",
                     })
                     .then(() => hydratePlaybackState())
@@ -237,11 +237,11 @@ export default React.memo(function ControlPanel() {
                 ? await player.togglePlay()
                 : playbackState.isPlaying
                 ? callSpotify(SpotifyApi)
-                    .pausePut()
+                    .apiSpotifyPausePut()
                     .then(() => hydratePlaybackState())
                     .catch(console.warn)
                 : callSpotify(SpotifyApi)
-                    .playPut({ playContextRequest: {} })
+                    .apiSpotifyPlayPut({ playContextRequest: {} })
                     .then(() => hydratePlaybackState())
                     .catch(console.warn)
             }
@@ -257,7 +257,7 @@ export default React.memo(function ControlPanel() {
             onClick={async () => {
               playingExternally
                 ? callSpotify(SpotifyApi)
-                    .nextOrPreviousNextOrPreviousPost({
+                    .apiSpotifyNextOrPreviousNextOrPreviousPost({
                       nextOrPrevious: "next",
                     })
                     .then(() => hydratePlaybackState())
@@ -323,7 +323,7 @@ export default React.memo(function ControlPanel() {
             sx={{ p: "2px 0 0" }}
             onClick={() =>
               callSpotify(SpotifyApi)
-                .saveOrRemoveIdPut({
+                .apiSpotifySaveOrRemoveIdPut({
                   id: currentTrack?.id,
                   save: !currentTrack?.saved,
                 })
@@ -357,7 +357,7 @@ export default React.memo(function ControlPanel() {
             sx={{ p: "2px 0 0" }}
             onClick={() =>
               callSpotify(SpotifyApi)
-                .shufflePut({
+                .apiSpotifyShufflePut({
                   shuffle: !shuffling,
                 })
                 .then(() => hydratePlaybackState())
@@ -544,7 +544,7 @@ const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
 
   React.useEffect(() => {
     callSpotify(SpotifyApi)
-      .devicesGet()
+      .apiSpotifyDevicesGet()
       .then((data) => setDevices(data.devices))
       .catch((e) => {
         console.warn(e);
@@ -601,7 +601,7 @@ const TransferStateAllDevices = ({ onClose }: ITransferStatePromptProps) => {
                 }}
                 onClick={async () => {
                   await callSpotify(SpotifyApi)
-                    .playerPut({
+                    .apiSpotifyPlayerPut({
                       transferStateRequest: { deviceIds: [d.id] },
                     })
                     .then(() => onClose())

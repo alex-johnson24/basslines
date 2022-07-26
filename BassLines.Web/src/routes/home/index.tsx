@@ -143,7 +143,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
       });
       let savedArr: TrackSavedReference[];
       if (authorized && songsResults.length) {
-        savedArr = await callSpotify(SpotifyApi).checkSavedPost({
+        savedArr = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({
           requestBody: songsResults.reduce((a, { link }) => {
             const [spotifyId, valid] = parseSpotifyId(link);
             valid && a.push(spotifyId);
@@ -163,7 +163,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   const toggleSaved = async (spotifyId: string, save: boolean) => {
     try {
-      const { saved, id } = await callSpotify(SpotifyApi).saveOrRemoveIdPut({
+      const { saved, id } = await callSpotify(SpotifyApi).apiSpotifySaveOrRemoveIdPut({
         id: spotifyId,
         save,
       });
@@ -281,7 +281,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   React.useEffect(() => {
     !!uris?.length &&
       callSpotify(SpotifyApi)
-        .tracksPost({
+        .apiSpotifyTracksPost({
           requestBody: sortedSongs
             .map(({ link }) => {
               const [id, valid] = parseSpotifyId(link);
@@ -391,7 +391,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
             sx={{ color: "#50d292" }}
             onClick={async () => {
               callSpotify(SpotifyApi)
-                .playPut({
+                .apiSpotifyPlayPut({
                   playContextRequest: {
                     uris,
                     positionMs: 0,

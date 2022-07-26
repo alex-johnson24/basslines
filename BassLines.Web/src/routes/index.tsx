@@ -52,7 +52,7 @@ export default React.memo(function Root(props: IRootProps) {
   React.useEffect(() => {
     if (!authorized) return undefined;
     callSpotify(SpotifyApi)
-      .meGet()
+      .apiSpotifyMeGet()
       .then((payload) => spotifyDispatch({ type: "setProfile", payload }))
       .catch(console.warn);
   }, [authorized]);

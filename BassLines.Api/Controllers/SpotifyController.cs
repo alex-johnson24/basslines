@@ -45,7 +45,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/model")]
+        [Route("model")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof (string), 400)]
         [ProducesResponseType(typeof (string), 500)]
@@ -69,7 +69,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/refresh")]
+        [Route("refresh")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof (string), 400)]
         [ProducesResponseType(typeof (string), 500)]
@@ -96,7 +96,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/search")]
+        [Route("search")]
         [ProducesResponseType(typeof (IEnumerable<SongBaseWithImages>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> Search([FromQuery] string query)
@@ -113,7 +113,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpGet]
-        [Route("/search/artist")]
+        [Route("search/artist")]
         [ProducesResponseType(typeof (ArtistDetails), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> SearchArtists([FromQuery] string query, int? pageSize = 10)
@@ -130,7 +130,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/me")]
+        [Route("me")]
         [ProducesResponseType(typeof (SpotifyProfile), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> GetProfile()
@@ -147,7 +147,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/track/{id}")]
+        [Route("track/{id}")]
         [ProducesResponseType(typeof (SpotifyTrack), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> GetTrack([FromRoute] string id)
@@ -164,7 +164,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpPost]
-        [Route("/tracks")]
+        [Route("tracks")]
         [ProducesResponseType(typeof (List<SpotifyTrackDetails>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> GetTracks([FromBody] List<string> ids)
@@ -181,7 +181,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpPost]
-        [Route("/artists-from-trackIds")]
+        [Route("artists-from-trackIds")]
         [ProducesResponseType(typeof (List<ArtistDetails>), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> GetArtistsFromTracks([FromBody] List<string> trackIds)
@@ -204,7 +204,7 @@ namespace BassLines.Api.Controllers
 
         
         [HttpGet]
-        [Route("/track/{id}/details")]
+        [Route("track/{id}/details")]
         [ProducesResponseType(typeof (SpotifyTrackDetails), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> GetTrackDetails([FromRoute] string id)
@@ -221,7 +221,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpPut]
-        [Route("/player")]
+        [Route("player")]
         public async Task<IActionResult> TransferPlayerState([FromBody]TransferStateRequest request)
         {
             try
@@ -237,7 +237,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/devices")]
+        [Route("devices")]
         [ProducesResponseType(typeof (MyDevices), 200)]
         [ProducesResponseType(typeof (string), 400)]
         [ProducesResponseType(typeof (string), 500)]
@@ -255,7 +255,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/playback-state")]
+        [Route("playback-state")]
         [ProducesResponseType(typeof (SpotifyPlaybackState), 200)]
         [ProducesResponseType(typeof (string), 500)]
         public async Task<IActionResult> GetPlaybackState()
@@ -272,7 +272,7 @@ namespace BassLines.Api.Controllers
         }
 
         [HttpPost]
-        [Route("/add-to-queue/{spotifyId}")]
+        [Route("add-to-queue/{spotifyId}")]
         public async Task<IActionResult> AddTrackToQueue([FromRoute]string spotifyId)
         {
             try
@@ -288,7 +288,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpPut]
-        [Route("/play")]
+        [Route("play")]
         public async Task<IActionResult> PlayTrack([FromBody] PlayContextRequest request = null)
         {
             try
@@ -304,7 +304,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpPut]
-        [Route("/pause")]
+        [Route("pause")]
         public async Task<IActionResult> Pause()
         {
             try
@@ -320,7 +320,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpPost]
-        [Route("/next-or-previous/{nextOrPrevious}")]
+        [Route("next-or-previous/{nextOrPrevious}")]
         public async Task<IActionResult> NextOrPrevious([FromRoute] string nextOrPrevious)
         {
             try
@@ -336,7 +336,7 @@ namespace BassLines.Api.Controllers
         }
         
         [HttpPut]
-        [Route("/shuffle")]
+        [Route("shuffle")]
         public async Task<IActionResult> Shuffle([FromQuery] bool shuffle)
         {
             try
@@ -356,7 +356,7 @@ namespace BassLines.Api.Controllers
         [HttpPut]
         [ProducesResponseType(typeof (TrackSavedReference), 200)]
         [ProducesResponseType(typeof (string), 400)]
-        [Route("/save-or-remove/{id}")]
+        [Route("save-or-remove/{id}")]
         public async Task<IActionResult> SaveOrRemoveTrack([FromRoute] string id, [FromQuery] bool save = true)
         {
             try
@@ -373,7 +373,7 @@ namespace BassLines.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof (List<TrackSavedReference>), 200)]
         [ProducesResponseType(typeof (string), 400)]
-        [Route("/check-saved")]
+        [Route("check-saved")]
         public async Task<IActionResult> CheckSavedTracks([FromBody] List<string> ids)
         {
             try

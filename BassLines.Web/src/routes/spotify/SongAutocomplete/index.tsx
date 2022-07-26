@@ -54,7 +54,7 @@ export default function SongAutoComplete({
     setLoading(true);
     try {
       if (!query) return undefined;
-      const songs = await callSpotify(SpotifyApi).searchGet({ query });
+      const songs = await callSpotify(SpotifyApi).apiSpotifySearchGet({ query });
       setOptions(
         songs.filter(
           (s, i, a) =>

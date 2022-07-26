@@ -134,7 +134,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
                   disableRipple
                   onClick={() =>
                     callSpotify(SpotifyApi)
-                      .playPut({
+                      .apiSpotifyPlayPut({
                         playContextRequest: {
                           uris: [`spotify:track:${spotifyTrackId}`],
                           positionMs: 0,
@@ -165,7 +165,7 @@ const SongCard = React.memo((props: ISongCardProps) => {
                   disableRipple
                   onClick={() =>
                     callSpotify(SpotifyApi)
-                      .addToQueueSpotifyIdPost({
+                      .apiSpotifyAddToQueueSpotifyIdPost({
                         spotifyId: spotifyTrackId,
                       })
                       .catch(console.warn)
