@@ -1,7 +1,7 @@
 import * as React from "react";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
+import MuiDrawer, { DrawerProps as MuiDrawerProps } from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
@@ -26,8 +26,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useSpotify } from "../contexts/spotifyContext";
 import { useSongState } from "../contexts/songContext";
 import SettingsDialog from "./SettingsDialog";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from '@mui/icons-material/Menu';
 
 const drawerWidth = 240;
+
+interface DrawerProps extends MuiDrawerProps {
+  open?: boolean;
+}
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -44,7 +51,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: "hidden",
-  width: `calc(${theme.spacing(9)} + 1px)`,
+  width: 0,
 });
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -60,20 +67,20 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
 }));
 
-const Drawer = styled(MuiDrawer)(({ theme }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: "nowrap",
-  boxSizing: "border-box",
-  [theme.breakpoints.up("md")]: {
-    ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
-  },
-  [theme.breakpoints.down("md")]: {
-    ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
-  },
-}));
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})<DrawerProps>(
+  ({ theme, open }) => ({
+    ...(!open && {
+      ...closedMixin(theme),
+      "& .MuiDrawer-paper": closedMixin(theme),
+    }),
+    ...(open && {
+      ...openedMixin(theme),
+      "& .MuiDrawer-paper": openedMixin(theme),
+    }),
+  })
+);
 
 const StatBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -141,6 +148,8 @@ const drawerItems = [
 export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [menuOpen, setMenuOpen] = React.useState<boolean>(false);
   const {
     state: { profile, player },
   } = useSpotify();
@@ -168,6 +177,9 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       <CssBaseline />
       <AppBar position="fixed">
         <Toolbar disableGutters>
+          <IconButton sx={{marginLeft: "10px"}} onClick={() => setMenuOpen(current => !current)}>
+            <MenuIcon sx={{color: "white"}} />
+          </IconButton>
           <Box sx={{ marginLeft: "24px" }}>
             <DatePicker
               label="Submission Date"
@@ -197,13 +209,16 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
               height: "48px",
               zIndex: -1,
             }}
-            display={{ xs: "none", md: "block" }}
+            display={{ xs: "none", md: "flex" }}
             src={`img/basslines.svg`}
           />
-          <Box sx={{ marginLeft: "auto", marginRight: "20px" }}>
+          <Box
+            display={{ xs: "none", md: "unset" }}
+            sx={{ marginLeft: "auto", marginRight: "20px" }}
+          >
             <GlobalSearch />
           </Box>
-          <SettingsDialog sx={{ marginRight: "24px" }} />
+          <SettingsDialog sx={{ marginRight: isSmallScreen ? "unset" : "24px", marginLeft: isSmallScreen ? "auto" : "unset"}} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -211,6 +226,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
         PaperProps={{
           sx: { boxShadow: "-2px 0 6px -1px rgb(0, 0, 0, .20) inset" },
         }}
+        open={!isSmallScreen || menuOpen}
       >
         <DrawerHeader />
         <List>
@@ -404,7 +420,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, pb: profile?.premium ? 13 : "" }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          pb: profile?.premium ? 13 : "",
+          overflow: "hidden",
+        }}
       >
         <DrawerHeader />
         {props.content}
