@@ -38,6 +38,9 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { getListOfSpotifyUris, parseSpotifyId } from "../../utils";
 import { useSpotify } from "../../contexts/spotifyContext";
 import SpotifyLogo from "../spotify/spotifyLogo";
+import Grid from "@mui/material/Grid";
+import ReviewerQueueEntry from "./ReviewerQueueEntry";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const useStyles = makeStyles(() => {
   return {
@@ -89,9 +92,9 @@ interface IHomeDashboardProps {
 const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
   const theme = useTheme();
   const classes = useStyles(theme);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const { userInfo, userCanReview } = useUserState();
-
   const [reviewerQueue, setReviewerQueue] = React.useState<UserModel[]>([]);
   const [currentReviewer, setCurrentReviewer] = React.useState<UserModel>(null);
   const [songDialogOpen, setSongDialogOpen] = React.useState<boolean>(false);
@@ -163,7 +166,9 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 
   const toggleSaved = async (spotifyId: string, save: boolean) => {
     try {
-      const { saved, id } = await callSpotify(SpotifyApi).apiSpotifySaveOrRemoveIdPut({
+      const { saved, id } = await callSpotify(
+        SpotifyApi
+      ).apiSpotifySaveOrRemoveIdPut({
         id: spotifyId,
         save,
       });
@@ -316,74 +321,96 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         userSong={currentUserSong}
       />
       <Container maxWidth={false}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "flex-end",
-            marginBottom: 2,
-          }}
-        >
-          <HeadphoneIcon
-            style={{ height: "54px", width: "54px", marginRight: "20px" }}
-            reviewerQueue={reviewerQueue}
-          />
-          <Box sx={{ minWidth: "250px" }}>
-            <Typography sx={{ fontSize: "16px", color: "text.textColor" }}>
-              Current Reviewer
-            </Typography>
-            <Typography
+        <Grid container>
+          <Grid
+            item
+            xs={3}
+            sx={{
+              display: "flex",
+            }}
+          >
+            <HeadphoneIcon
+              style={{ height: "54px", width: "54px", marginRight: "20px" }}
+              reviewerQueue={reviewerQueue}
+            />
+            <Box sx={{ minWidth: "250px" }}>
+              <Typography sx={{ fontSize: "16px", color: "text.textColor" }}>
+                Current Reviewer
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  paddingLeft: currentReviewer?.firstName ? "unset" : "55px",
+                }}
+                noWrap
+              >
+                {currentReviewer?.firstName
+                  ? `${currentReviewer?.firstName} ${currentReviewer?.lastName}`
+                  : "--"}
+              </Typography>
+            </Box>
+          </Grid>
+          {isSmallScreen && (
+            <Grid
               sx={{
-                fontSize: "20px",
-                paddingLeft: currentReviewer?.firstName ? "unset" : "55px",
+                display: "inline-flex",
+                flexWrap: "nowrap",
+                marginBottom: "10px",
               }}
-              noWrap
+              item
+              xs={12}
             >
-              {currentReviewer?.firstName
-                ? `${currentReviewer?.firstName} ${currentReviewer?.lastName}`
-                : "--"}
-            </Typography>
-          </Box>
-          <FormControl style={{ width: "100%" }} variant="filled">
-            <InputLabel style={{ fontSize: "16px" }}>Reviewer Notes</InputLabel>
-            <FilledInput
-              style={{
-                fontSize: "20px",
-                caretColor: userCanReview ? "unset" : "transparent",
-              }}
-              fullWidth
-              value={localReviewerNotes}
-              onChange={(event) => setLocalReviewerNotes(event.target.value)}
-              disableUnderline
-              readOnly={!userCanReview}
-              endAdornment={
-                userCanReview && (
-                  <InputAdornment position="end">
-                    {reviewerNotes !== localReviewerNotes && (
-                      <Tooltip title="Reset">
+              {reviewerQueue.map((m, i) => (
+                <ReviewerQueueEntry index={i + 1} reviewer={m} />
+              ))}
+            </Grid>
+          )}
+          <Grid item xs={12} xl={9}>
+            <FormControl style={{ width: "100%" }} variant="filled">
+              <InputLabel style={{ fontSize: "16px" }}>
+                Reviewer Notes
+              </InputLabel>
+              <FilledInput
+                style={{
+                  fontSize: "20px",
+                  caretColor: userCanReview ? "unset" : "transparent",
+                }}
+                fullWidth
+                value={localReviewerNotes}
+                onChange={(event) => setLocalReviewerNotes(event.target.value)}
+                disableUnderline
+                readOnly={!userCanReview}
+                multiline
+                endAdornment={
+                  userCanReview && (
+                    <InputAdornment position="end">
+                      {reviewerNotes !== localReviewerNotes && (
+                        <Tooltip title="Reset">
+                          <IconButton
+                            onClick={getReviewerNotes}
+                            sx={{ marginRight: "5px" }}
+                            edge="end"
+                          >
+                            <Refresh />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      <Tooltip title="Post Note">
                         <IconButton
-                          onClick={getReviewerNotes}
+                          onClick={putReviewerNotes}
                           sx={{ marginRight: "5px" }}
                           edge="end"
                         >
-                          <Refresh />
+                          <Send />
                         </IconButton>
                       </Tooltip>
-                    )}
-                    <Tooltip title="Post Note">
-                      <IconButton
-                        onClick={putReviewerNotes}
-                        sx={{ marginRight: "5px" }}
-                        edge="end"
-                      >
-                        <Send />
-                      </IconButton>
-                    </Tooltip>
-                  </InputAdornment>
-                )
-              }
-            />
-          </FormControl>
-        </Box>
+                    </InputAdornment>
+                  )
+                }
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
         {profile?.premium && (
           <Button
             variant="contained"
@@ -426,7 +453,13 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
               )}
             />
           ))}
-          <Box sx={{ position: "absolute", top: "90%", left: "95%" }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "90%",
+              left: isSmallScreen ? "85%" : "95%",
+            }}
+          >
             <Tooltip
               title={
                 formattedDate !== format(new Date(), "yyyy-MM-dd")
