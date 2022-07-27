@@ -61,6 +61,17 @@ namespace BassLines.Api.Repositories
 
         public void SubmitSong(Song song)
         {
+            /* This will only check for submissions already persisted to the DB, so technically duplicate 
+                 requests sent before initial persistance is achieved can still be submitted. FE validation 
+                 should prevent that tho. */
+            var alreadySubmitted = _ctx.Set<Song>()
+                .Any(s => s.Userid == song.User.Id && s.Submitteddate == DateTime.Now.Date);
+
+            if (alreadySubmitted)
+            {
+                throw new SongSubmissionFailedException();
+            }
+
             // get us a submitted date
             // add the genre to the context to let the db know it exists
             // do the same for the submitting user

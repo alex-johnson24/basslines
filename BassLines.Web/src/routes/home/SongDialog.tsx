@@ -53,26 +53,18 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
     }
   );
 
-  const { mutateAsync: updateSong, status: getUpdateStatus } = useMutation(
-    async () => {
-      call(SongsApi).apiSongsPut({ songModel: userSong });
-    }
-  );
-
-  const { mutateAsync: submitSong, status: getSubmitStatus } = useMutation(
-    async () => {
-      await call(SongsApi).apiSongsPost({ songModel: userSong });
-    }
-  );
-
-  const submitData = async () => {
-    const songResult = userSong.id ? await updateSong() : await submitSong();
+  const submitSong = async () => {
+    const songResult = userSong.id
+      ? await call(SongsApi).apiSongsPut({ songModel: userSong })
+      : await call(SongsApi).apiSongsPost({ songModel: userSong });
     if (songResult === null) {
       console.log("POST FAILED");
     } else {
       props.handleClose();
     }
   };
+
+  const { mutateAsync: submit, isLoading } = useMutation(submitSong);
 
   React.useEffect(() => {
     if (props.open) {
@@ -211,14 +203,7 @@ const SongDialog = React.memo((props: ISongDialogProps) => {
         <Button onClick={props.handleClose} variant="outlined" color="inherit">
           Cancel
         </Button>
-        <Button
-          onClick={submitData}
-          variant="contained"
-          color="primary"
-          disabled={
-            getSubmitStatus === "loading" || getUpdateStatus === "loading"
-          }
-        >
+        <Button onClick={() => submit()} variant="contained" color="primary" disabled={isLoading}>
           Submit
         </Button>
       </DialogActions>
