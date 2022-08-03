@@ -422,7 +422,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          paddingTop: "24px",
           pb: profile?.premium ? 13 : "",
           overflow: "hidden",
         }}

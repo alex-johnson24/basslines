@@ -12,9 +12,11 @@ import { call } from "../../data/callWrapper";
 import { useUserState } from "../../contexts";
 import Check from "@mui/icons-material/Check";
 import Close from "@mui/icons-material/Close";
+import { SxProps, Theme } from "@mui/material";
 
 interface IRatingInputField {
   selectedSong: SongModel;
+  sx: SxProps<Theme>;
 }
 
 const RatingInputField = (props: IRatingInputField) => {
@@ -45,8 +47,8 @@ const RatingInputField = (props: IRatingInputField) => {
   return (
     <Tooltip title={userCanReview && !isEditing ? "Click to Rate" : ""}>
       <Box
-        component="span"
-        sx={{ cursor: userCanReview ? "pointer" : "unset" }}
+        component="div"
+        sx={{ cursor: userCanReview ? "pointer" : "unset", ...props.sx }}
       >
         {isEditing ? (
           <ClickAwayListener onClickAway={handleClearField}>
@@ -111,7 +113,7 @@ const RatingInputField = (props: IRatingInputField) => {
         ) : (
           <Typography
             onClick={() => (userCanReview ? setIsEditing(true) : {})}
-            variant="h6"
+            variant="h4"
             color="secondary.main"
             alignContent="center"
           >
