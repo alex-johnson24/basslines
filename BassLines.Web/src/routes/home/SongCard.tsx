@@ -2,16 +2,14 @@ import AddRounded from "@mui/icons-material/AddRounded";
 import FavoriteBorderRounded from "@mui/icons-material/FavoriteBorderRounded";
 import FavoriteRounded from "@mui/icons-material/FavoriteRounded";
 import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
-import {
-  Avatar,
-  Chip,
-  Grid,
-  IconButton,
-  Link,
-  styled,
-  SvgIcon,
-  Typography,
-} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton"
+import Link from "@mui/material/Link";
+import SvgIcon from "@mui/material/SvgIcon";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/system/Box";
 import * as React from "react";
@@ -19,7 +17,7 @@ import { useSpotify } from "../../contexts/spotifyContext";
 import { SpotifyApi } from "../../data/src/apis/SpotifyApi";
 import { SongModel, SpotifyTrackDetails } from "../../data/src/models";
 import { parseSpotifyId } from "../../utils";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import ThumbUp from "@mui/icons-material/ThumbUp";
 import Edit from "@mui/icons-material/Edit";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -167,6 +165,19 @@ export default function SongCard(props: IProps) {
             />
           </SmallAvatar>
         </animated.span>
+        <Tooltip
+              title={
+                props.song.likes?.length > 0 ? (
+                  <span style={{ whiteSpace: "pre-line" }}>
+                    {props.song.likes?.map(
+                      (m) => `${m.user?.firstName} ${m.user?.lastName}\n`
+                    )}
+                  </span>
+                ) : (
+                  ""
+                )
+              }
+            >
         <Typography
           textAlign="center"
           variant="subtitle2"
@@ -175,6 +186,7 @@ export default function SongCard(props: IProps) {
         >
           {props.song.likes?.length || 0}
         </Typography>
+        </Tooltip>
         {!songIsRated && isCurrentSubmissionDate && isUserSong && (
           <Chip
             sx={{
