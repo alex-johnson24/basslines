@@ -78,6 +78,7 @@ export default function SongCard(props: IProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { userInfo } = useUserState();
+  const isUserSong = props.song.user.username === userInfo?.username;
 
   const isInitialMount = React.useRef(true);
   const [style, trigger] = useAnimation({ y: -9 });
@@ -172,19 +173,19 @@ export default function SongCard(props: IProps) {
         >
           {props.song.likes?.length || 0}
         </Typography>
-        <Chip
-          sx={{
-            ml: "20px",
-            display:
-              songIsRated || !isCurrentSubmissionDate ? "none" : "inline-flex",
-          }}
-          icon={<Edit />}
-          label="Edit Song"
-          variant="outlined"
-          color="secondary"
-          onClick={() => props.setEditSongDialogOpen(true)}
-          size="small"
-        />
+        {!songIsRated && isCurrentSubmissionDate && isUserSong && (
+          <Chip
+            sx={{
+              ml: "20px",
+            }}
+            icon={<Edit />}
+            label="Edit Song"
+            variant="outlined"
+            color="secondary"
+            onClick={() => props.setEditSongDialogOpen(true)}
+            size="small"
+          />
+        )}
       </Box>
       <Box sx={{ position: "absolute", ...spotifyActionLocation }}>
         <SpotifyActions {...spotifyProps} />
@@ -207,7 +208,7 @@ export default function SongCard(props: IProps) {
               <text
                 fontSize="24px"
                 fontWeight="lighter"
-                color="white"
+                color="#FFFFFF"
                 x="50%"
                 y="50%"
                 dominant-baseline="middle"
@@ -248,8 +249,13 @@ export default function SongCard(props: IProps) {
         )}
       </Box>
       <Avatar
+        src={`img/${props.ranking}.svg`}
+        imgProps={{
+          sx: { width: "75%", height: "75%" },
+        }}
         sx={{
-          bgcolor: "secondary.main",
+          bgcolor:
+            props.ranking && props.allSongsRated ? "unset" : "secondary.main",
           color: "white",
           position: "absolute",
           fontWeight: "lighter",
@@ -260,9 +266,11 @@ export default function SongCard(props: IProps) {
           ? `${firstName.split("")[0]}${lastName.split("")[0]}`
           : "??"}
       </Avatar>
-      <Box sx={{ position: "absolute", bottom: "5px", right: "9px" }}>
-        <Typography variant="subtitle2">{`${props.song?.user?.firstName} ${props.song?.user?.lastName}`}</Typography>
-      </Box>
+      {props.allSongsRated && (
+        <Box sx={{ position: "absolute", bottom: "5px", right: "9px" }}>
+          <Typography variant="subtitle2">{`${props.song?.user?.firstName} ${props.song?.user?.lastName}`}</Typography>
+        </Box>
+      )}
     </Paper>
   );
 }
