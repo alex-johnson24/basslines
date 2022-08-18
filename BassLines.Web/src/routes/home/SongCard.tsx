@@ -54,6 +54,9 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 
 const useStyles = makeStyles(() => ({
   root: {
+    "& .disabled-icon": {
+      display: "none",
+    },
     "& .reset-icon": {
       display: "none",
     },
@@ -77,7 +80,7 @@ export default function SongCard(props: IProps) {
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { userInfo } = useUserState();
+  const { userInfo, userCanReview } = useUserState();
   const isUserSong = props.song.user.username === userInfo?.username;
 
   const isInitialMount = React.useRef(true);
@@ -225,7 +228,7 @@ export default function SongCard(props: IProps) {
                 color: "white",
               }}
               size="small"
-              className="reset-icon"
+              className={userCanReview ? "reset-icon" : "disabled-icon"}
               children={<RestartAltIcon />}
               onClick={(e) => {
                 resetRating({
