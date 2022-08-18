@@ -111,7 +111,6 @@ export default function SongCard(props: IProps) {
     } else {
       trigger();
     }
-    console.log(props.song.likes);
   }, [props.song.likes.length]);
 
   return (
