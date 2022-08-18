@@ -208,6 +208,7 @@ export default function SongCard(props: IProps) {
                 fontSize="24px"
                 fontWeight="lighter"
                 color="#FFFFFF"
+                fill="#FFFFFF"
                 x="50%"
                 y="50%"
                 dominant-baseline="middle"
