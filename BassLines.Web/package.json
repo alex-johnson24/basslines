@@ -1,6 +1,6 @@
 {
   "name": "basslines.web",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "description": "basslines web client",
   "main": "index.tsx",
   "scripts": {
@@ -63,6 +63,7 @@
     "react-dom": "^16.13.1",
     "react-query": "^3.24.3",
     "react-router-dom": "5.1.2",
+    "react-spring": "9.5.2",
     "recharts": "^2.1.6",
     "regenerator-runtime": "^0.13.9"
   }

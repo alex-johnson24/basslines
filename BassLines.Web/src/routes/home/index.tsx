@@ -30,7 +30,6 @@ import {
 } from "../../data/src";
 import { format } from "date-fns";
 import SongDialog from "./SongDialog";
-import SongCard from "./SongCard";
 import HeadphoneIcon from "./HeadphoneIcon";
 import { useUserState } from "../../contexts";
 import { useSongDispatch, useSongState } from "../../contexts/songContext";
@@ -41,6 +40,7 @@ import SpotifyLogo from "../spotify/spotifyLogo";
 import Grid from "@mui/material/Grid";
 import ReviewerQueueEntry from "./ReviewerQueueEntry";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import SongCard from "./SongCard";
 
 const useStyles = makeStyles(() => {
   return {
@@ -320,7 +320,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         userInfo={userInfo}
         userSong={currentUserSong}
       />
-      <Container maxWidth={false}>
+      <Container maxWidth={ isSmallScreen ? "xl" : false}>
         <Grid container>
           <Grid
             item
