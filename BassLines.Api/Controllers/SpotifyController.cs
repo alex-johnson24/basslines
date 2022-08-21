@@ -1,3 +1,4 @@
+using System.Net;
 using System.Linq;
 using System;
 using System.Collections.Generic;
@@ -333,6 +334,50 @@ namespace BassLines.Api.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        
+        [HttpGet]
+        [Route("playlists")]
+        public async Task<List<SpotifyPlaylist>> GetPlaylists(bool basslinesOnly = true)
+        {
+            return await _spotifyService.GetPlaylists(HttpContext.Request.Headers["spotify_token"], basslinesOnly);
+        }
+        
+        [HttpGet]
+        [Route("playlist-tracks/{playlistId}")]
+        public async Task<SearchRoot<PlaylistTrack>> GetPlaylistTracks(string playlistId, int page = 0)
+        {
+            return await _spotifyService.GetPlaylistTracks(HttpContext.Request.Headers["spotify_token"], playlistId, page);
+        }
+        
+        [HttpDelete]
+        [Route("playlist-tracks/{playlistId}")]
+        public async Task<IActionResult> RemovePlaylistTrack(string playlistId, string trackUri)
+        {
+            return Ok(await _spotifyService.RemovePlaylistTrack(HttpContext.Request.Headers["spotify_token"], trackUri, playlistId));
+        }
+        
+        [HttpPost]
+        [Route("create-playlist")]
+        public async Task<SpotifyPlaylist> CreatePlaylist(CreatePlaylistRequest request)
+        {
+            return await _spotifyService.CreatePlaylist(HttpContext.Request.Headers["spotify_token"], request);
+        }
+        
+        [HttpPut]
+        [Route("update-playlist")]
+        public async Task<IActionResult> UpdatePlaylist(CreatePlaylistRequest request)
+        {
+            var result = await _spotifyService.UpdatePlaylist(HttpContext.Request.Headers["spotify_token"], request);
+            return this.StatusCode((int)result);
+        }
+        
+        [HttpPost]
+        [Route("add-songs-to-playlist")]
+        public async Task<IActionResult> CreatePlaylist(AddTracksToPlaylistRequest request)
+        {
+            await _spotifyService.AddSongsToPlaylist(HttpContext.Request.Headers["spotify_token"], request.Id, request.TrackUris);
+            return Ok();
         }
         
         [HttpPut]

@@ -365,8 +365,7 @@ const SpotifyActions = ({
             onClick={() => toggleSaved(spotifyTrackId, !song.saved)}
             sx={{ "& svg": { fontSize: iconSize } }}
             children={
-              // song.saved === undefined ? null : song.saved ?
-              false ? (
+              song.saved === undefined ? null : song.saved ? (
                 <FavoriteRounded htmlColor={theme.palette.secondary.main} />
               ) : (
                 <FavoriteBorderRounded />

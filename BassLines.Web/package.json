@@ -61,6 +61,7 @@
     "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-query": "^3.24.3",
     "react-router-dom": "5.1.2",
     "react-spring": "9.5.2",

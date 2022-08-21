@@ -4,17 +4,25 @@ import MiniDrawer from "../toolbar";
 import { useUserDispatch, useUserState } from "../contexts";
 import jwt_decode from "jwt-decode";
 import { getCookieByName } from "../utils/textUtils";
-import { SpotifyApi, UserModel } from "../data/src";
+import { SpotifyApi, SpotifyPlaylist, UserModel } from "../data/src";
 import SpotifyRedirect from "./spotify/Redirect";
 import SpotifyHandler from "./spotify/Handler";
 import { useSpotify } from "../contexts/spotifyContext";
 import ControlPanel from "./spotify/ControlPanel";
 import Login from "./login";
 
-const Leaderboard = React.lazy(() => import(/* webpackChunkName: "leaderboard" */ "./leaderboard"));
-const HomeDashboard = React.lazy(() => import(/* webpackChunkName: "home" */ "./home"));
-const Songs = React.lazy(() => import(/* webpackChunkName: "songs" */ "./songs"));
-const MyCharts = React.lazy(() => import(/* webpackChunkName: "mycharts" */"./mycharts"));
+const Leaderboard = React.lazy(
+  () => import(/* webpackChunkName: "leaderboard" */ "./leaderboard")
+);
+const HomeDashboard = React.lazy(
+  () => import(/* webpackChunkName: "home" */ "./home")
+);
+const Songs = React.lazy(
+  () => import(/* webpackChunkName: "songs" */ "./songs")
+);
+const MyCharts = React.lazy(
+  () => import(/* webpackChunkName: "mycharts" */ "./mycharts")
+);
 
 interface IRootProps {
   basepath: string;
@@ -29,6 +37,7 @@ export default React.memo(function Root(props: IRootProps) {
   const { userInfo } = useUserState();
   const history = useHistory();
   const dispatch = useUserDispatch();
+  const [playlists, setPlaylists] = React.useState<SpotifyPlaylist[]>();
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(
     new Date()
   );
@@ -54,9 +63,19 @@ export default React.memo(function Root(props: IRootProps) {
     callSpotify(SpotifyApi)
       .apiSpotifyMeGet()
       .then((payload) => spotifyDispatch({ type: "setProfile", payload }))
+
       .catch(console.warn);
   }, [authorized]);
 
+  React.useEffect(() => {
+    callSpotify(SpotifyApi)
+      .apiSpotifyPlaylistsGet({ basslinesOnly: false })
+      .then(setPlaylists)
+      .catch(async (e) => {
+        console.log(await e.json());
+      });
+  }, [profile]);
+  
   return (
     <Switch>
       <Route path="/login" component={Login} />

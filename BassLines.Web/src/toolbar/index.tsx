@@ -29,6 +29,7 @@ import SettingsDialog from "./SettingsDialog";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from '@mui/icons-material/Menu';
+import { makeStyles } from "@mui/styles";
 
 const drawerWidth = 240;
 
@@ -148,6 +149,7 @@ const drawerItems = [
 export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
+  const classes = useStyles()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [menuOpen, setMenuOpen] = React.useState<boolean>(false);
   const {
@@ -424,8 +426,10 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           flexGrow: 1,
           paddingTop: "24px",
           pb: profile?.premium ? 13 : "",
-          overflow: "hidden",
+          overflow: "auto",
+          height: "100vh"
         }}
+        className={classes.slimScrollbar}
       >
         <DrawerHeader />
         {props.content}
@@ -433,3 +437,23 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
     </Box>
   );
 }
+
+const useStyles = makeStyles(() => {
+  return {
+    slimScrollbar: {
+      "&::-webkit-scrollbar": {
+        width: "8px",
+        height: "8px",
+      },
+      "&::-webkit-scrollbar-track": {
+        boxShadow: "rgba(0, 0, 0, 0.2)",
+        borderRadius: "4px",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        borderRadius: "4px",
+      },
+    },
+  };
+});
+

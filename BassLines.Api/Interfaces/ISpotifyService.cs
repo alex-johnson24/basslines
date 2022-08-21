@@ -30,5 +30,11 @@ namespace BassLines.Api.Interfaces
         Task<TrackSavedReference> SaveOrRemoveTrack(string accessToken, string id, bool save);
         Task<List<TrackSavedReference>> CheckForSavedTracks(string accessToken, List<string> ids);
         Task<ArtistDetails> SearchArtist(string accessToken, string query, int? pageSize = 10);
+        Task<List<SpotifyPlaylist>> GetPlaylists(string accessToken, bool basslinesOnly);
+        Task<SearchRoot<PlaylistTrack>> GetPlaylistTracks(string accessToken, string playlistId, int page);
+        Task<HttpStatusCode> RemovePlaylistTrack(string accessToken, string trackUri, string playlistId);
+        Task<SpotifyPlaylist> CreatePlaylist(string accessToken, CreatePlaylistRequest request);
+        Task AddSongsToPlaylist(string accessToken, string playlistId, string[] trackUris);
+        Task<HttpStatusCode> UpdatePlaylist(string accessToken, CreatePlaylistRequest request);
     }
 }

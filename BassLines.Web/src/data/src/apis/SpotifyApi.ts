@@ -15,21 +15,33 @@
 
 import * as runtime from '../runtime';
 import {
+    AddTracksToPlaylistRequest,
+    AddTracksToPlaylistRequestFromJSON,
+    AddTracksToPlaylistRequestToJSON,
     ArtistDetails,
     ArtistDetailsFromJSON,
     ArtistDetailsToJSON,
+    CreatePlaylistRequest,
+    CreatePlaylistRequestFromJSON,
+    CreatePlaylistRequestToJSON,
     MyDevices,
     MyDevicesFromJSON,
     MyDevicesToJSON,
     PlayContextRequest,
     PlayContextRequestFromJSON,
     PlayContextRequestToJSON,
+    PlaylistTrackSearchRoot,
+    PlaylistTrackSearchRootFromJSON,
+    PlaylistTrackSearchRootToJSON,
     SongBaseWithImages,
     SongBaseWithImagesFromJSON,
     SongBaseWithImagesToJSON,
     SpotifyPlaybackState,
     SpotifyPlaybackStateFromJSON,
     SpotifyPlaybackStateToJSON,
+    SpotifyPlaylist,
+    SpotifyPlaylistFromJSON,
+    SpotifyPlaylistToJSON,
     SpotifyProfile,
     SpotifyProfileFromJSON,
     SpotifyProfileToJSON,
@@ -47,6 +59,10 @@ import {
     TransferStateRequestToJSON,
 } from '../models';
 
+export interface ApiSpotifyAddSongsToPlaylistPostRequest {
+    addTracksToPlaylistRequest?: AddTracksToPlaylistRequest;
+}
+
 export interface ApiSpotifyAddToQueueSpotifyIdPostRequest {
     spotifyId: string;
 }
@@ -57,6 +73,10 @@ export interface ApiSpotifyArtistsFromTrackIdsPostRequest {
 
 export interface ApiSpotifyCheckSavedPostRequest {
     requestBody?: Array<string>;
+}
+
+export interface ApiSpotifyCreatePlaylistPostRequest {
+    createPlaylistRequest?: CreatePlaylistRequest;
 }
 
 export interface ApiSpotifyModelGetRequest {
@@ -73,6 +93,20 @@ export interface ApiSpotifyPlayPutRequest {
 
 export interface ApiSpotifyPlayerPutRequest {
     transferStateRequest?: TransferStateRequest;
+}
+
+export interface ApiSpotifyPlaylistTracksPlaylistIdDeleteRequest {
+    playlistId: string;
+    trackUri?: string;
+}
+
+export interface ApiSpotifyPlaylistTracksPlaylistIdGetRequest {
+    playlistId: string;
+    page?: number;
+}
+
+export interface ApiSpotifyPlaylistsGetRequest {
+    basslinesOnly?: boolean;
 }
 
 export interface ApiSpotifySaveOrRemoveIdPutRequest {
@@ -105,10 +139,40 @@ export interface ApiSpotifyTracksPostRequest {
     requestBody?: Array<string>;
 }
 
+export interface ApiSpotifyUpdatePlaylistPutRequest {
+    createPlaylistRequest?: CreatePlaylistRequest;
+}
+
 /**
  * 
  */
 export class SpotifyApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async apiSpotifyAddSongsToPlaylistPostRaw(requestParameters: ApiSpotifyAddSongsToPlaylistPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Spotify/add-songs-to-playlist`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AddTracksToPlaylistRequestToJSON(requestParameters.addTracksToPlaylistRequest),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async apiSpotifyAddSongsToPlaylistPost(requestParameters: ApiSpotifyAddSongsToPlaylistPostRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyAddSongsToPlaylistPostRaw(requestParameters, initOverrides);
+    }
 
     /**
      */
@@ -188,6 +252,33 @@ export class SpotifyApi extends runtime.BaseAPI {
      */
     async apiSpotifyCheckSavedPost(requestParameters: ApiSpotifyCheckSavedPostRequest, initOverrides?: RequestInit): Promise<Array<TrackSavedReference>> {
         const response = await this.apiSpotifyCheckSavedPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiSpotifyCreatePlaylistPostRaw(requestParameters: ApiSpotifyCreatePlaylistPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<SpotifyPlaylist>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Spotify/create-playlist`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreatePlaylistRequestToJSON(requestParameters.createPlaylistRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SpotifyPlaylistFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiSpotifyCreatePlaylistPost(requestParameters: ApiSpotifyCreatePlaylistPostRequest, initOverrides?: RequestInit): Promise<SpotifyPlaylist> {
+        const response = await this.apiSpotifyCreatePlaylistPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -418,6 +509,97 @@ export class SpotifyApi extends runtime.BaseAPI {
 
     /**
      */
+    async apiSpotifyPlaylistTracksPlaylistIdDeleteRaw(requestParameters: ApiSpotifyPlaylistTracksPlaylistIdDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.playlistId === null || requestParameters.playlistId === undefined) {
+            throw new runtime.RequiredError('playlistId','Required parameter requestParameters.playlistId was null or undefined when calling apiSpotifyPlaylistTracksPlaylistIdDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.trackUri !== undefined) {
+            queryParameters['trackUri'] = requestParameters.trackUri;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Spotify/playlist-tracks/{playlistId}`.replace(`{${"playlistId"}}`, encodeURIComponent(String(requestParameters.playlistId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async apiSpotifyPlaylistTracksPlaylistIdDelete(requestParameters: ApiSpotifyPlaylistTracksPlaylistIdDeleteRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyPlaylistTracksPlaylistIdDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async apiSpotifyPlaylistTracksPlaylistIdGetRaw(requestParameters: ApiSpotifyPlaylistTracksPlaylistIdGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<PlaylistTrackSearchRoot>> {
+        if (requestParameters.playlistId === null || requestParameters.playlistId === undefined) {
+            throw new runtime.RequiredError('playlistId','Required parameter requestParameters.playlistId was null or undefined when calling apiSpotifyPlaylistTracksPlaylistIdGet.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.page !== undefined) {
+            queryParameters['page'] = requestParameters.page;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Spotify/playlist-tracks/{playlistId}`.replace(`{${"playlistId"}}`, encodeURIComponent(String(requestParameters.playlistId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PlaylistTrackSearchRootFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiSpotifyPlaylistTracksPlaylistIdGet(requestParameters: ApiSpotifyPlaylistTracksPlaylistIdGetRequest, initOverrides?: RequestInit): Promise<PlaylistTrackSearchRoot> {
+        const response = await this.apiSpotifyPlaylistTracksPlaylistIdGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiSpotifyPlaylistsGetRaw(requestParameters: ApiSpotifyPlaylistsGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<SpotifyPlaylist>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.basslinesOnly !== undefined) {
+            queryParameters['basslinesOnly'] = requestParameters.basslinesOnly;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Spotify/playlists`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(SpotifyPlaylistFromJSON));
+    }
+
+    /**
+     */
+    async apiSpotifyPlaylistsGet(requestParameters: ApiSpotifyPlaylistsGetRequest, initOverrides?: RequestInit): Promise<Array<SpotifyPlaylist>> {
+        const response = await this.apiSpotifyPlaylistsGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async apiSpotifyRefreshGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
@@ -639,6 +821,32 @@ export class SpotifyApi extends runtime.BaseAPI {
     async apiSpotifyTracksPost(requestParameters: ApiSpotifyTracksPostRequest, initOverrides?: RequestInit): Promise<Array<SpotifyTrackDetails>> {
         const response = await this.apiSpotifyTracksPostRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async apiSpotifyUpdatePlaylistPutRaw(requestParameters: ApiSpotifyUpdatePlaylistPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Spotify/update-playlist`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreatePlaylistRequestToJSON(requestParameters.createPlaylistRequest),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async apiSpotifyUpdatePlaylistPut(requestParameters: ApiSpotifyUpdatePlaylistPutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.apiSpotifyUpdatePlaylistPutRaw(requestParameters, initOverrides);
     }
 
 }

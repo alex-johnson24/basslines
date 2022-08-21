@@ -6,5 +6,6 @@ namespace BassLines.Api.Models
         public string ClientSecret { get; set; }
         public string RedirectUri { get; set; }
         public string AuthUrl { get; set; }
+        public string PlaylistPrefix = "@basslines:";
     }
 }
