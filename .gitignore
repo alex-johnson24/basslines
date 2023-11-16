@@ -33,6 +33,7 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 BassLines.Api/appsettings.Development.json
+BassLines.Api/appsettings.Prod.json
 node_modules/
 BassLines.Api/wwwroot/*
 BassLines.Api/logs/
