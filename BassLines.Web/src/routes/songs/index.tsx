@@ -36,15 +36,6 @@ const useStyles = makeStyles(() => {
     header: {
       backgroundColor: (theme: Theme) => theme.palette.primary.light,
       color: "white",
-      "& .MuiDataGrid-columnHeaders": {
-        backgroundColor: "rgb(80, 80, 89)",
-        color: "#fff",
-        fontSize: 16,
-        "& span": {
-          // master checkbox
-          color: "#fff",
-        },
-      },
     },
   };
 });
@@ -222,6 +213,17 @@ const Songs = () => {
             componentsProps={{
               columnMenu: { background: theme.palette.secondary },
             }}
+            sx={(theme) => ({
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: theme.palette.primary.light,
+                color: "#fff",
+                fontSize: 16,
+                "& span": {
+                  // master checkbox
+                  color: "#fff",
+                },
+              },
+            })}
             sortModel={sortModel}
             onSortModelChange={setSortModel}
             onSelectionModelChange={setSelectionModel}
@@ -236,11 +238,10 @@ const Songs = () => {
           >
             <Button
               children="Create Playlist from selection"
+              variant="contained"
+              color="primary"
               onClick={() => setCreateOpen(true)}
             />
-            {!!playlists.length && (
-              <Button children="Add Selected to Playlist" />
-            )}
             <CreatePlaylistDialog
               selected={selectionModel?.length ?? 0}
               request={request}

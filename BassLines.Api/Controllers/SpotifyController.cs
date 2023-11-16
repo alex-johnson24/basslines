@@ -374,7 +374,7 @@ namespace BassLines.Api.Controllers
         
         [HttpPost]
         [Route("add-songs-to-playlist")]
-        public async Task<IActionResult> CreatePlaylist(AddTracksToPlaylistRequest request)
+        public async Task<IActionResult> AddSongsToPlaylist(AddTracksToPlaylistRequest request)
         {
             await _spotifyService.AddSongsToPlaylist(HttpContext.Request.Headers["spotify_token"], request.Id, request.TrackUris);
             return Ok();
