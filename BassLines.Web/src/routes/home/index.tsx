@@ -456,7 +456,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           <Box
             sx={{
               position: "absolute",
-              top: "90%",
+              top: "85%",
               left: isSmallScreen ? "85%" : "95%",
             }}
           >

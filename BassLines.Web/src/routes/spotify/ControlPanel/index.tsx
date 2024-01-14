@@ -1,3 +1,4 @@
+import * as React from "react";
 import PauseRounded from "@mui/icons-material/PauseRounded";
 import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 import SkipNextRounded from "@mui/icons-material/SkipNextRounded";
@@ -13,16 +14,16 @@ import Dialog from "@mui/material/Dialog";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Popover from "@mui/material/Popover";
-import Slider from "@mui/material/Slider";
+import Slider, { SliderThumb } from "@mui/material/Slider";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import * as React from "react";
 import { useSpotify } from "../../../contexts/spotifyContext";
 import { Device, SpotifyApi, SpotifyPlaybackState } from "../../../data/src";
 import { convertSecondsToLengthString } from "../../../utils";
 import { SongItem } from "../SongAutocomplete";
 import SpotifyLogo from "../spotifyLogo";
 import useSpotifyWebPlayer from "../WebPlayer";
+import { SvgIconProps, Theme, Tooltip, useMediaQuery } from "@mui/material";
 
 //******AUTHORIZED FOR SPOTIFY******//
 export default React.memo(function ControlPanel() {
@@ -42,6 +43,8 @@ export default React.memo(function ControlPanel() {
     id?: string;
     saved?: boolean;
   }
+
+  const isSmall = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   const [playbackState, setPlaybackState] =
     React.useState<SpotifyPlaybackState>();
@@ -85,7 +88,9 @@ export default React.memo(function ControlPanel() {
 
       if (playing && playing?.id !== currentTrack?.id) {
         (async () => {
-          const likeArray = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({
+          const likeArray = await callSpotify(
+            SpotifyApi
+          ).apiSpotifyCheckSavedPost({
             requestBody: [playing?.id],
           });
           setCurrentTrack({
@@ -128,7 +133,9 @@ export default React.memo(function ControlPanel() {
 
     dispatch({ type: "setDeviceId", payload: deviceId }),
       (async () => {
-        const { devices } = await callSpotify(SpotifyApi).apiSpotifyDevicesGet();
+        const { devices } = await callSpotify(
+          SpotifyApi
+        ).apiSpotifyDevicesGet();
         const anotherDeviceActive = devices.some(
           (d) => d.isActive && d.id !== deviceId && d.name !== "BassLines"
         );
@@ -153,19 +160,102 @@ export default React.memo(function ControlPanel() {
   const shuffling =
     (playingExternally && playbackState?.shuffleState) || playerState?.shuffle;
 
+  const controlIconProps: SvgIconProps = {
+    fontSize: isSmall ? "large" : "inherit",
+  };
+
+  const prevButton = () => (
+    <IconButton
+      disabled={
+        !playingExternally &&
+        !playerState?.track_window?.previous_tracks?.length
+      }
+      sx={{ p: "2px 0 0" }}
+      children={<SkipPreviousRounded {...controlIconProps} />}
+      onClick={async () => {
+        playingExternally
+          ? callSpotify(SpotifyApi)
+              .apiSpotifyNextOrPreviousNextOrPreviousPost({
+                nextOrPrevious: "previous",
+              })
+              .then(() => hydratePlaybackState())
+              .catch(console.warn)
+          : position <= 2000
+          ? await player.previousTrack()
+          : await player.seek(0);
+      }}
+      disableRipple
+    />
+  );
+  const playButton = () => (
+    <IconButton
+      disabled={playingExternally && !playbackState}
+      sx={{ p: "2px 0 0" }}
+      children={
+        !playingExternally ? (
+          paused ? (
+            <PlayArrowRounded fontSize="large" />
+          ) : (
+            <PauseRounded fontSize="large" />
+          )
+        ) : playbackState?.isPlaying ? (
+          <PauseRounded fontSize="large" />
+        ) : (
+          <PlayArrowRounded fontSize="large" />
+        )
+      }
+      onClick={async () =>
+        !playingExternally
+          ? await player.togglePlay()
+          : playbackState.isPlaying
+          ? callSpotify(SpotifyApi)
+              .apiSpotifyPausePut()
+              .then(() => hydratePlaybackState())
+              .catch(console.warn)
+          : callSpotify(SpotifyApi)
+              .apiSpotifyPlayPut({ playContextRequest: {} })
+              .then(() => hydratePlaybackState())
+              .catch(console.warn)
+      }
+      disableRipple
+    />
+  );
+
+  const nextButton = () => (
+    <IconButton
+      disabled={
+        !playingExternally && !playerState?.track_window?.next_tracks?.length
+      }
+      sx={{ p: "2px 0 0" }}
+      children={<SkipNextRounded {...controlIconProps} />}
+      onClick={async () => {
+        playingExternally
+          ? callSpotify(SpotifyApi)
+              .apiSpotifyNextOrPreviousNextOrPreviousPost({
+                nextOrPrevious: "next",
+              })
+              .then(() => hydratePlaybackState())
+              .catch(console.warn)
+          : await player.nextTrack();
+      }}
+      disableRipple
+    />
+  );
+
   return !player ? (
     <></>
   ) : (
     <>
-      <Box
+      <Grid
         component="aside"
+        container
         style={{
-          minHeight: true ? "75px" : "150px",
+          minHeight: "75px",
           position: "fixed",
-          bottom: false ? "-100px" : "-4px",
+          bottom: "-4px",
           padding: "5px",
-          width: "calc(100vw - 240px)",
-          left: "240px",
+          width: isSmall ? "100vw" : "calc(100vw - 240px)",
+          left: isSmall ? 0 : "240px",
           transition: ".1666s all ease-in-out",
           display: "flex",
           flexWrap: "wrap",
@@ -177,218 +267,206 @@ export default React.memo(function ControlPanel() {
               : "rgba(248,248,248,.9)",
         }}
       >
-        {track_window || playbackState ? (
-          <SongItem
-            style={{ width: "180px" }}
-            song={{
-              title: (track_window?.current_track ?? playbackState?.item)?.name,
-              artist: (track_window?.current_track ?? playbackState?.item)
-                ?.artists?.[0]?.name,
-              images: (track_window?.current_track ?? playbackState?.item)
-                ?.album?.images,
-            }}
-            element="div"
-          />
-        ) : playerState?.loading ? (
-          <CircularProgress size={28} />
-        ) : (
-          <Box width={"180px"} />
-        )}
-        <Grid width="fit-content">
-          <IconButton
-            disabled={
-              !playingExternally &&
-              !playerState?.track_window?.previous_tracks?.length
-            }
-            sx={{ p: "2px 0 0" }}
-            children={<SkipPreviousRounded />}
-            onClick={async () => {
-              playingExternally
-                ? callSpotify(SpotifyApi)
-                    .apiSpotifyNextOrPreviousNextOrPreviousPost({
-                      nextOrPrevious: "previous",
-                    })
-                    .then(() => hydratePlaybackState())
-                    .catch(console.warn)
-                : position <= 2000
-                ? await player.previousTrack()
-                : await player.seek(0);
-            }}
-            disableRipple
-          />
-          <IconButton
-            disabled={playingExternally && !playbackState}
-            sx={{ p: "2px 0 0" }}
-            children={
-              !playingExternally ? (
-                paused ? (
-                  <PlayArrowRounded />
-                ) : (
-                  <PauseRounded />
-                )
-              ) : playbackState?.isPlaying ? (
-                <PauseRounded />
-              ) : (
-                <PlayArrowRounded />
-              )
-            }
-            onClick={async () =>
-              !playingExternally
-                ? await player.togglePlay()
-                : playbackState.isPlaying
-                ? callSpotify(SpotifyApi)
-                    .apiSpotifyPausePut()
-                    .then(() => hydratePlaybackState())
-                    .catch(console.warn)
-                : callSpotify(SpotifyApi)
-                    .apiSpotifyPlayPut({ playContextRequest: {} })
-                    .then(() => hydratePlaybackState())
-                    .catch(console.warn)
-            }
-            disableRipple
-          />
-          <IconButton
-            disabled={
-              !playingExternally &&
-              !playerState?.track_window?.next_tracks?.length
-            }
-            sx={{ p: "2px 0 0" }}
-            children={<SkipNextRounded />}
-            onClick={async () => {
-              playingExternally
-                ? callSpotify(SpotifyApi)
-                    .apiSpotifyNextOrPreviousNextOrPreviousPost({
-                      nextOrPrevious: "next",
-                    })
-                    .then(() => hydratePlaybackState())
-                    .catch(console.warn)
-                : await player.nextTrack();
-            }}
-            disableRipple
-          />
+        <Grid item xs={12} md={4}>
+          {track_window || playbackState ? (
+            <Grid container justifyContent="space-between">
+              <SongItem
+                icon={
+                  currentTrack && (
+                    <IconButton
+                      disableRipple
+                      sx={{ p: "2px 0 0" }}
+                      onClick={() =>
+                        callSpotify(SpotifyApi)
+                          .apiSpotifySaveOrRemoveIdPut({
+                            id: currentTrack?.id,
+                            save: !currentTrack?.saved,
+                          })
+                          .then(setCurrentTrack)
+                          .catch(console.warn)
+                      }
+                      children={
+                        currentTrack?.saved ? (
+                          <Tooltip title="Remove from your Spotify library">
+                            <FavoriteRounded
+                              fontSize="small"
+                              style={{ color: theme.palette.secondary.main }}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Add to your Spotify library">
+                            <FavoriteBorderRounded fontSize="small" />
+                          </Tooltip>
+                        )
+                      }
+                    />
+                  )
+                }
+                style={{
+                  width: "fit-content",
+                  marginRight: "8px",
+                  maxWidth: "100%",
+                }}
+                song={{
+                  title: (track_window?.current_track ?? playbackState?.item)
+                    ?.name,
+                  artist: (track_window?.current_track ?? playbackState?.item)
+                    ?.artists?.[0]?.name,
+                  images: (track_window?.current_track ?? playbackState?.item)
+                    ?.album?.images,
+                }}
+                element="div"
+              />
+              {isSmall && (
+                <Grid item container sx={{ width: "fit-content" }}>
+                  {prevButton()}
+                  {playButton()}
+                  {nextButton()}
+                </Grid>
+              )}
+            </Grid>
+          ) : playerState?.loading ? (
+            <CircularProgress size={28} />
+          ) : (
+            <Box width={"180px"} />
+          )}
+
+          {isSmall && (
+            <Grid container>
+              <Slider
+                sx={{ flexGrow: 1, padding: "6px 0 0" }}
+                color="secondary"
+                size="medium"
+                disabled={playingExternally}
+                components={{
+                  Thumb: (props) => (
+                    <SliderThumb {...props} sx={{ display: "none" }} />
+                  ),
+                }}
+                onChange={(e, n: number) => setTrackPosition(n)}
+                onChangeCommitted={(e, numOutOf100: number) => {
+                  setTrackPosition(numOutOf100);
+                  player.seek(duration * (numOutOf100 / 100));
+                }}
+                value={trackPosition || 0}
+              />
+            </Grid>
+          )}
         </Grid>
-        <Grid
-          sx={{
-            padding: "0 16px",
-            marginTop: "3px",
-            width: "240px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Slider
-            sx={{ width: "100%" }}
-            color="secondary"
-            size="small"
-            disabled={playingExternally}
-            onChange={(e, n: number) => setTrackPosition(n)}
-            onChangeCommitted={(e, numOutOf100: number) => {
-              setTrackPosition(numOutOf100);
-              player.seek(duration * (numOutOf100 / 100));
-            }}
-            value={trackPosition || 0}
-          />
+
+        {!isSmall && (
           <Grid
+            container
+            item
+            xs={12}
+            md={4}
             sx={{
+              padding: "0 16px",
+              marginTop: "3px",
+              flexGrow: 1,
               display: "flex",
-              width: "100%",
-              justifyContent: "space-between",
-              fontSize: ".7rem",
+              flexDirection: "column",
             }}
           >
-            <Typography
-              paragraph={false}
-              children={
-                playingExternally
-                  ? ""
-                  : convertSecondsToLengthString(position / 1000)
-              }
-              fontSize={".7rem"}
+            <Grid container justifyContent="center">
+              {prevButton()}
+              {playButton()}
+              {nextButton()}
+            </Grid>
+            <Grid container alignItems="center" wrap="nowrap">
+              <Typography
+                paragraph={false}
+                children={
+                  playingExternally
+                    ? ""
+                    : convertSecondsToLengthString(position / 1000)
+                }
+                fontSize={".7rem"}
+                mr={1.5}
+              />
+              <Slider
+                sx={{ flexGrow: 1 }}
+                color="secondary"
+                size="small"
+                disabled={playingExternally}
+                onChange={(e, n: number) => setTrackPosition(n)}
+                onChangeCommitted={(e, numOutOf100: number) => {
+                  setTrackPosition(numOutOf100);
+                  player.seek(duration * (numOutOf100 / 100));
+                }}
+                value={trackPosition || 0}
+              />
+              <Typography
+                paragraph={false}
+                children={
+                  playingExternally
+                    ? ""
+                    : convertSecondsToLengthString(duration / 1000)
+                }
+                fontSize={".7rem"}
+                ml={1.5}
+              />
+            </Grid>
+          </Grid>
+        )}
+
+        {!isSmall && (
+          <Grid
+            container
+            justifyContent="flex-end"
+            item
+            md={4}
+            sx={{ "& button": { margin: "0 3px" } }}
+          >
+            <IconButton
+              disabled={playingExternally}
+              sx={{ p: "2px 0 0" }}
+              children={<VolumeUpRounded />}
+              onClick={(e) => {
+                e.persist();
+                setVolumeSliderAnchor(e.target);
+              }}
+              disableRipple
             />
-            <Typography
-              paragraph={false}
-              children={
-                playingExternally
-                  ? ""
-                  : convertSecondsToLengthString(duration / 1000)
+            <IconButton
+              disableRipple
+              disabled={playbackState?.shuffleState == undefined}
+              sx={{ p: "2px 0 0" }}
+              onClick={() =>
+                callSpotify(SpotifyApi)
+                  .apiSpotifyShufflePut({
+                    shuffle: !shuffling,
+                  })
+                  .then(() => hydratePlaybackState())
+                  .catch(console.warn)
               }
-              fontSize={".7rem"}
+              children={
+                <ShuffleRounded
+                  style={{
+                    color: shuffling ? theme.palette.secondary.main : "inherit",
+                  }}
+                />
+              }
+            />
+            <IconButton
+              disableRipple
+              sx={{ p: "2px 0 0" }}
+              onClick={() => setTransferStateMenuOpen(true)}
+              children={
+                <Box
+                  component="img"
+                  sx={{
+                    width: "100%",
+                    height: "23px",
+                    mt: "1px",
+                    ml: "4px",
+                  }}
+                  src={`img/speaker.svg`}
+                />
+              }
             />
           </Grid>
-        </Grid>
-        <Grid sx={{ "& button": { margin: "0 3px" } }}>
-          <IconButton
-            disableRipple
-            disabled={!currentTrack}
-            sx={{ p: "2px 0 0" }}
-            onClick={() =>
-              callSpotify(SpotifyApi)
-                .apiSpotifySaveOrRemoveIdPut({
-                  id: currentTrack?.id,
-                  save: !currentTrack?.saved,
-                })
-                .then(setCurrentTrack)
-                .catch(console.warn)
-            }
-            children={
-              currentTrack?.saved ? (
-                <FavoriteRounded
-                  fontSize="small"
-                  style={{ color: theme.palette.secondary.main }}
-                />
-              ) : (
-                <FavoriteBorderRounded fontSize="small" />
-              )
-            }
-          />
-          <IconButton
-            disabled={playingExternally}
-            sx={{ p: "2px 0 0" }}
-            children={<VolumeUpRounded />}
-            onClick={(e) => {
-              e.persist();
-              setVolumeSliderAnchor(e.target);
-            }}
-            disableRipple
-          />
-          <IconButton
-            disableRipple
-            disabled={playbackState?.shuffleState == undefined}
-            sx={{ p: "2px 0 0" }}
-            onClick={() =>
-              callSpotify(SpotifyApi)
-                .apiSpotifyShufflePut({
-                  shuffle: !shuffling,
-                })
-                .then(() => hydratePlaybackState())
-                .catch(console.warn)
-            }
-            children={
-              <ShuffleRounded
-                style={{
-                  color: shuffling ? theme.palette.secondary.main : "inherit",
-                }}
-              />
-            }
-          />
-          <IconButton
-            disableRipple
-            sx={{ p: "2px 0 0" }}
-            onClick={() => setTransferStateMenuOpen(true)}
-            children={
-              <Box
-                component="img"
-                sx={{
-                  width: "100%",
-                  height: "23px",
-                  mt: "1px",
-                  ml: "4px",
-                }}
-                src={`img/speaker.svg`}
-              />
-            }
-          />
-        </Grid>
+        )}
         <Popover
           anchorOrigin={{
             vertical: "top",
@@ -438,7 +516,7 @@ export default React.memo(function ControlPanel() {
               </Typography>
             </Grid>
           )}
-      </Box>
+      </Grid>
       <TransferStatePrompt
         open={transferPromptOpen}
         currentDevice={currentDevice}
@@ -461,8 +539,6 @@ export default React.memo(function ControlPanel() {
     </>
   );
 });
-
-//TODO: perhaps move playbackState refreshing to BE services
 
 interface ITransferStatePromptProps {
   open?: boolean;
