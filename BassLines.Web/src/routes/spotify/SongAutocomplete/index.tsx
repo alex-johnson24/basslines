@@ -137,10 +137,12 @@ export default function SongAutoComplete({
 export const SongItem = ({
   song,
   element,
+  icon,
   ...props
 }: React.HTMLAttributes<HTMLElement> & {
   song: SongBaseWithImages;
   element?: React.ElementType;
+  icon?: JSX.Element;
 }) => {
   const imgHeight = "65px";
 
@@ -167,7 +169,11 @@ export const SongItem = ({
         flexDirection="column"
         width={`calc(100% - ${imgHeight})`}
       >
-        <Typography noWrap children={song.title} />
+        <Grid container wrap="nowrap" alignItems="center" height="24px">
+          <Typography noWrap children={song.title} />
+          &nbsp; &nbsp;
+          {icon}
+        </Grid>
         <Typography
           noWrap
           variant="caption"

@@ -28,7 +28,7 @@ import { useSongState } from "../contexts/songContext";
 import SettingsDialog from "./SettingsDialog";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
 import { makeStyles } from "@mui/styles";
 
 const drawerWidth = 240;
@@ -70,18 +70,16 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
-})<DrawerProps>(
-  ({ theme, open }) => ({
-    ...(!open && {
-      ...closedMixin(theme),
-      "& .MuiDrawer-paper": closedMixin(theme),
-    }),
-    ...(open && {
-      ...openedMixin(theme),
-      "& .MuiDrawer-paper": openedMixin(theme),
-    }),
-  })
-);
+})<DrawerProps>(({ theme, open }) => ({
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+}));
 
 const StatBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -149,8 +147,8 @@ const drawerItems = [
 export default function MiniDrawer(props: IMiniDrawerProps) {
   const theme = useTheme();
   const history = useHistory();
-  const classes = useStyles()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const classes = useStyles();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [menuOpen, setMenuOpen] = React.useState<boolean>(false);
   const {
     state: { profile, player },
@@ -179,9 +177,14 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
       <CssBaseline />
       <AppBar position="fixed">
         <Toolbar disableGutters>
-          <IconButton sx={{marginLeft: "10px"}} onClick={() => setMenuOpen(current => !current)}>
-            <MenuIcon sx={{color: "white"}} />
-          </IconButton>
+          {isSmallScreen && (
+            <IconButton
+              sx={{ marginLeft: "10px" }}
+              onClick={() => setMenuOpen((current) => !current)}
+            >
+              <MenuIcon sx={{ color: "white" }} />
+            </IconButton>
+          )}
           <Box sx={{ marginLeft: "24px" }}>
             <DatePicker
               label="Submission Date"
@@ -220,7 +223,12 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           >
             <GlobalSearch />
           </Box>
-          <SettingsDialog sx={{ marginRight: isSmallScreen ? "unset" : "24px", marginLeft: isSmallScreen ? "auto" : "unset"}} />
+          <SettingsDialog
+            sx={{
+              marginRight: isSmallScreen ? "unset" : "24px",
+              marginLeft: isSmallScreen ? "auto" : "unset",
+            }}
+          />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -262,6 +270,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
                   item.link == "/mycharts" ||
                   item.link == "/leaderboard"
                 ) {
+                  setMenuOpen(false);
                   history.push(item.link);
                 }
               }}
