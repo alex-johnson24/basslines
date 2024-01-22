@@ -19,6 +19,7 @@ jobs:
         node-version: 14
 
     - name: Install Dependencies
+      working-directory: ./BassLines.Web
       run: yarn install
 
     - name: Run Yarn Command
