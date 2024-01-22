@@ -28,10 +28,10 @@ jobs:
 
     - name: Zip Directory
       working-directory: ./BassLines.Web/dist
-      run: zip -r archive.zip ./
+      run: zip -r basslines.web.${{github.run_number}}.zip ./
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: my-artifact
-        path: archive.zip
+        name: basslines.web.${{github.run_number}}
+        path: ./BassLines.Web/dist/basslines.web.${{github.run_number}}.zip
