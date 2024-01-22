@@ -21,20 +21,13 @@ jobs:
     - name: Install Dependencies
       run: yarn install
 
-    - name: List Directory
-      run: ls -altr
-
-    - name: List Directory
-      run: cd basslines
-
-    - name: List Directory
-      run: ls -altr
-
     - name: Run Yarn Command
+      working-directory: ./BassLines.Web
       run: yarn prod:webpack
 
     - name: Zip Directory
-      run: zip -r archive.zip ./BassLines.Web/dist
+      working-directory: ./BassLines.Web/dist
+      run: zip -r archive.zip ./
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
