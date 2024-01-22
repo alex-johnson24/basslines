@@ -21,6 +21,15 @@ jobs:
     - name: Install Dependencies
       run: yarn install
 
+    - name: List Directory
+      run: ls -altr
+
+    - name: List Directory
+      run: cd basslines
+
+    - name: List Directory
+      run: ls -altr
+
     - name: Run Yarn Command
       run: yarn prod:webpack
 
