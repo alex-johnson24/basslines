@@ -36,19 +36,8 @@ jobs:
         name: basslines.web.${{github.run_number}}
         path: ./BassLines.Web/dist/basslines.web.${{github.run_number}}.zip
 
-  approve:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Wait for Approval
-        uses: actions/wait-for-approval@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          # Timeout in minutes (default is 10 minutes)
-          timeout-minutes: 5
-
   deploy_remote:
-    needs: approve
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
