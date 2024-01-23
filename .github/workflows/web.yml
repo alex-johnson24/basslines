@@ -53,13 +53,7 @@ jobs:
         run: touch ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 
       - name: Install SSH Key
-        run: echo "$LIGHTSAIL_SSH_KEY" > ~/.ssh/id_rsa
-        shell: bash
-        env:
-          LIGHTSAIL_SSH_KEY: ${{secrets.LIGHTSAIL_SSH_KEY}}
-
-      - name: Cat SSH File
-        run: cat ~/.ssh/id_rsa
+        run: echo "${{secrets.LIGHTSAIL_SSH_KEY}}" > ~/.ssh/id_rsa
         
       - name: Copy Artifact to Remote Server
         run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/app.web.basslines.co
