@@ -29,7 +29,7 @@ jobs:
 
     - name: Swap Environment Variables in JavaScript File
       run: |
-        sed -i "s|__API_URL__|${{env.API_URL}}|g" ./BassLines.Web/dist/configs.js
+        sed -i "s|__API_URL__|${{vars.API_URL}}|g" ./BassLines.Web/dist/configs.js
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
@@ -58,4 +58,4 @@ jobs:
         run: echo "${{secrets.LIGHTSAIL_SSH_KEY}}" > ~/.ssh/id_rsa
         
       - name: Copy Artifact to Remote Server
-        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/app.web.basslines.co
+        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}} ec2-user@alexanderdev.com:/appl/app.web.basslines.co
