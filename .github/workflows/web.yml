@@ -31,11 +31,15 @@ jobs:
       run: |
         sed -i "s|__API_URL__|${{vars.API_URL}}|g" ./BassLines.Web/dist/configs.js
 
+    - name: Zip Directory
+      working-directory: ./BassLines.Web/dist
+      run: zip -r basslines.web.${{github.run_number}}.zip ./
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: basslines.web.${{github.run_number}}
-        path: ./BassLines.Web/dist
+        path: ./BassLines.Web/dist/basslines.web.${{github.run_number}}.zip
 
   deploy_remote:
     needs: build
@@ -61,4 +65,4 @@ jobs:
         run: echo "${{secrets.LIGHTSAIL_SSH_KEY}}" > ~/.ssh/id_rsa
         
       - name: Copy Artifact to Remote Server
-        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}} ec2-user@alexanderdev.com:/appl/app.web.basslines.co
+        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/app.web.basslines.co
