@@ -57,6 +57,9 @@ jobs:
         shell: bash
         env:
           LIGHTSAIL_SSH_KEY: ${{secrets.LIGHTSAIL_SSH_KEY}}
+
+      - name: Cat SSH File
+        run: cat ~/.ssh/id_rsa
         
       - name: Copy Artifact to Remote Server
         run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/app.web.basslines.co
