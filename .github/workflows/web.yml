@@ -48,6 +48,9 @@ jobs:
           name: basslines.web.${{github.run_number}}
           path: .
 
+      - name: Debug Artifact
+        run: ls -altr /home/runner/work/basslines/basslines
+
       - name: Create SSH Directory
         run: mkdir ~/.ssh && chmod 700 ~/.ssh
 
