@@ -66,3 +66,6 @@ jobs:
         
       - name: Copy Artifact to Remote Server
         run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/app.web.basslines.co
+
+      - name: Install Application Files
+        run: ssh ec2-user@alexanderdev.com 'unzip -o /appl/app.web.basslines.co/basslines.web.${{github.run_number}}.zip -d /appl/app.web.basslines.co'
