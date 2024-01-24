@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, release) && 'production' || 'development' }}
+    environment: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release') && 'production' || 'development' }}
 
     steps:
     - name: Checkout Repository
@@ -46,7 +46,7 @@ jobs:
   deploy_remote:
     needs: build
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, release) && 'production' || 'development' }}
+    environment: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'release') && 'production' || 'development' }}
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v2
