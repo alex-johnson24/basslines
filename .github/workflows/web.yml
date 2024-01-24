@@ -64,7 +64,7 @@ jobs:
         run: echo "${{secrets.LIGHTSAIL_SSH_KEY}}" > ~/.ssh/id_rsa
         
       - name: Copy Artifact to Remote Server
-        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/test
+        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/${{vars.DEPLOYMENT_DIRECTORY}}
 
       - name: Install Application Files
-        run: ssh ec2-user@alexanderdev.com 'unzip -o /appl/test/basslines.web.${{github.run_number}}.zip -d /appl/test'
+        run: ssh ec2-user@alexanderdev.com 'unzip -o /appl/${{vars.DEPLOYMENT_DIRECTORY}}/basslines.web.${{github.run_number}}.zip -d /appl/${{vars.DEPLOYMENT_DIRECTORY}}'
