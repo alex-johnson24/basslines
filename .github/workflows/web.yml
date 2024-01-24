@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - main
+    tags:        
+      - 'release/v**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, release) && 'production' || 'development' }}
 
     steps:
     - name: Checkout Repository
@@ -44,16 +46,13 @@ jobs:
   deploy_remote:
     needs: build
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, release) && 'production' || 'development' }}
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
           name: basslines.web.${{github.run_number}}
           path: .
-
-      - name: Debug Artifact
-        run: ls -altr /home/runner/work/basslines/basslines
 
       - name: Create SSH Directory
         run: mkdir ~/.ssh && chmod 700 ~/.ssh
@@ -65,7 +64,7 @@ jobs:
         run: echo "${{secrets.LIGHTSAIL_SSH_KEY}}" > ~/.ssh/id_rsa
         
       - name: Copy Artifact to Remote Server
-        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/app.web.basslines.co
+        run: scp -o StrictHostKeyChecking=no -r basslines.web.${{github.run_number}}.zip ec2-user@alexanderdev.com:/appl/test
 
       - name: Install Application Files
-        run: ssh ec2-user@alexanderdev.com 'unzip -o /appl/app.web.basslines.co/basslines.web.${{github.run_number}}.zip -d /appl/app.web.basslines.co'
+        run: ssh ec2-user@alexanderdev.com 'unzip -o /appl/test/basslines.web.${{github.run_number}}.zip -d /appl/test'
