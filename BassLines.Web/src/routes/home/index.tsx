@@ -411,11 +411,17 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
             </FormControl>
           </Grid>
         </Grid>
-        {profile?.premium && (
+        {profile?.premium && !!uris.length && (
           <Button
             variant="contained"
-            disabled={!uris.length}
-            sx={{ color: "#50d292" }}
+            sx={{ 
+              color: "#50d292", 
+              mt: 1, 
+              zIndex: 1,
+              width: { xs: "100%", sm: "fit-content" },
+              position: { xs: "sticky", sm: "unset" },
+              top: { xs: "32px", sm: "unset" },
+             }}
             onClick={async () => {
               callSpotify(SpotifyApi)
                 .apiSpotifyPlayPut({
@@ -434,10 +440,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
             />
           </Button>
         )}
-        <Box
-          sx={{ height: "calc(100vh - 312px)", overflowY: "auto" }}
-          className={classes.scrollbar}
-        >
+        <Box className={classes.scrollbar} sx={{ pb: 2 }}>
           {sortedSongs.map((m: SongModel, i: number) => (
             <SongCard
               key={i}
@@ -456,7 +459,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           <Box
             sx={{
               position: "absolute",
-              top: "85%",
+              bottom: "125px",
               left: isSmallScreen ? "85%" : "95%",
             }}
           >
