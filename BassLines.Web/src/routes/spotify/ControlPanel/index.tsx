@@ -244,7 +244,7 @@ export default React.memo(function ControlPanel() {
 
   return !player ? (
     <></>
-  ) : (
+  ) : track_window && playbackState ? (
     <>
       <Grid
         component="aside"
@@ -268,73 +268,66 @@ export default React.memo(function ControlPanel() {
         }}
       >
         <Grid item xs={12} md={4}>
-          {track_window || playbackState ? (
-            <Grid container justifyContent="space-between">
-              <SongItem
-                icon={
-                  currentTrack && (
-                    <IconButton
-                      disableRipple
-                      sx={{ p: "2px 0 0" }}
-                      onClick={() =>
-                        callSpotify(SpotifyApi)
-                          .apiSpotifySaveOrRemoveIdPut({
-                            id: currentTrack?.id,
-                            save: !currentTrack?.saved,
-                          })
-                          .then(setCurrentTrack)
-                          .catch(console.warn)
-                      }
-                      children={
-                        currentTrack?.saved ? (
-                          <Tooltip title="Remove from your Spotify library">
-                            <FavoriteRounded
-                              fontSize="small"
-                              style={{ color: theme.palette.secondary.main }}
-                            />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="Add to your Spotify library">
-                            <FavoriteBorderRounded fontSize="small" />
-                          </Tooltip>
-                        )
-                      }
-                    />
-                  )
-                }
-                style={{
-                  width: "fit-content",
-                  marginRight: "8px",
-                  maxWidth: "100%",
-                }}
-                song={{
-                  title: (track_window?.current_track ?? playbackState?.item)
-                    ?.name,
-                  artist: (track_window?.current_track ?? playbackState?.item)
-                    ?.artists?.[0]?.name,
-                  images: (track_window?.current_track ?? playbackState?.item)
-                    ?.album?.images,
-                }}
-                element="div"
-              />
-              {isSmall && (
-                <Grid item container sx={{ width: "fit-content" }}>
-                  {prevButton()}
-                  {playButton()}
-                  {nextButton()}
-                </Grid>
-              )}
-            </Grid>
-          ) : playerState?.loading ? (
-            <CircularProgress size={28} />
-          ) : (
-            <Box width={"180px"} />
-          )}
+          <Grid container wrap='nowrap' justifyContent="space-between">
+            <SongItem
+              icon={
+                currentTrack && (
+                  <IconButton
+                    disableRipple
+                    sx={{ p: "2px 0 0" }}
+                    onClick={() =>
+                      callSpotify(SpotifyApi)
+                        .apiSpotifySaveOrRemoveIdPut({
+                          id: currentTrack?.id,
+                          save: !currentTrack?.saved,
+                        })
+                        .then(setCurrentTrack)
+                        .catch(console.warn)
+                    }
+                    children={
+                      currentTrack?.saved ? (
+                        <Tooltip title="Remove from your Spotify library">
+                          <FavoriteRounded
+                            fontSize="small"
+                            style={{ color: theme.palette.secondary.main }}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Add to your Spotify library">
+                          <FavoriteBorderRounded fontSize="small" />
+                        </Tooltip>
+                      )
+                    }
+                  />
+                )
+              }
+              style={{
+                width: "calc(100% - 125px)",
+                marginRight: "8px",
+              }}
+              song={{
+                title: (track_window?.current_track ?? playbackState?.item)
+                  ?.name,
+                artist: (track_window?.current_track ?? playbackState?.item)
+                  ?.artists?.[0]?.name,
+                images: (track_window?.current_track ?? playbackState?.item)
+                  ?.album?.images,
+              }}
+              element="div"
+            />
+            {isSmall && (
+              <Grid item container sx={{ width: "fit-content" }}>
+                {prevButton()}
+                {playButton()}
+                {nextButton()}
+              </Grid>
+            )}
+          </Grid>
 
           {isSmall && (
             <Grid container>
               <Slider
-                sx={{ flexGrow: 1, padding: "6px 0 0" }}
+                sx={{ flexGrow: 1, padding: "6px 0 0 !important" }}
                 color="secondary"
                 size="medium"
                 disabled={playingExternally}
@@ -502,7 +495,8 @@ export default React.memo(function ControlPanel() {
             />
           }
         />
-        {playingExternally &&
+        {!isSmall &&
+          playingExternally &&
           playbackState?.device?.name &&
           playbackState?.device?.name !== "BassLines" && (
             <Grid
@@ -537,6 +531,8 @@ export default React.memo(function ControlPanel() {
         />
       )}
     </>
+  ) : (
+    <></>
   );
 });
 

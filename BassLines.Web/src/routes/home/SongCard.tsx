@@ -93,7 +93,7 @@ export default function SongCard(props: IProps) {
 
   const spotifyProps = {
     ...props,
-    iconSize: isSmallScreen ? "14px" : "20px",
+    iconSize: "20px",
   };
 
   const spotifyActionLocation = {
@@ -205,13 +205,20 @@ export default function SongCard(props: IProps) {
         <SpotifyActions {...spotifyProps} />
       </Box>
       <Box
-        sx={{ position: "absolute", top: "0", right: "35%", marginTop: "-2px" }}
+        sx={{ 
+          position: "absolute", 
+          top: { xs: "-16px", md: "0" }, 
+          right: { xs: "40%", md: "35%"}
+         }}
         className={classes.root}
       >
         {props.song?.rating ? (
           <>
             <SvgIcon
-              sx={{ width: "62px", height: "102px" }}
+              sx={{ 
+                height: "102px",
+                width: { xs: "40px", md: "62px" }, 
+              }}
               viewBox="0 0 62 101"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -357,13 +364,13 @@ const SpotifyActions = ({
                 })
                 .catch(console.warn)
             }
-            sx={{ "& svg": { fontSize: iconSize } }}
+            sx={{ padding: "2px", "& svg": { fontSize: iconSize } }}
             children={<PlayArrowRounded />}
           />
           <IconButton
             disableRipple
             onClick={() => toggleSaved(spotifyTrackId, !song.saved)}
-            sx={{ "& svg": { fontSize: iconSize } }}
+            sx={{ padding: "2px", "& svg": { fontSize: iconSize } }}
             children={
               song.saved === undefined ? null : song.saved ? (
                 <FavoriteRounded htmlColor={theme.palette.secondary.main} />
@@ -381,14 +388,14 @@ const SpotifyActions = ({
                 })
                 .catch(console.warn)
             }
-            sx={{ "& svg": { fontSize: iconSize } }}
+            sx={{ padding: "2px", "& svg": { fontSize: iconSize } }}
             children={<AddRounded />}
           />
         </>
       )}
       <IconButton
         sx={{
-          "& svg": { fontSize: iconSize },
+          padding: "2px", "& svg": { fontSize: iconSize },
           color:
             song.likes.map((m) => m.userId).indexOf(userInfo.id) > -1
               ? "secondary.main"

@@ -68,18 +68,18 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
 }));
 
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<DrawerProps>(({ theme, open }) => ({
-  ...(!open && {
-    ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
-  }),
-  ...(open && {
-    ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
-  }),
-}));
+// const Drawer = styled(MuiDrawer, {
+//   shouldForwardProp: (prop) => prop !== "open",
+// })<DrawerProps>(({ theme, open }) => ({
+//   ...(!open && {
+//     ...closedMixin(theme),
+//     "& .MuiDrawer-paper": closedMixin(theme),
+//   }),
+//   ...(open && {
+//     ...openedMixin(theme),
+//     "& .MuiDrawer-paper": openedMixin(theme),
+//   }),
+// }));
 
 const StatBox = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -231,10 +231,15 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
           />
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
+      <MuiDrawer
+        variant={isSmallScreen ? "temporary" : "permanent"}
         PaperProps={{
-          sx: { boxShadow: "-2px 0 6px -1px rgb(0, 0, 0, .20) inset" },
+          sx: { 
+            width: isSmallScreen ? "100vw" : drawerWidth,
+            maxWidth: "500px",
+            boxShadow: "-2px 0 6px -1px rgb(0, 0, 0, .20) inset" ,
+            position: isSmallScreen ? "fixed" : "relative",
+          },
         }}
         open={!isSmallScreen || menuOpen}
       >
@@ -428,7 +433,7 @@ export default function MiniDrawer(props: IMiniDrawerProps) {
         >
           Logout
         </Button>
-      </Drawer>
+      </MuiDrawer>
       <Box
         component="main"
         sx={{
