@@ -68,19 +68,6 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
 }));
 
-// const Drawer = styled(MuiDrawer, {
-//   shouldForwardProp: (prop) => prop !== "open",
-// })<DrawerProps>(({ theme, open }) => ({
-//   ...(!open && {
-//     ...closedMixin(theme),
-//     "& .MuiDrawer-paper": closedMixin(theme),
-//   }),
-//   ...(open && {
-//     ...openedMixin(theme),
-//     "& .MuiDrawer-paper": openedMixin(theme),
-//   }),
-// }));
-
 const StatBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
