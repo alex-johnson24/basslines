@@ -145,14 +145,19 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         submitDateString: formattedDate,
       });
       let savedArr: TrackSavedReference[];
-      if (authorized && songsResults.length) {
-        savedArr = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({
-          requestBody: songsResults.reduce((a, { link }) => {
+      try{
+        if (authorized && songsResults.length) {
+          const requestBody = songsResults.reduce((a, { link }) => {
             const [spotifyId, valid] = parseSpotifyId(link);
             valid && a.push(spotifyId);
             return a;
-          }, []),
-        });
+          }, []);
+          if (requestBody.length){
+            savedArr = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({ requestBody });
+          }
+        }
+      } catch (er) {
+        console.warn(er);
       }
       dispatch({
         type: "setDailySongs",
