@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import { useTheme, Theme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import Button, { ButtonProps } from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Fab from "@mui/material/Fab";
 import FilledInput from "@mui/material/FilledInput";
@@ -145,15 +145,17 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         submitDateString: formattedDate,
       });
       let savedArr: TrackSavedReference[];
-      try{
+      try {
         if (authorized && songsResults.length) {
           const requestBody = songsResults.reduce((a, { link }) => {
             const [spotifyId, valid] = parseSpotifyId(link);
             valid && a.push(spotifyId);
             return a;
           }, []);
-          if (requestBody.length){
-            savedArr = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({ requestBody });
+          if (requestBody.length) {
+            savedArr = await callSpotify(SpotifyApi).apiSpotifyCheckSavedPost({
+              requestBody,
+            });
           }
         }
       } catch (er) {
@@ -303,6 +305,10 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         .catch(console.warn);
   }, [sortedSongs]);
 
+  const disableSubmission =
+    formattedDate !== format(new Date(), "yyyy-MM-dd") ||
+    dailySongs.map((m) => m.user?.username).indexOf(userInfo?.username) > -1;
+
   return (
     <>
       <Snackbar
@@ -325,7 +331,7 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         userInfo={userInfo}
         userSong={currentUserSong}
       />
-      <Container maxWidth={ isSmallScreen ? "xl" : false}>
+      <Container maxWidth={isSmallScreen ? "xl" : false}>
         <Grid container>
           <Grid
             item
@@ -385,7 +391,14 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
                 onChange={(event) => setLocalReviewerNotes(event.target.value)}
                 disableUnderline
                 readOnly={!userCanReview}
+                tabIndex={userCanReview ? 0 : -1}
+                autoFocus={userCanReview}
                 multiline
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    putReviewerNotes();
+                  }
+                }}
                 endAdornment={
                   userCanReview && (
                     <InputAdornment position="end">
@@ -419,14 +432,14 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
         {profile?.premium && !!uris.length && (
           <Button
             variant="contained"
-            sx={{ 
-              color: "#50d292", 
-              mt: 1, 
+            sx={{
+              color: "#50d292",
+              mt: 1,
               zIndex: 1,
               width: { xs: "100%", sm: "fit-content" },
               position: { xs: "sticky", sm: "unset" },
               top: { xs: "32px", sm: "unset" },
-             }}
+            }}
             onClick={async () => {
               callSpotify(SpotifyApi)
                 .apiSpotifyPlayPut({
@@ -446,6 +459,9 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
           </Button>
         )}
         <Box className={classes.scrollbar} sx={{ pb: 2 }}>
+          {!disableSubmission && (
+            <AddSongCard onClick={() => setSongDialogOpen(true)} />
+          )}
           {sortedSongs.map((m: SongModel, i: number) => (
             <SongCard
               key={i}
@@ -461,37 +477,6 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
               )}
             />
           ))}
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: "125px",
-              left: isSmallScreen ? "85%" : "95%",
-            }}
-          >
-            <Tooltip
-              title={
-                formattedDate !== format(new Date(), "yyyy-MM-dd")
-                  ? ""
-                  : "Submit Daily Song"
-              }
-            >
-              <span>
-                <Fab
-                  onClick={() => setSongDialogOpen(true)}
-                  color="primary"
-                  size="medium"
-                  disabled={
-                    formattedDate !== format(new Date(), "yyyy-MM-dd") ||
-                    dailySongs
-                      .map((m) => m.user?.username)
-                      .indexOf(userInfo?.username) > -1
-                  }
-                >
-                  <Add />
-                </Fab>
-              </span>
-            </Tooltip>
-          </Box>
         </Box>
       </Container>
     </>
@@ -499,3 +484,36 @@ const HomeDashboard = React.memo((props: IHomeDashboardProps) => {
 });
 
 export default HomeDashboard;
+
+const AddSongCard = (props: ButtonProps) => (
+  <Button
+    sx={{
+      mt: 1,
+      p: "20px 16px 20px 16px",
+      position: "relative",
+      cursor: "pointer",
+      ":hover": {
+        border: "1px solid #50d29260",
+      },
+      ":focus": {
+        border: "1px solid #50d29260",
+      },
+      fontSize: "20px",
+      textTransform: "none",
+      color: "#50d292",
+    }}
+    variant="outlined"
+    fullWidth
+    {...{
+      autoFocus: true,
+      disableTouchRipple: true,
+      disableRipple: true,
+      disableFocusRipple: true,
+    }}
+    {...props}
+  >
+    <Typography variant="h6" sx={{ textAlign: "center" }}>
+      Submit a Song
+    </Typography>
+  </Button>
+);
