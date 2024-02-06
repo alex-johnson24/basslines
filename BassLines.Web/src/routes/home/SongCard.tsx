@@ -212,7 +212,7 @@ export default function SongCard(props: IProps) {
          }}
         className={classes.root}
       >
-        {props.song?.rating ? (
+        {songIsRated ? (
           <>
             <SvgIcon
               sx={{ 
