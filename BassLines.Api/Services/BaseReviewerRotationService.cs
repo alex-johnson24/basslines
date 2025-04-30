@@ -9,18 +9,12 @@ using System;
 
 namespace BassLines.Api.Services
 {
-    public abstract class BaseReviewerRotationService : IReviewerRotationService
+    public abstract class BaseReviewerRotationService(BassLinesContext ctx) : IReviewerRotationService
     {
-
         protected static readonly string REVIEWER_LIST_KEY = "reviewerList";
         protected static readonly string CURRENT_REVIEWER_KEY = "currentReviewer";
         protected static readonly string REVIEWER_NOTES_KEY = "reviewerNotes";
-        protected readonly BassLinesContext _ctx;
-
-        protected BaseReviewerRotationService(BassLinesContext ctx)
-        {
-            _ctx = ctx;
-        }
+        protected readonly BassLinesContext _ctx = ctx;
 
         protected Queue<string> GetReviewerOrder(Guid studioId)
         {

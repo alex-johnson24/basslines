@@ -19,22 +19,17 @@ using System.Text.Json;
 
 namespace BassLines.Api.Services
 {
-  public class SpotifyService : ISpotifyService
+  public class SpotifyService(
+    IOptions<SpotifySettings> spotify, 
+    IHttpClientFactory httpClientFactory, 
+    IOptions<AuthSettings> authSettings, 
+    IMapper mapper) : ISpotifyService
   {
-    private readonly SpotifySettings _spotify;
-    private readonly HttpClient _spotifyClient;
-    private readonly HttpClient _tokenClient;
-    private readonly AuthSettings _authSettings;
-    private readonly IMapper _mapper;
-
-    public SpotifyService(IOptions<SpotifySettings> spotify, IHttpClientFactory httpClientFactory, IOptions<AuthSettings> authSettings, IMapper mapper)
-    {
-      _spotify = spotify.Value;
-      _spotifyClient = httpClientFactory.CreateClient("Spotify");
-      _tokenClient = httpClientFactory.CreateClient("SpotifyToken");
-      _authSettings = authSettings.Value;
-      _mapper = mapper;
-    }
+    private readonly SpotifySettings _spotify = spotify.Value;
+    private readonly HttpClient _spotifyClient = httpClientFactory.CreateClient("Spotify");
+    private readonly HttpClient _tokenClient = httpClientFactory.CreateClient("SpotifyToken");
+    private readonly AuthSettings _authSettings = authSettings.Value;
+    private readonly IMapper _mapper = mapper;
 
     public string GetSpotifyAuthUrl() => _spotify.AuthUrl;
 
@@ -554,10 +549,7 @@ namespace BassLines.Api.Services
 
       var result = await _spotifyClient.GetAsync($"tracks/{trackId}");
 
-      var trackDetails = await result.DeserializeHttp<TrackDetails>();
-
-      return trackDetails;
+      return await result.DeserializeHttp<TrackDetails>();
     }
   }
 }
-

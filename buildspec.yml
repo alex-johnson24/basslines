@@ -5,7 +5,7 @@ version: 0.2
 phases:
   install:
     commands:
-      - /usr/local/bin/dotnet-install.sh --channel LTS
+      - /usr/local/bin/dotnet-install.sh --channel 8.0 --lts
     runtime-versions:
       nodejs: 14
 
@@ -33,5 +33,5 @@ phases:
 artifacts:
   files:
     - "**/*"
-  base-directory: ./BassLines.Api/bin/Release/net6.0/publish/
+  base-directory: ./BassLines.Api/bin/Release/net8.0/publish/
   discard-paths: no

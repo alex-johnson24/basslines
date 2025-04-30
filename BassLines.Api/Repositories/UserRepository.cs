@@ -7,11 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BassLines.Api.Repositories
 {
-    public class UserRepository : BaseRepository, IUserRepository
+    public class UserRepository(IDbContextFactory<BassLinesContext> ctxFactory) 
+        : BaseRepository(ctxFactory), IUserRepository
     {
-        public UserRepository(IDbContextFactory<BassLinesContext> ctxFactory) : base(ctxFactory)
-        { }
-
         public IEnumerable<User> GetUsers(Guid studioId)
         {
             return _ctx.Set<User>()

@@ -10,18 +10,15 @@ using BassLines.Api.Utils;
 
 namespace BassLines.Api.Services
 {
-    public class InMemoryReviewerRotationService : BaseReviewerRotationService
+    public class InMemoryReviewerRotationService(
+        IMemoryCache cache, 
+        IUserRepository userRepo, 
+        IMapper mapper, 
+        BassLinesContext ctx) : BaseReviewerRotationService(ctx)
     {
-        private readonly IMemoryCache _cache;
-        private readonly IUserRepository _userRepo;
-        private readonly IMapper _mapper;
-
-        public InMemoryReviewerRotationService(IMemoryCache cache, IUserRepository userRepo, IMapper mapper, BassLinesContext ctx) : base(ctx)
-        {
-            _cache = cache;
-            _userRepo = userRepo;
-            _mapper = mapper;
-        }
+        private readonly IMemoryCache _cache = cache;
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly IMapper _mapper = mapper;
 
         public override string GetCurrentReviewer(Guid studioId) => _cache.Get<string>(CURRENT_REVIEWER_KEY.ToGuidKey(studioId));
 

@@ -14,18 +14,15 @@ namespace BassLines.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController(
+        ILogger<UsersController> logger, 
+        IUserService userService, 
+        ILeaderboardService leaderboardService
+    ) : ControllerBase
     {
-        private readonly ILogger<UsersController> _logger;
-        private readonly IUserService _userService;
-        private readonly ILeaderboardService _leaderboardService;
-
-        public UsersController(ILogger<UsersController> logger, IUserService userService, ILeaderboardService leaderboardService)
-        {
-            _logger = logger;
-            _userService = userService;
-            _leaderboardService = leaderboardService;
-        }
+        private readonly ILogger<UsersController> _logger = logger;
+        private readonly IUserService _userService = userService;
+        private readonly ILeaderboardService _leaderboardService = leaderboardService;
 
         [Route("StudioUsers")]
         [HttpGet]

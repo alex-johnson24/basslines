@@ -8,11 +8,9 @@ using BassLines.Api.ViewModels;
 
 namespace BassLines.Api.Repositories
 {
-    public class SongRepository : BaseRepository, ISongRepository
+    public class SongRepository(IDbContextFactory<BassLinesContext> ctxFactory) 
+        : BaseRepository(ctxFactory), ISongRepository
     {
-        public SongRepository(IDbContextFactory<BassLinesContext> ctxFactory) : base(ctxFactory)
-        { }
-
         public IEnumerable<Song> GetSongs(Guid studioId)
         {
             return _ctx.Set<Song>()
@@ -29,6 +27,7 @@ namespace BassLines.Api.Repositories
         {
             return _ctx.Set<Song>()
                     .AsNoTracking()
+                    .AsSplitQuery()
                     .Include(i => i.Genre)
                     .Include(i => i.User)
                     .Include(i => i.Reviewer)

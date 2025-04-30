@@ -17,30 +17,21 @@ using System.Threading.Tasks;
 
 namespace BassLines.Api.Services
 {
-    public class UserService : IUserService
+    public class UserService(
+        IUserRepository userRepo,
+        IMetricsRepository metricsRepo,
+        ILogger<UserService> logger,
+        IMapper mapper,
+        IOptions<AuthSettings> authSettings,
+        IRoleRepository roleRepository) : IUserService
     {
         private static readonly int _saltLength = 32;
-        private readonly IUserRepository _userRepo;
-        private readonly IMetricsRepository _metricsRepo;
-        private readonly IRoleRepository _roleRepository;
-        private readonly ILogger<UserService> _logger;
-        private readonly IMapper _mapper;
-        private readonly AuthSettings _authSettings;
-
-        public UserService(IUserRepository userRepo,
-                           IMetricsRepository metricsRepo,
-                           ILogger<UserService> logger,
-                           IMapper mapper,
-                           IOptions<AuthSettings> authSettings,
-                           IRoleRepository roleRepository)
-        {
-            _userRepo = userRepo;
-            _metricsRepo = metricsRepo;
-            _logger = logger;
-            _mapper = mapper;
-            _authSettings = authSettings.Value;
-            _roleRepository = roleRepository;
-        }
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly IMetricsRepository _metricsRepo = metricsRepo;
+        private readonly ILogger<UserService> _logger = logger;
+        private readonly IMapper _mapper = mapper;
+        private readonly AuthSettings _authSettings = authSettings.Value;
+        private readonly IRoleRepository _roleRepository = roleRepository;
 
         public UserModel SignIn(LoginModel loginModel, out string jwt)
         {

@@ -5,11 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BassLines.Api.Repositories
 {
-    public class GenreRepository : BaseRepository, IGenreRepository
+    public class GenreRepository(IDbContextFactory<BassLinesContext> ctxFactory) 
+        : BaseRepository(ctxFactory), IGenreRepository
     {
-        public GenreRepository(IDbContextFactory<BassLinesContext> ctxFactory) : base(ctxFactory)
-        { }
-
         public IEnumerable<Genre> GetGenres()
         {
             return _ctx.Set<Genre>();

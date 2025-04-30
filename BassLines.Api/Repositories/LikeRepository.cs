@@ -4,11 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BassLines.Api.Repositories
 {
-    public class LikeRepository : BaseRepository, ILikeRepository
+    public class LikeRepository(IDbContextFactory<BassLinesContext> ctxFactory) 
+        : BaseRepository(ctxFactory), ILikeRepository
     {
-        public LikeRepository(IDbContextFactory<BassLinesContext> ctxFactory) : base(ctxFactory)
-        { }
-
         public void CreateLike(Like like)
         {
             _ctx.Set<Like>().Add(like);

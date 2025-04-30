@@ -16,22 +16,19 @@ namespace BassLines.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class ReviewersController : ControllerBase
+    public class ReviewersController(
+        ILogger<ReviewersController> logger, 
+        IReviewerRotationService reviewerRotationService, 
+        IUserRepository userRepo, 
+        IMapper mapper, 
+        IHubContext<SongHub, ISongHub> songHub
+    ) : ControllerBase
     {
-        private readonly ILogger<ReviewersController> _logger;
-        private readonly IReviewerRotationService _reviewerRotationService;
-        private readonly IUserRepository _userRepo;
-        private readonly IMapper _mapper;
-        private readonly IHubContext<SongHub, ISongHub> _songHub;
-
-        public ReviewersController(ILogger<ReviewersController> logger, IReviewerRotationService reviewerRotationService, IUserRepository userRepo, IMapper mapper, IHubContext<SongHub, ISongHub> songHub)
-        {
-            _logger = logger;
-            _reviewerRotationService = reviewerRotationService;
-            _userRepo = userRepo;
-            _mapper = mapper;
-            _songHub = songHub;
-        }
+        private readonly ILogger<ReviewersController> _logger = logger;
+        private readonly IReviewerRotationService _reviewerRotationService = reviewerRotationService;
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly IMapper _mapper = mapper;
+        private readonly IHubContext<SongHub, ISongHub> _songHub = songHub;
 
         [HttpGet]
         [UserStudioClaimFilter]

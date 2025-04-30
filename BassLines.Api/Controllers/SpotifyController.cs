@@ -15,20 +15,13 @@ namespace BassLines.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class SpotifyController : ControllerBase
+    public class SpotifyController(
+        ILogger<SpotifyController> logger,
+        ISpotifyService spotifyService
+    ) : ControllerBase
     {
-        private readonly ISpotifyService _spotifyService;
-
-        private readonly ILogger _logger;
-
-        public SpotifyController(
-            ILogger<SpotifyController> logger,
-            ISpotifyService spotifyService
-        )
-        {
-            _logger = logger;
-            _spotifyService = spotifyService;
-        }
+        private readonly ISpotifyService _spotifyService = spotifyService;
+        private readonly ILogger _logger = logger;
 
         [HttpGet]
         [ProducesResponseType(typeof (string), 200)]

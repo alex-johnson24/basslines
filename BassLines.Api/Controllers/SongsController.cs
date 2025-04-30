@@ -19,20 +19,17 @@ namespace BassLines.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class SongsController : ControllerBase
+    public class SongsController(
+        ISongRepository songRepo,
+        ILogger<SongsController> logger,
+        IHubContext<SongHub, ISongHub> songHub,
+        IMapper mapper
+    ) : ControllerBase
     {
-        private readonly ILogger<SongsController> _logger;
-        private readonly ISongRepository _songRepo;
-        private readonly IHubContext<SongHub, ISongHub> _songHub;
-        private readonly IMapper _mapper;
-
-        public SongsController(ISongRepository songRepo, ILogger<SongsController> logger, IHubContext<SongHub, ISongHub> songHub, IMapper mapper)
-        {
-            _songRepo = songRepo;
-            _logger = logger;
-            _songHub = songHub;
-            _mapper = mapper;
-        }
+        private readonly ILogger<SongsController> _logger = logger;
+        private readonly ISongRepository _songRepo = songRepo;
+        private readonly IHubContext<SongHub, ISongHub> _songHub = songHub;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet]
         [UserStudioClaimFilter]
