@@ -11,15 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BassLines.Api.Repositories
 {
-    public class MetricsRepository : IMetricsRepository
+    public class MetricsRepository(IMapper mapper, IDbContextFactory<BassLinesContext> ctxFactory) : IMetricsRepository
     {
-        private readonly IMapper _mapper;
-        private readonly IDbContextFactory<BassLinesContext> _ctxFactory;
-        public MetricsRepository(IMapper mapper, IDbContextFactory<BassLinesContext> ctxFactory)
-        {
-            _mapper = mapper;
-            _ctxFactory = ctxFactory;
-        }
+        private readonly IMapper _mapper = mapper;
+        private readonly IDbContextFactory<BassLinesContext> _ctxFactory = ctxFactory;
 
         public Dictionary<string, decimal> GetBayesianAverages(Guid studioId)
         {

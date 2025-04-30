@@ -6,11 +6,10 @@ using BassLines.Api.Enums;
 
 namespace BassLines.Api.Repositories
 {
-    public class RoleRepository : BaseRepository, IRoleRepository
+    public class RoleRepository(IDbContextFactory<BassLinesContext> contextFactory) 
+        : BaseRepository(contextFactory), IRoleRepository
     {
         private static UserRole DEFAULT_ROLE = UserRole.Contributor;
-        public RoleRepository(IDbContextFactory<BassLinesContext> contextFactory) : base(contextFactory)
-        { }
 
         public Role GetDefaultRole()
         {
