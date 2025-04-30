@@ -16,22 +16,19 @@ namespace BassLines.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class LikesController : ControllerBase
+    public class LikesController(
+        ILikeRepository likesRepo, 
+        ILogger<LikesController> logger, 
+        IMapper mapper, 
+        ISongRepository songRepo, 
+        IHubContext<SongHub, ISongHub> songHub
+    ) : ControllerBase
     {
-        private readonly ILogger<LikesController> _logger;
-        private readonly ILikeRepository _likesRepo;
-        private readonly IMapper _mapper;
-        private readonly ISongRepository _songRepo;
-        private readonly IHubContext<SongHub, ISongHub> _songHub;
-
-        public LikesController(ILikeRepository likesRepo, ILogger<LikesController> logger, IMapper mapper, ISongRepository songRepo, IHubContext<SongHub, ISongHub> songHub)
-        {
-            _logger = logger;
-            _likesRepo = likesRepo;
-            _mapper = mapper;
-            _songRepo = songRepo;
-            _songHub = songHub;
-        }
+        private readonly ILogger<LikesController> _logger = logger;
+        private readonly ILikeRepository _likesRepo = likesRepo;
+        private readonly IMapper _mapper = mapper;
+        private readonly ISongRepository _songRepo = songRepo;
+        private readonly IHubContext<SongHub, ISongHub> _songHub = songHub;
 
         [HttpPost]
         [UserStudioClaimFilter]

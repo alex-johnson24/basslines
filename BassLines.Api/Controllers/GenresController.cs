@@ -11,16 +11,13 @@ namespace BassLines.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class GenresController : ControllerBase
+    public class GenresController(
+        IGenreRepository genreRepo, 
+        ILogger<GenresController> logger
+    ) : ControllerBase
     {
-        private readonly ILogger<GenresController> _logger;
-        private readonly IGenreRepository _genreRepo;
-
-        public GenresController(IGenreRepository genreRepo, ILogger<GenresController> logger)
-        {
-            _logger = logger;
-            _genreRepo = genreRepo;
-        }
+        private readonly ILogger<GenresController> _logger = logger;
+        private readonly IGenreRepository _genreRepo = genreRepo;
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<GenreModel>), 200)]
