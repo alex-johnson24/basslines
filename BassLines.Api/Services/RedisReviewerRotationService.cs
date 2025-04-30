@@ -12,21 +12,19 @@ using BassLines.Api.Utils;
 
 namespace BassLines.Api.Services
 {
-    public class RedisReviewerRotationService : BaseReviewerRotationService
+    public class RedisReviewerRotationService(
+        IDistributedCache cache, 
+        IUserRepository userRepo, 
+        IMapper mapper, 
+        BassLinesContext ctx) : BaseReviewerRotationService(ctx)
     {
-        private readonly IDistributedCache _cache;
-        private readonly IUserRepository _userRepo;
-        private readonly IMapper _mapper;
+        private readonly IDistributedCache _cache = cache;
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly IMapper _mapper = mapper;
         private readonly DistributedCacheEntryOptions _opts = new DistributedCacheEntryOptions
         {
             SlidingExpiration = TimeSpan.MaxValue
         };
-        public RedisReviewerRotationService(IDistributedCache cache, IUserRepository userRepo, IMapper mapper, BassLinesContext ctx) : base(ctx)
-        {
-            _cache = cache;
-            _userRepo = userRepo;
-            _mapper = mapper;
-        }
 
         public override string GetCurrentReviewer(Guid studioId) => _cache.Get(CURRENT_REVIEWER_KEY.ToGuidKey(studioId)).FromRedisCache<string>();
 

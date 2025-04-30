@@ -99,17 +99,14 @@ namespace BassLines.Api.Services
         }
     }
 
-    public class LeaderboardService : ILeaderboardService
+    public class LeaderboardService(
+        IUserRepository userRepo, 
+        ISongRepository songRepo, 
+        IMetricsRepository metricsRepo) : ILeaderboardService
     {
-        private readonly IUserRepository _userRepo;
-        private readonly ISongRepository _songRepo;
-        private readonly IMetricsRepository _metricsRepo;
-        public LeaderboardService(IUserRepository userRepo, ISongRepository songRepo, IMetricsRepository metricsRepo)
-        {
-            _userRepo = userRepo;
-            _songRepo = songRepo;
-            _metricsRepo = metricsRepo;
-        }
+        private readonly IUserRepository _userRepo = userRepo;
+        private readonly ISongRepository _songRepo = songRepo;
+        private readonly IMetricsRepository _metricsRepo = metricsRepo;
 
         public IEnumerable<UserLeaderboardModel> GetLeaderboardMetrics(Guid studioId)
         {
