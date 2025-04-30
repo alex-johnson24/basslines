@@ -4,13 +4,9 @@ using BassLines.Api.Interfaces;
 
 namespace BassLines.Api.Repositories
 {
-    public abstract class BaseRepository : IBaseRepository
+    public abstract class BaseRepository(IDbContextFactory<BassLinesContext> ctxFactory) : IBaseRepository
     {
-        protected readonly BassLinesContext _ctx;
-        public BaseRepository(IDbContextFactory<BassLinesContext> ctxFactory)
-        {
-            _ctx = ctxFactory.CreateDbContext();
-        }
+        protected readonly BassLinesContext _ctx = ctxFactory.CreateDbContext();
         
         public bool SaveChanges()
         {
